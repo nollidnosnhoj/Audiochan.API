@@ -20,14 +20,19 @@ namespace Audiochan.Infrastructure.Storage
     public class AmazonS3Service : IStorageService
     {
         private readonly IAmazonS3 _client;
+        private readonly IDateTimeService _dateTimeService;
         private readonly string _bucket;
         private readonly long _chunkThreshold;
         private readonly string _url;
 
-        public AmazonS3Service(IOptions<AmazonS3Options> amazonS3Options, IOptions<AudiochanOptions> audiochanOptions)
+        public AmazonS3Service(
+            IOptions<AmazonS3Options> amazonS3Options,
+            IOptions<AudiochanOptions> audiochanOptions,
+            IDateTimeService dateTimeService)
         {
             if (!audiochanOptions.Value.StorageUrl.Contains("amazonaws.com"))
                 throw new StorageException("StorageUrl should contain amazonaws.com");
+            _dateTimeService = dateTimeService;
             _url = audiochanOptions.Value.StorageUrl;
             _bucket = amazonS3Options.Value.Bucket;
             var region = RegionEndpoint.GetBySystemName(amazonS3Options.Value.Region);
@@ -45,11 +50,16 @@ namespace Audiochan.Infrastructure.Storage
             _chunkThreshold = amazonS3Options.Value.ChunkThreshold;
             _client = new AmazonS3Client(credentials, s3Config);
         }
-        
-        public async Task RemoveAsync(string url, 
+
+        public async Task<string> GetPresignedUrlAsync(string container, string blobName, 
             CancellationToken cancellationToken = default)
         {
-            var (container, blobName) = url.GetBlobPath(_url);
+            return await Task.Run(() => GetPresignedUrl(container, blobName), cancellationToken);
+        }
+
+        public async Task RemoveAsync(string path, CancellationToken cancellationToken = default)
+        {
+            var (container, blobName) = path.GetBlobPath();
             var key = GetKeyName(container, blobName);
 
             var deleteRequest = new DeleteObjectRequest
@@ -146,10 +156,23 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
+        private string GetPresignedUrl(string container, string blobName)
+        {
+            var expiration = _dateTimeService.Now.AddMinutes(5);
+            var key = GetKeyName(container, blobName);
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = _bucket,
+                Key = key,
+                Expires = expiration
+            };
+            var presignedUrl = _client.GetPreSignedURL(request);
+            return presignedUrl;
+        }
+
         private static string GetKeyName(string container, string blobName)
         {
-            container = container.Replace('\\', '/');
-            
+            container = container.Replace(Path.DirectorySeparatorChar, '/');
             return string.IsNullOrWhiteSpace(container)
                 ? blobName
                 : $"{container}/{blobName}";
