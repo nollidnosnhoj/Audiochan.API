@@ -33,13 +33,13 @@ namespace Audiochan.Infrastructure.Images
             var imageStream = new MemoryStream();
             await imageOriginal.SaveAsync(imageStream, new JpegEncoder(), cancellationToken);
             imageStream.Seek(0, SeekOrigin.Begin);
-            await _storageService.SaveBlobAsync(
+            await _storageService.SaveAsync(
                 container: GetContainer(type),
                 blobName: BlobWithExt(name), 
                 stream: imageStream, 
                 overwrite: true, 
                 cancellationToken);
-            var blob = await _storageService.GetBlobAsync(
+            var blob = await _storageService.GetAsync(
                 container: GetContainer(type), 
                 blobName: BlobWithExt(name), 
                 cancellationToken);

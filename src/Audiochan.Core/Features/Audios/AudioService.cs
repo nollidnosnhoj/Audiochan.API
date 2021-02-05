@@ -195,8 +195,8 @@ namespace Audiochan.Core.Features.Audios
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                await _storageService.DeleteBlobAsync(cachedStreamUrl, cancellationToken);
-                await _storageService.DeleteBlobAsync(cachedPictureUrl, cancellationToken);
+                await _storageService.RemoveAsync(cachedStreamUrl, cancellationToken);
+                await _storageService.RemoveAsync(cachedPictureUrl, cancellationToken);
                 throw; 
             }
         }
@@ -278,8 +278,8 @@ namespace Audiochan.Core.Features.Audios
 
             _dbContext.Audios.Remove(audio);
             var removeEntityFromDatabaseTask = _dbContext.SaveChangesAsync(cancellationToken);
-            var removeAudioBlobTask = _storageService.DeleteBlobAsync(audio.StreamUrl, cancellationToken);
-            var removeImageBlobTask = _storageService.DeleteBlobAsync(audio.PictureUrl, cancellationToken);
+            var removeAudioBlobTask = _storageService.RemoveAsync(audio.StreamUrl, cancellationToken);
+            var removeImageBlobTask = _storageService.RemoveAsync(audio.PictureUrl, cancellationToken);
             await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask, removeImageBlobTask);
             return Result.Success();
         }

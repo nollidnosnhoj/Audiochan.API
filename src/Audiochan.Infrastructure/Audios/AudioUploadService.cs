@@ -25,9 +25,9 @@ namespace Audiochan.Infrastructure.Audios
             var audioMetadata = new Track(audioStream, audioFile.ContentType);
             var blobName = $"{audioId}{Path.GetExtension(audioFile.FileName)}";
             await _storageService
-                .SaveBlobAsync(ContainerConstants.Audios, blobName, audioStream, false, cancellationToken);
+                .SaveAsync(ContainerConstants.Audios, blobName, audioStream, false, cancellationToken);
             var blobDto = await _storageService
-                .GetBlobAsync(ContainerConstants.Audios, blobName, cancellationToken);
+                .GetAsync(ContainerConstants.Audios, blobName, cancellationToken);
 
             return new AudioUploadResult(
                 blobDto.Url,

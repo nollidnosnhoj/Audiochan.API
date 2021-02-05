@@ -46,7 +46,7 @@ namespace Audiochan.Infrastructure.Storage
             _client = new AmazonS3Client(credentials, s3Config);
         }
         
-        public async Task DeleteBlobAsync(string url, 
+        public async Task RemoveAsync(string url, 
             CancellationToken cancellationToken = default)
         {
             var (container, blobName) = url.GetBlobPath(_url);
@@ -68,7 +68,7 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public async Task SaveBlobAsync(string container, string blobName, Stream stream, 
+        public async Task SaveAsync(string container, string blobName, Stream stream, 
             bool overwrite = true,
             CancellationToken cancellationToken = default)
         {
@@ -123,7 +123,7 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public async Task<BlobDto> GetBlobAsync(string container, string blobName,
+        public async Task<BlobDto> GetAsync(string container, string blobName,
             CancellationToken cancellationToken = default)
         {
             var key = GetKeyName(container, blobName);
