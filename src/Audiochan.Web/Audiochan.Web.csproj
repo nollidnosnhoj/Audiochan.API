@@ -26,8 +26,4 @@
     <ProjectReference Include="..\Audiochan.Infrastructure\Audiochan.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot" />
-  </ItemGroup>
-
 </Project>
