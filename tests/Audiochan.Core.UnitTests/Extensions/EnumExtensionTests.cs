@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Audiochan.UnitTests.Extensions
+namespace Audiochan.Core.UnitTests.Extensions
 {
     public enum TestEnum
     {

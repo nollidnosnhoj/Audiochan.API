@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Audiochan.UnitTests.Validations
+namespace Audiochan.Core.UnitTests.Validations
 {
     public class UploadAudioValidationTests
     {

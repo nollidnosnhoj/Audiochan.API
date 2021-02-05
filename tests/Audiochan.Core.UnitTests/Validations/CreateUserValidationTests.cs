@@ -8,7 +8,7 @@ using FluentValidation.TestHelper;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Audiochan.UnitTests.Validations
+namespace Audiochan.Core.UnitTests.Validations
 {
     public class CreateUserValidationTests
     {
