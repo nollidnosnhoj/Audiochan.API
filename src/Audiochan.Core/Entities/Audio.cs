@@ -16,6 +16,7 @@ namespace Audiochan.Core.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
+        public Guid UploadId { get; set; }
         public long FileSize { get; set; }
         public string FileExt { get; set; }
         public string PictureUrl { get; set; }
