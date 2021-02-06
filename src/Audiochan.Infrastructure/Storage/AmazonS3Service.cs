@@ -8,10 +8,10 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Audiochan.Core.Common.Exceptions;
+using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Interfaces;
-using Audiochan.Infrastructure.Storage.Extensions;
 using Audiochan.Infrastructure.Storage.Options;
 using Microsoft.Extensions.Options;
 
@@ -51,16 +51,16 @@ namespace Audiochan.Infrastructure.Storage
             _client = new AmazonS3Client(credentials, s3Config);
         }
 
-        public async Task<string> GetPresignedUrlAsync(string container, string blobName, 
+        public async Task<string> GetPresignedUrlAsync(string container, string blobName, string fileExtension,
             CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => GetPresignedUrl(container, blobName), cancellationToken);
+            return await Task.Run(() => GetPresignedUrl(container, blobName, fileExtension), cancellationToken);
         }
 
         public async Task RemoveAsync(string path, CancellationToken cancellationToken = default)
         {
             var (container, blobName) = path.GetBlobPath();
-            var key = GetKeyName(container, blobName);
+            var key = blobName.GetKeyName(container);
 
             var deleteRequest = new DeleteObjectRequest
             {
@@ -94,7 +94,7 @@ namespace Audiochan.Infrastructure.Storage
                     BucketName = _bucket,
                     InputStream = stream,
                     PartSize = 6291456,
-                    Key = GetKeyName(container, blobName),
+                    Key = blobName.GetKeyName(container),
                     ContentType = blobName.GetContentType(),
                     AutoCloseStream = true,
                     Headers = {ContentLength = length.Value},
@@ -115,7 +115,7 @@ namespace Audiochan.Infrastructure.Storage
                 var putRequest = new PutObjectRequest
                 {
                     BucketName = _bucket,
-                    Key = GetKeyName(container, blobName),
+                    Key = blobName.GetKeyName(container),
                     InputStream = stream,
                     ContentType = blobName.GetContentType(),
                     CannedACL = S3CannedACL.PublicRead,
@@ -136,7 +136,7 @@ namespace Audiochan.Infrastructure.Storage
         public async Task<BlobDto> GetAsync(string container, string blobName,
             CancellationToken cancellationToken = default)
         {
-            var key = GetKeyName(container, blobName);
+            var key = blobName.GetKeyName(container);
 
             try
             {
@@ -156,26 +156,20 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        private string GetPresignedUrl(string container, string blobName)
+        private string GetPresignedUrl(string container, string blobName, string fileExtension)
         {
             var expiration = _dateTimeService.Now.AddMinutes(5);
-            var key = GetKeyName(container, blobName);
+            var key = blobName.GetKeyName(container, fileExtension);
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = _bucket,
                 Key = key,
-                Expires = expiration
+                Expires = expiration,
+                ContentType = blobName.GetContentType(),
+                Verb = HttpVerb.PUT
             };
             var presignedUrl = _client.GetPreSignedURL(request);
             return presignedUrl;
-        }
-
-        private static string GetKeyName(string container, string blobName)
-        {
-            container = container.Replace(Path.DirectorySeparatorChar, '/');
-            return string.IsNullOrWhiteSpace(container)
-                ? blobName
-                : $"{container}/{blobName}";
         }
     }
 }

@@ -25,15 +25,14 @@ namespace Audiochan.Web.Controllers
         public async Task<IActionResult> GetPresignedUrl([FromBody] GetPresignedUrlRequest request, 
             CancellationToken cancellationToken)
         {
-            var extension = Path.GetExtension(request.FileName);
             // Generate ID for audio
             // TODO: Check for collision
             var id = Guid.NewGuid();
-            var name = $"source{extension}";
             // Get presigned url to upload audio in the frontend
             var url = await _storageService.GetPresignedUrlAsync(
                 container: ContainerConstants.Audios,
-                blobName: Path.Combine(id.ToString(), name),
+                blobName: Path.Combine(id.ToString(), "source"),
+                fileExtension: Path.GetExtension(request.FileName),
                 cancellationToken);
             return Ok(new {Id = id, Url = url});
         }
