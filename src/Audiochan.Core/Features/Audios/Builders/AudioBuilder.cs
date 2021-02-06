@@ -17,12 +17,10 @@ namespace Audiochan.Core.Features.Audios.Builders
             _audio = new Audio();
         }
 
-        public AudioBuilder AddFile(IFormFile file)
+        public AudioBuilder AddId(Guid id)
         {
-            if (string.IsNullOrEmpty(_audio.Title))
-                _audio.Title = Path.GetFileNameWithoutExtension(file.FileName);
-            _audio.FileExt = Path.GetExtension(file.FileName);
-            _audio.FileSize = file.Length;
+            if (id != Guid.Empty) _audio.Id = id;
+            
             return this;
         }
 
@@ -39,12 +37,15 @@ namespace Audiochan.Core.Features.Audios.Builders
             return this;
         }
 
-        public AudioBuilder AddUploadResult(AudioUploadResult uploadResult)
+        public AudioBuilder AddDuration(int duration)
         {
-            _audio.Duration = uploadResult.Duration;
-            _audio.FileSize = uploadResult.FileSize;
-            _audio.FileExt = uploadResult.FileExt;
-            _audio.StreamUrl = uploadResult.StreamUrl;
+            _audio.Duration = duration;
+            return this;
+        }
+
+        public AudioBuilder AddFileExtension(string extension)
+        {
+            _audio.FileExt = extension;
             return this;
         }
 

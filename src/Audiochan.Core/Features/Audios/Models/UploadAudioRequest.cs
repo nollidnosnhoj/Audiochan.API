@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace Audiochan.Core.Features.Audios.Models
 {
     public record UploadAudioRequest : UpdateAudioRequest
     {
+        public Guid Id { get; init; }
+        public string FileName { get; init; }
+        public int Duration { get; init; }
         public IFormFile File { get; init; }
-        public IFormFile Image { get; init; }
     }
 }

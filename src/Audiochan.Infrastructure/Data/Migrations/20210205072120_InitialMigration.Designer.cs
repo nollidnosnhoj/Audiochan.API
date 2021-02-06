@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Audiochan.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210205041849_InitialMigration")]
+    [Migration("20210205072120_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,10 +89,6 @@ namespace Audiochan.Infrastructure.Data.Migrations
                     b.Property<string>("PictureUrl")
                         .HasColumnType("text")
                         .HasColumnName("picture_url");
-
-                    b.Property<string>("StreamUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("stream_url");
 
                     b.Property<string>("Title")
                         .IsRequired()

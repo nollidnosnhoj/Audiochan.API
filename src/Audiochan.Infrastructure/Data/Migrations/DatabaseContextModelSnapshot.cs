@@ -88,10 +88,6 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("picture_url");
 
-                    b.Property<string>("StreamUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("stream_url");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)

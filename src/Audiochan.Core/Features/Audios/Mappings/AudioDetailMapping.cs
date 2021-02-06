@@ -22,7 +22,6 @@ namespace Audiochan.Core.Features.Audios.Mappings
                 Duration = audio.Duration,
                 FileSize = audio.FileSize,
                 FileExt = audio.FileExt,
-                Url = audio.StreamUrl,
                 PictureUrl = audio.PictureUrl,
                 Tags = string.Join(' ', audio.Tags.Select(tag => tag.Id)),
                 FavoriteCount = audio.Favorited.Count,

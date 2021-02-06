@@ -111,7 +111,6 @@ namespace Audiochan.Infrastructure.Data.Migrations
                     duration = table.Column<int>(type: "integer", nullable: false),
                     file_size = table.Column<long>(type: "bigint", nullable: false),
                     file_ext = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
-                    stream_url = table.Column<string>(type: "text", nullable: true),
                     picture_url = table.Column<string>(type: "text", nullable: true),
                     is_public = table.Column<bool>(type: "boolean", nullable: false),
                     is_loop = table.Column<bool>(type: "boolean", nullable: false),
