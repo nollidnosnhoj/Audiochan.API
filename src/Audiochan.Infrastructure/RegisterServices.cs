@@ -2,6 +2,7 @@
 using Audiochan.Infrastructure.Images;
 using Audiochan.Infrastructure.Security;
 using Audiochan.Infrastructure.Shared;
+using Audiochan.Infrastructure.Upload;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Audiochan.Infrastructure
@@ -14,6 +15,7 @@ namespace Audiochan.Infrastructure
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IDateTimeService, DateTimeService>();
             services.AddTransient<IImageUploadService, ImageUploadService>();
+            services.AddTransient<IUploadService, UploadService>();
             return services;
         }
     }
