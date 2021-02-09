@@ -2,5 +2,5 @@
 
 namespace Audiochan.Core.Common.Models
 {
-    public record StorageSignedUrlResult(Guid Id, string Url, string FileName = "") { }
+    public record StorageSignedUrlResult(Guid UploadId, string Url, string FileName = "") { }
 }

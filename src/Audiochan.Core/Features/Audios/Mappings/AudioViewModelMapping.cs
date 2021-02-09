@@ -3,11 +3,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.Models;
+using Audiochan.Core.Features.Genres.Models;
 using Audiochan.Core.Features.Users.Models;
 
 namespace Audiochan.Core.Features.Audios.Mappings
 {
-    public static class AudioDetailMapping
+    public static class AudioViewModelMapping
     {
         public static Expression<Func<Audio, AudioViewModel>> Map(string currentUserId)
         {
@@ -29,7 +30,9 @@ namespace Audiochan.Core.Features.Audios.Mappings
                               && audio.Favorited.Any(f => f.UserId == currentUserId),
                 Created = audio.Created,
                 Updated = audio.LastModified,
-                Genre = audio.Genre != null ? audio.Genre.Name : string.Empty,
+                Genre = audio.Genre != null 
+                    ? new GenreDto(audio.Genre.Id, audio.Genre.Name, audio.Genre.Slug) 
+                    : null,
                 User = new UserViewModel
                 {
                     Id = audio.User.Id,

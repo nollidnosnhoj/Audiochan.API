@@ -148,11 +148,7 @@ namespace Audiochan.Infrastructure.Storage
                 Key = key,
                 Expires = expiration,
                 ContentType = contentType,
-                Verb = HttpVerb.PUT,
-                ResponseHeaderOverrides =
-                {
-                    ContentDisposition = $"inline; filename={request.OriginalFileName}"
-                },
+                Verb = HttpVerb.PUT
             };
 
             if (request.Metadata is not null && request.Metadata.Count > 0)

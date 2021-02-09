@@ -35,6 +35,7 @@ namespace Audiochan.Web.Extensions
             return result.ErrorCode switch
             {
                 ResultStatus.Success => StatusCodes.Status200OK,
+                ResultStatus.NotFound => StatusCodes.Status404NotFound,
                 ResultStatus.Unauthorized => StatusCodes.Status401Unauthorized,
                 ResultStatus.Forbidden => StatusCodes.Status403Forbidden,
                 ResultStatus.UnprocessedEntity => StatusCodes.Status422UnprocessableEntity,

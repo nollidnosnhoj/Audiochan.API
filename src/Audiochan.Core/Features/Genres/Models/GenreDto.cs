@@ -1,9 +1,6 @@
 ﻿namespace Audiochan.Core.Features.Genres.Models
 {
-    public record GenreDto
+    public record GenreDto(long Id, string Name, string Slug)
     {
-        public long Id { get; init; }
-        public string Name { get; init; }
-        public string Slug { get; init; }
     }
 }

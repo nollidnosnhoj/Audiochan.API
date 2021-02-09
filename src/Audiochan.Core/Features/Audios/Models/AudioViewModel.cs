@@ -20,7 +20,7 @@ namespace Audiochan.Core.Features.Audios.Models
         public bool IsFavorited { get; init; }
         public DateTime Created { get; init; }
         public DateTime? Updated { get; init; }
-        public string Genre { get; init; }
+        public GenreDto Genre { get; init; }
         public UserViewModel User { get; init; }
         public Guid UploadId { get; init; }
     }

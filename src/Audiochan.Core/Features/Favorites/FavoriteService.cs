@@ -39,7 +39,7 @@ namespace Audiochan.Core.Features.Favorites
                 .Where(fa => fa.User.UserName == username.ToLower())
                 .OrderByDescending(fa => fa.Created)
                 .Select(fa => fa.Audio)
-                .Select(AudioDetailMapping.Map(currentUserId))
+                .Select(AudioViewModelMapping.Map(currentUserId))
                 .Paginate(query, cancellationToken);
         }
 

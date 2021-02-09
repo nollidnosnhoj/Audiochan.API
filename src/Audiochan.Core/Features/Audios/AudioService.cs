@@ -57,7 +57,7 @@ namespace Audiochan.Core.Features.Audios
                 .FilterVisibility(userId)
                 .Where(a => followedIds.Contains(a.UserId))
                 .Distinct()
-                .Select(AudioDetailMapping.Map(userId))
+                .Select(AudioViewModelMapping.Map(userId))
                 .OrderByDescending(a => a.Created)
                 .Paginate(query, cancellationToken);
         }
@@ -88,7 +88,7 @@ namespace Audiochan.Core.Features.Audios
             queryable = queryable.Sort(query.Sort.ToLower());
 
             return await queryable
-                .Select(AudioDetailMapping.Map(currentUserId))
+                .Select(AudioViewModelMapping.Map(currentUserId))
                 .Paginate(query, cancellationToken);
         }
 
@@ -104,7 +104,7 @@ namespace Audiochan.Core.Features.Audios
                 .Include(a => a.Genre)
                 .FilterVisibility(currentUserId)
                 .Where(x => x.Id == audioId)
-                .Select(AudioDetailMapping.Map(currentUserId))
+                .Select(AudioViewModelMapping.Map(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 
@@ -123,7 +123,7 @@ namespace Audiochan.Core.Features.Audios
                 .Include(a => a.Genre)
                 .FilterVisibility(currentUserId)
                 .OrderBy(a => Guid.NewGuid())
-                .Select(AudioDetailMapping.Map(currentUserId))
+                .Select(AudioViewModelMapping.Map(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 
@@ -272,7 +272,7 @@ namespace Audiochan.Core.Features.Audios
 
             _dbContext.Audios.Remove(audio);
             var removeEntityFromDatabaseTask = _dbContext.SaveChangesAsync(cancellationToken);
-            var blobName = Path.Combine(audio.Id.ToString(), $"source{audio.FileExt}");
+            var blobName = Path.Combine(audio.UploadId.ToString(), $"source{audio.FileExt}");
             var removeAudioBlobTask = _storageService.RemoveAsync(ContainerConstants.Audios, blobName, cancellationToken);
             await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask);
             return Result.Success();
