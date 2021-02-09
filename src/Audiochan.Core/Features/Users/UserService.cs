@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Result;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Users.Mappings;
 using Audiochan.Core.Features.Users.Models;
@@ -18,13 +20,11 @@ namespace Audiochan.Core.Features.Users
     {
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IImageUploadService _imageUploadService;
 
-        public UserService(UserManager<User> userManager, ICurrentUserService currentUserService, IImageUploadService imageUploadService)
+        public UserService(UserManager<User> userManager, ICurrentUserService currentUserService)
         {
             _userManager = userManager;
             _currentUserService = currentUserService;
-            _imageUploadService = imageUploadService;
         }
 
         public async Task<IResult<CurrentUserViewModel>> GetCurrentUser(string authUserId, 
@@ -67,19 +67,10 @@ namespace Audiochan.Core.Features.Users
                 : Result<UserDetailsViewModel>.Success(profile);
         }
 
-        public async Task<IResult<string>> AddPicture(string userId, IFormFile file,
+        public Task<IResult<string>> AddPicture(string userId, IFormFile file,
             CancellationToken cancellationToken = default)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-                return Result<string>.Fail(ResultStatus.Unauthorized);
-
-            var blobDto = await _imageUploadService.Upload(PictureType.User, file, cancellationToken);
-
-            user.PictureUrl = blobDto.Url;
-            await _userManager.UpdateAsync(user);
-            return Result<string>.Success(blobDto.Url);
+            throw new NotImplementedException();
         }
 
         public async Task<IResult> UpdateUsername(string userId, string newUsername, 

@@ -1,5 +1,4 @@
 ﻿using Audiochan.Core.Interfaces;
-using Audiochan.Infrastructure.Images;
 using Audiochan.Infrastructure.Security;
 using Audiochan.Infrastructure.Shared;
 using Audiochan.Infrastructure.Upload;
@@ -14,7 +13,6 @@ namespace Audiochan.Infrastructure
             services.AddTransient<IAudioMetadataService, AudioMetadataService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IDateTimeService, DateTimeService>();
-            services.AddTransient<IImageUploadService, ImageUploadService>();
             services.AddTransient<IUploadService, UploadService>();
             return services;
         }

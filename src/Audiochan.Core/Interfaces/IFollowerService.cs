@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Result;
 using Audiochan.Core.Features.Followers.Models;
 
 namespace Audiochan.Core.Interfaces

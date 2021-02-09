@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Audiochan.Core.Common.Enums;
 
-namespace Audiochan.Core.Common.Models
+namespace Audiochan.Core.Common.Models.Result
 {
     public interface IResult<out T> : IResult
     {
