@@ -12,7 +12,7 @@ namespace Audiochan.Core.Entities
             Favorited = new HashSet<FavoriteAudio>();
         }
 
-        public Guid Id { get; set; }
+        public long Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
@@ -24,7 +24,7 @@ namespace Audiochan.Core.Entities
         public bool IsLoop { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
-        public long GenreId { get; set; }
+        public long? GenreId { get; set; }
         public Genre Genre { get; set; }
         public ICollection<Tag> Tags { get; set; }
         public ICollection<FavoriteAudio> Favorited { get; }

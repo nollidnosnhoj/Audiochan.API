@@ -47,17 +47,13 @@ namespace Audiochan.Core.Features.Genres
 
         public async Task<Genre> GetGenre(string input, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+            
             long genreId = 0;
             
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                input = "misc";
-            }
-            else
-            {
-                if (long.TryParse(input, out var parseResult))
-                    genreId = parseResult;
-            }
+            if (long.TryParse(input, out var parseResult))
+                genreId = parseResult;
 
             Expression<Func<Genre, bool>> predicate = genre =>
                 genre.Id == genreId || genre.Slug == input.Trim().ToLower();

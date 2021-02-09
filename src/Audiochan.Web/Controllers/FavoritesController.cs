@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Interfaces;
 using Audiochan.Web.Extensions;
@@ -33,7 +32,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "CheckIfUserFavoritedAudio",
             Tags = new []{"favorites"}
         )]
-        public async Task<IActionResult> IsFavorite(Guid audioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> IsFavorite(long audioId, CancellationToken cancellationToken)
         {
             return await _favoriteService.CheckIfUserFavorited(_currentUserService.GetUserId(), audioId, cancellationToken)
                 ? Ok()
@@ -50,7 +49,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "FavoriteAudio",
             Tags = new []{"favorites"}
         )]
-        public async Task<IActionResult> Favorite(Guid audioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Favorite(long audioId, CancellationToken cancellationToken)
         {
             var result = await _favoriteService.FavoriteAudio(_currentUserService.GetUserId(), audioId, cancellationToken);
             return result.IsSuccess 
@@ -68,7 +67,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "UnfavoriteAudio",
             Tags = new []{"favorites"}
         )]
-        public async Task<IActionResult> Unfavorite(Guid audioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Unfavorite(long audioId, CancellationToken cancellationToken)
         {
             var result = await _favoriteService.UnfavoriteAudio(_currentUserService.GetUserId(), audioId, cancellationToken);
             return result.IsSuccess 

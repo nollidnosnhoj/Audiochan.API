@@ -105,17 +105,19 @@ namespace Audiochan.Infrastructure.Data.Migrations
                 name: "audios",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "text", nullable: true),
                     duration = table.Column<int>(type: "integer", nullable: false),
+                    upload_id = table.Column<Guid>(type: "uuid", nullable: false),
                     file_size = table.Column<long>(type: "bigint", nullable: false),
                     file_ext = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     picture_url = table.Column<string>(type: "text", nullable: true),
                     is_public = table.Column<bool>(type: "boolean", nullable: false),
                     is_loop = table.Column<bool>(type: "boolean", nullable: false),
-                    user_id = table.Column<string>(type: "text", nullable: true),
-                    genre_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    genre_id = table.Column<long>(type: "bigint", nullable: true),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     last_modified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
@@ -127,7 +129,7 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         column: x => x.genre_id,
                         principalTable: "genres",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "fk_audios_users_user_id",
                         column: x => x.user_id,
@@ -275,7 +277,7 @@ namespace Audiochan.Infrastructure.Data.Migrations
                 name: "audio_tags",
                 columns: table => new
                 {
-                    audios_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    audios_id = table.Column<long>(type: "bigint", nullable: false),
                     tags_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -300,7 +302,7 @@ namespace Audiochan.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     user_id = table.Column<string>(type: "text", nullable: false),
-                    audio_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    audio_id = table.Column<long>(type: "bigint", nullable: false),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     last_modified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Audiochan.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210205072120_InitialMigration")]
+    [Migration("20210209055627_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,8 +24,8 @@ namespace Audiochan.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AudioTag", b =>
                 {
-                    b.Property<Guid>("AudiosId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("AudiosId")
+                        .HasColumnType("bigint")
                         .HasColumnName("audios_id");
 
                     b.Property<string>("TagsId")
@@ -43,11 +43,11 @@ namespace Audiochan.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Audiochan.Core.Entities.Audio", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("bigint")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("uuid_generate_v4()");
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -70,7 +70,7 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("file_size");
 
-                    b.Property<long>("GenreId")
+                    b.Property<long?>("GenreId")
                         .HasColumnType("bigint")
                         .HasColumnName("genre_id");
 
@@ -96,7 +96,12 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("title");
 
+                    b.Property<Guid>("UploadId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("upload_id");
+
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
@@ -118,8 +123,8 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
-                    b.Property<Guid>("AudioId")
-                        .HasColumnType("uuid")
+                    b.Property<long>("AudioId")
+                        .HasColumnType("bigint")
                         .HasColumnName("audio_id");
 
                     b.Property<DateTime>("Created")
@@ -491,14 +496,14 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .WithMany("Audios")
                         .HasForeignKey("GenreId")
                         .HasConstraintName("fk_audios_genres_genre_id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Audiochan.Core.Entities.User", "User")
                         .WithMany("Audios")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_audios_users_user_id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Genre");
 

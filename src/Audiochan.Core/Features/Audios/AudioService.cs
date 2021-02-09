@@ -8,8 +8,8 @@ using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Result;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audios.Builders;
 using Audiochan.Core.Features.Audios.Models;
 using Audiochan.Core.Features.Audios.Extensions;
 using Audiochan.Core.Features.Audios.Mappings;
@@ -92,7 +92,7 @@ namespace Audiochan.Core.Features.Audios
                 .Paginate(query, cancellationToken);
         }
 
-        public async Task<IResult<AudioViewModel>> Get(Guid audioId, CancellationToken cancellationToken = default)
+        public async Task<IResult<AudioViewModel>> Get(long audioId, CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
             
@@ -134,81 +134,69 @@ namespace Audiochan.Core.Features.Audios
         public async Task<IResult<AudioViewModel>> Create(UploadAudioRequest request, 
             CancellationToken cancellationToken = default)
         {
-            var id = request.Id;
-            var title = request.Title;
-            var extension = Path.GetExtension(request.FileName);
-            var duration = request.Duration;
-
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            var audio = new Audio
+            {
+                UploadId = request.UploadId,
+                Title = !string.IsNullOrWhiteSpace(request.Title)
+                    ? request.Title
+                    : Path.GetFileNameWithoutExtension(request.FileName),
+                Description = request.Description,
+                Duration = request.Duration,
+                FileExt = Path.GetExtension(request.FileName),
+                IsPublic = request.IsPublic ?? true,
+                IsLoop = request.IsLoop ?? false
+            };
+                
             if (request.File is not null)
             {
-                extension = Path.GetExtension(request.File.FileName);
-                title = string.IsNullOrWhiteSpace(title)
+                audio.FileExt = Path.GetExtension(request.File.FileName);
+                audio.Title = string.IsNullOrWhiteSpace(audio.Title)
                     ? Path.GetFileNameWithoutExtension(request.File.FileName)
-                    : request.Title;
-                duration = _audioMetadataService.GetDuration(request.File);
+                    : audio.Title;
+                audio.Duration = _audioMetadataService.GetDuration(request.File);
             }
-            
-            var audioBuilder = new AudioBuilder()
-                .AddId(id)
-                .AddTitle(title)
-                .AddDescription(request.Description)
-                .AddDuration(duration)
-                .AddFileExtension(extension)
-                .SetToPublic(request.IsPublic)
-                .SetToLoop(request.IsLoop);
-            
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+                
             try
             {
-                var currentUser = await _dbContext.Users
+                audio.User = await _dbContext.Users
                     .SingleOrDefaultAsync(u => u.Id == _currentUserService.GetUserId(), cancellationToken);
-                
-                var genre = await _genreService.GetGenre(request.Genre ?? "misc", cancellationToken);
-                
-                if (genre == null)
-                    return Result<AudioViewModel>
-                        .Fail(ResultStatus.BadRequest, "Genre does not exist.");
-                
-                var tags = request.Tags.Count > 0
+                audio.Genre = await _genreService.GetGenre(request.Genre, cancellationToken);
+                audio.Tags = request.Tags.Count > 0
                     ? await CreateNewTags(request.Tags, cancellationToken)
                     : new List<Tag>();
 
-                var audio = audioBuilder
-                    .AddGenre(genre)
-                    .AddTags(tags)
-                    .AddUser(currentUser)
-                    .Build();
-                
-                id = audio.Id;
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 if (request.File is not null)
                 {
+                    audio.UploadId = Guid.NewGuid();
                     var memoryStream = new MemoryStream();
                     await request.File.CopyToAsync(memoryStream, cancellationToken);
-                    await _storageService.SaveAsync(
-                        container: ContainerConstants.Audios,
-                        blobName: Path.Combine(id.ToString(), $"source{extension}"), 
-                        stream: memoryStream,
-                        overwrite: false,
-                        cancellationToken);
+                    var metaData = new Dictionary<string, string>
+                    {
+                        {"UserId", audio.User.Id}
+                    };
+                    var blobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt);
+                    var blobRequest = new SaveBlobRequest(ContainerConstants.Audios, blobName, request.FileName, metaData);
+                    await _storageService.SaveAsync(memoryStream, blobRequest, cancellationToken);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
                 }
 
-                await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
-                return Result<AudioViewModel>.Success(audio.MapToDetail(currentUser.Id));
+                return Result<AudioViewModel>.Success(audio.MapToDetail(audio.User.Id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                var path = Path.Combine(ContainerConstants.Audios, id.ToString(), $"source{extension}");
-                await _storageService.RemoveAsync(path, cancellationToken);
+                var blobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt);
+                await _storageService.RemoveAsync(ContainerConstants.Audios, blobName, cancellationToken);
                 throw; 
             }
         }
 
-        public async Task<IResult<AudioViewModel>> Update(Guid audioId, UpdateAudioRequest request, 
+        public async Task<IResult<AudioViewModel>> Update(long audioId, UpdateAudioRequest request, 
             CancellationToken cancellationToken = default)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -269,7 +257,7 @@ namespace Audiochan.Core.Features.Audios
             }
         }
 
-        public async Task<IResult> Remove(Guid audioId, CancellationToken cancellationToken = default)
+        public async Task<IResult> Remove(long audioId, CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
 
@@ -284,15 +272,13 @@ namespace Audiochan.Core.Features.Audios
 
             _dbContext.Audios.Remove(audio);
             var removeEntityFromDatabaseTask = _dbContext.SaveChangesAsync(cancellationToken);
-            var audioPath = Path.Combine(ContainerConstants.Audios, audio.Id.ToString(), $"source{audio.FileExt}");
-            var removeAudioBlobTask = _storageService.RemoveAsync(audioPath, cancellationToken);
-            // TODO: Work on removing audio picture
-            // var removeImageBlobTask = _storageService.RemoveAsync(audio.PictureUrl, cancellationToken);
+            var blobName = Path.Combine(audio.Id.ToString(), $"source{audio.FileExt}");
+            var removeAudioBlobTask = _storageService.RemoveAsync(ContainerConstants.Audios, blobName, cancellationToken);
             await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask);
             return Result.Success();
         }
 
-        public Task<IResult<string>> AddPicture(Guid audioId, IFormFile file,
+        public Task<IResult<string>> AddPicture(long audioId, IFormFile file,
             CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();

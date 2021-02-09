@@ -6,7 +6,7 @@ namespace Audiochan.Core.Features.Audios.Models
 {
     public record AudioViewModel
     {
-        public string Id { get; init; }
+        public long Id { get; init; }
         public string Title { get; init; }
         public string Description { get; init; }
         public bool IsPublic { get; init; }
@@ -20,7 +20,8 @@ namespace Audiochan.Core.Features.Audios.Models
         public bool IsFavorited { get; init; }
         public DateTime Created { get; init; }
         public DateTime? Updated { get; init; }
-        public GenreDto Genre { get; init; }
+        public string Genre { get; init; }
         public UserViewModel User { get; init; }
+        public Guid UploadId { get; init; }
     }
 }

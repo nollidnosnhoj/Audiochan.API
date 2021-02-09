@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Result;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.Mappings;
 using Audiochan.Core.Features.Audios.Models;
@@ -43,7 +43,7 @@ namespace Audiochan.Core.Features.Favorites
                 .Paginate(query, cancellationToken);
         }
 
-        public async Task<IResult> FavoriteAudio(string userId, Guid audioId, 
+        public async Task<IResult> FavoriteAudio(string userId, long audioId, 
             CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
@@ -76,7 +76,7 @@ namespace Audiochan.Core.Features.Favorites
             return Result.Success();
         }
 
-        public async Task<IResult> UnfavoriteAudio(string userId, Guid audioId, 
+        public async Task<IResult> UnfavoriteAudio(string userId, long audioId, 
             CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
@@ -99,7 +99,7 @@ namespace Audiochan.Core.Features.Favorites
             return Result.Success();
         }
 
-        public async Task<bool> CheckIfUserFavorited(string userId, Guid audioId,
+        public async Task<bool> CheckIfUserFavorited(string userId, long audioId,
             CancellationToken cancellationToken = default)
         {
             return await _dbContext.FavoriteAudios.AsNoTracking()

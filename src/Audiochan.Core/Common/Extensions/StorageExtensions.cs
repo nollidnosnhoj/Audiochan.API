@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Audiochan.Core.Common.Constants;
 
 namespace Audiochan.Core.Common.Extensions
 {
@@ -403,23 +404,9 @@ namespace Audiochan.Core.Common.Extensions
                 : "application/octet-stream";
         }
 
-        public static string GetKeyName(this string blobName, string container = "", string extension = "")
+        public static string GetAudioPath(this Guid uploadId, string fileExtension)
         {
-            if (string.IsNullOrWhiteSpace(blobName))
-                throw new ArgumentNullException(nameof(blobName));
-
-            var key = Path.Combine(container, blobName + extension);
-
-            return key.Replace(Path.DirectorySeparatorChar, '/');
-        }
-
-        public static (string container, string blobName) GetBlobPath(this string path)
-        {
-            path = path.Trim(Path.DirectorySeparatorChar);
-            var filePath = path.Split(Path.DirectorySeparatorChar);
-            var name = filePath[^1];
-            var container = string.Join(Path.DirectorySeparatorChar, filePath[..^1]);
-            return (container, name);
+            return Path.Combine(ContainerConstants.Audios, uploadId.ToString(), $"source{fileExtension}");
         }
     }
 }

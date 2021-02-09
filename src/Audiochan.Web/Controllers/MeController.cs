@@ -148,23 +148,6 @@ namespace Audiochan.Web.Controllers
                 : result.ReturnErrorResponse();
         }
 
-        [HttpPatch("picture", Name="AddUserPicture")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [SwaggerOperation(
-            Summary = "Add picture to user.",
-            OperationId = "AddUserPicture",
-            Tags = new[] {"me"}
-        )]
-        public async Task<IActionResult> AddUserPicture([FromForm] UploadArtworkRequest request,
-            CancellationToken cancellationToken)
-        {
-            var result = await _userService.AddPicture(_currentUserId, request.Image, cancellationToken);
-            return result.IsSuccess
-                ? Ok(new {Image = result.Data})
-                : result.ReturnErrorResponse();
-        }
-
         [HttpPatch("username", Name="UpdateUsername")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]

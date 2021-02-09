@@ -8,8 +8,7 @@ namespace Audiochan.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Audio> builder)
         {
-            builder.Property(x => x.Id)
-                .HasDefaultValueSql("uuid_generate_v4()");
+            builder.HasKey(x => x.Id);
             
             builder.Property(x => x.Title)
                 .IsRequired()
@@ -25,10 +24,12 @@ namespace Audiochan.Infrastructure.Data.Configurations
             builder.HasOne(x => x.Genre)
                 .WithMany(x => x.Audios)
                 .HasForeignKey(x => x.GenreId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(x => x.User)
                 .WithMany(x => x.Audios)
+                .IsRequired()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Features.Audios.Models;
@@ -39,7 +38,7 @@ namespace Audiochan.Web.Controllers
         [ProducesResponseType(typeof(AudioViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorViewModel), StatusCodes.Status404NotFound)]
         [SwaggerOperation(Summary = "Return an audio by ID.", OperationId = "GetAudio", Tags = new [] { "audios" })]
-        public async Task<IActionResult> Get(Guid audioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Get(long audioId, CancellationToken cancellationToken)
         {
             var result = await _audioService.Get(audioId, cancellationToken);
             return result.IsSuccess ? Ok(result.Data) : result.ReturnErrorResponse();
@@ -88,7 +87,7 @@ namespace Audiochan.Web.Controllers
             Description = "Requires authentication.",
             OperationId = "UpdateAudio",
             Tags = new [] { "audios" })]
-        public async Task<IActionResult> Update(Guid audioId, [FromBody] UpdateAudioRequest request, 
+        public async Task<IActionResult> Update(long audioId, [FromBody] UpdateAudioRequest request, 
             CancellationToken cancellationToken)
         {
             var result = await _audioService.Update(audioId, request, cancellationToken);
@@ -105,28 +104,10 @@ namespace Audiochan.Web.Controllers
             Description = "Requires authentication.",
             OperationId = "DeleteAudio",
             Tags = new [] { "audios" })]
-        public async Task<IActionResult> Destroy(Guid audioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> Destroy(long audioId, CancellationToken cancellationToken)
         {
             var result = await _audioService.Remove(audioId, cancellationToken);
             return result.IsSuccess ? NoContent() : result.ReturnErrorResponse();
-        }
-
-        [HttpPatch("{audioId}/picture", Name = "AddAudioPicture")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [SwaggerOperation(
-            Summary = "Add picture to audio upload.",
-            OperationId = "AddAudioPicture",
-            Tags = new[] {"audios"}
-        )]
-        public async Task<IActionResult> AddPicture(Guid audioId, [FromForm] UploadArtworkRequest request,
-            CancellationToken cancellationToken)
-        {
-            var result = await _audioService.AddPicture(audioId, request.Image, cancellationToken);
-
-            return result.IsSuccess
-                ? Ok(new {Image = result.Data})
-                : result.ReturnErrorResponse();
         }
     }
 }

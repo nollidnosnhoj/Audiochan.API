@@ -3,7 +3,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.Models;
-using Audiochan.Core.Features.Genres.Models;
 using Audiochan.Core.Features.Users.Models;
 
 namespace Audiochan.Core.Features.Audios.Mappings
@@ -14,7 +13,7 @@ namespace Audiochan.Core.Features.Audios.Mappings
         {
             return audio => new AudioViewModel
             {
-                Id = audio.Id.ToString(),
+                Id = audio.Id,
                 Title = audio.Title,
                 Description = audio.Description,
                 IsPublic = audio.IsPublic,
@@ -30,17 +29,13 @@ namespace Audiochan.Core.Features.Audios.Mappings
                               && audio.Favorited.Any(f => f.UserId == currentUserId),
                 Created = audio.Created,
                 Updated = audio.LastModified,
-                Genre = new GenreDto
-                {
-                    Id = audio.Genre.Id,
-                    Name = audio.Genre.Name,
-                    Slug = audio.Genre.Slug
-                },
+                Genre = audio.Genre != null ? audio.Genre.Name : string.Empty,
                 User = new UserViewModel
                 {
                     Id = audio.User.Id,
                     Username = audio.User.UserName,
                 },
+                UploadId = audio.UploadId
             };
         }
 

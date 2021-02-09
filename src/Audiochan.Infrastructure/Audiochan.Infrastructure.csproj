@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Audiochan.Core\Audiochan.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Storage\Extensions" />
-  </ItemGroup>
-
 </Project>
