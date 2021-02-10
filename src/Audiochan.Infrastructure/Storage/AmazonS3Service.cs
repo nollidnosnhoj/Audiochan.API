@@ -73,6 +73,7 @@ namespace Audiochan.Infrastructure.Storage
 
             var threshold = Math.Min(_chunkThreshold, 5000000000);
             var key = GetKeyName(request.Container, request.BlobName);
+            var blobUrl = string.Join('/', _url, key);
             var contentType = key.GetContentType();
 
             if (length >= threshold)
@@ -101,7 +102,6 @@ namespace Audiochan.Infrastructure.Storage
                 try
                 {
                     await transferUtility.UploadAsync(fileTransferUtilityRequest, cancellationToken);
-                    return new SaveBlobResponse($"{_url}/{key}", key, contentType, request.OriginalFileName);
                 }
                 catch (AmazonS3Exception ex)
                 {
@@ -131,13 +131,20 @@ namespace Audiochan.Infrastructure.Storage
                 try
                 {
                     await _client.PutObjectAsync(putRequest, cancellationToken);
-                    return new SaveBlobResponse($"{_url}/{key}", key, contentType, request.OriginalFileName);
                 }
                 catch (AmazonS3Exception ex)
                 {
                     throw new StorageException(ex.Message);
                 }
             }
+            
+            return new SaveBlobResponse
+            {
+                Url = blobUrl,
+                Path = key,
+                ContentType = contentType,
+                OriginalFileName = request.OriginalFileName
+            };
         }
 
         public string GetPresignedUrl(SaveBlobRequest request)

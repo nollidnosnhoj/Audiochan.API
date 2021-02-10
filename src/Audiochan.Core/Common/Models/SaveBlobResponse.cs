@@ -1,11 +1,10 @@
 ﻿namespace Audiochan.Core.Common.Models
 {
-    public record SaveBlobResponse(
-        string Url,
-        string Path,
-        string ContentType,
-        string OriginalFileName)
+    public record SaveBlobResponse
     {
-        
+        public string Url { get; init; }
+        public string Path { get; init; }
+        public string ContentType { get; init; }
+        public string OriginalFileName { get; init; }
     }
 }

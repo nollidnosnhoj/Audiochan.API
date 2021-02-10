@@ -6,7 +6,6 @@ namespace Audiochan.Core.Interfaces
 {
     public interface IUploadService
     {
-        Task<StorageSignedUrlResult> GetPresignedUrl(GetPresignedUrlRequest request,
-            CancellationToken cancellationToken = default);
+        GetUploadUrlResponse GetUploadUrl(GetUploadUrlRequest request);
     }
 }

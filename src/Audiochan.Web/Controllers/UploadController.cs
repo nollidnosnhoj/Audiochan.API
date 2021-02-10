@@ -19,10 +19,9 @@ namespace Audiochan.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPresignedUrl([FromBody] GetPresignedUrlRequest request, 
-            CancellationToken cancellationToken)
+        public IActionResult GetUploadUrl([FromBody] GetUploadUrlRequest request)
         {
-            return Ok(await _uploadService.GetPresignedUrl(request, cancellationToken));
+            return Ok(_uploadService.GetUploadUrl(request));
         }
     }
 }

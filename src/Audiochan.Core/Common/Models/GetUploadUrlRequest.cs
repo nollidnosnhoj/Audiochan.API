@@ -1,6 +1,6 @@
 ﻿namespace Audiochan.Core.Common.Models
 {
-    public record GetPresignedUrlRequest
+    public record GetUploadUrlRequest
     {
         public string FileName { get; init; }
     }
