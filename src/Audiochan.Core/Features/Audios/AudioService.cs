@@ -14,7 +14,6 @@ using Audiochan.Core.Features.Audios.Models;
 using Audiochan.Core.Features.Audios.Extensions;
 using Audiochan.Core.Features.Audios.Mappings;
 using Audiochan.Core.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audios
@@ -26,18 +25,21 @@ namespace Audiochan.Core.Features.Audios
         private readonly IGenreService _genreService;
         private readonly IStorageService _storageService;
         private readonly IAudioMetadataService _audioMetadataService;
+        private readonly IImageService _imageService;
 
         public AudioService(IDatabaseContext dbContext, 
             ICurrentUserService currentUserService,
             IGenreService genreService, 
             IStorageService storageService, 
-            IAudioMetadataService audioMetadataService)
+            IAudioMetadataService audioMetadataService, 
+            IImageService imageService)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _genreService = genreService;
             _storageService = storageService;
             _audioMetadataService = audioMetadataService;
+            _imageService = imageService;
         }
 
         public async Task<PagedList<AudioViewModel>> GetFeed(string userId, PaginationQuery query,
@@ -278,10 +280,37 @@ namespace Audiochan.Core.Features.Audios
             return Result.Success();
         }
 
-        public Task<IResult<string>> AddPicture(long audioId, IFormFile file,
-            CancellationToken cancellationToken = default)
+        public async Task<IResult<string>> AddPicture(long audioId, string data, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var blobName = audioId + "_" + Guid.NewGuid().ToString("N") + ".jpg";
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var currentUserId = _currentUserService.GetUserId();
+
+                var audio = await _dbContext.Audios
+                    .Include(a => a.Favorited)
+                    .Include(a => a.User)
+                    .Include(a => a.Tags)
+                    .Include(a => a.Genre)
+                    .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
+
+                if (audio == null) return Result<string>.Fail(ResultStatus.NotFound);
+
+                if (audio.UserId != currentUserId) return Result<string>.Fail(ResultStatus.Forbidden);
+                var response = await _imageService.UploadImage(data, PictureType.Audio, blobName, cancellationToken);
+                audio.Picture = response.Path;
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                return Result<string>.Success(response.Url);
+            }
+            catch (Exception)
+            {
+                var task1 = transaction.RollbackAsync(cancellationToken);
+                var task2 = _imageService.RemoveImage(PictureType.Audio, blobName, cancellationToken);
+                await Task.WhenAll(task1, task2);
+                throw;
+            }
         }
         
         public async Task<PagedList<PopularTagViewModel>>  GetPopularTags(

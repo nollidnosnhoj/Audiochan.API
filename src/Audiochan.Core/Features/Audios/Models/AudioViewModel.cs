@@ -15,7 +15,7 @@ namespace Audiochan.Core.Features.Audios.Models
         public int Duration { get; init; }
         public long FileSize { get; init; }
         public string FileExt { get; init; }
-        public string PictureUrl { get; init; }
+        public string Picture { get; init; }
         public int FavoriteCount { get; init; }
         public bool IsFavorited { get; init; }
         public DateTime Created { get; init; }

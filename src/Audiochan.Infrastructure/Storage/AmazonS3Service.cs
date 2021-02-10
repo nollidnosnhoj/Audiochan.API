@@ -29,7 +29,6 @@ namespace Audiochan.Infrastructure.Storage
             if (!amazonS3Options.Value.Url.Contains("amazonaws.com"))
                 throw new StorageException("StorageUrl should contain amazonaws.com");
             _dateTimeService = dateTimeService;
-            _url = amazonS3Options.Value.Url;
             _bucket = amazonS3Options.Value.Bucket;
             var region = RegionEndpoint.GetBySystemName(amazonS3Options.Value.Region);
 
@@ -43,6 +42,7 @@ namespace Audiochan.Infrastructure.Storage
 
             _chunkThreshold = amazonS3Options.Value.ChunkThreshold;
             _client = new AmazonS3Client(credentials, s3Config);
+            _url = $"https://{_bucket}.s3.amazonaws.com";
         }
 
         public async Task RemoveAsync(string container, string blobName, CancellationToken cancellationToken = default)
@@ -65,7 +65,7 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public async Task SaveAsync(Stream stream, SaveBlobRequest request, CancellationToken cancellationToken = default)
+        public async Task<SaveBlobResponse> SaveAsync(Stream stream, SaveBlobRequest request, CancellationToken cancellationToken = default)
         {
             long? length = stream.CanSeek 
                 ? stream.Length 
@@ -73,6 +73,7 @@ namespace Audiochan.Infrastructure.Storage
 
             var threshold = Math.Min(_chunkThreshold, 5000000000);
             var key = GetKeyName(request.Container, request.BlobName);
+            var contentType = key.GetContentType();
 
             if (length >= threshold)
             {
@@ -83,7 +84,7 @@ namespace Audiochan.Infrastructure.Storage
                     InputStream = stream,
                     PartSize = 6291456,
                     Key = key,
-                    ContentType = key.GetContentType(),
+                    ContentType = contentType,
                     AutoCloseStream = true,
                     Headers = {ContentLength = length.Value},
                     CannedACL = S3CannedACL.PublicRead
@@ -100,6 +101,7 @@ namespace Audiochan.Infrastructure.Storage
                 try
                 {
                     await transferUtility.UploadAsync(fileTransferUtilityRequest, cancellationToken);
+                    return new SaveBlobResponse($"{_url}/{key}", key, contentType, request.OriginalFileName);
                 }
                 catch (AmazonS3Exception ex)
                 {
@@ -113,7 +115,7 @@ namespace Audiochan.Infrastructure.Storage
                     BucketName = _bucket,
                     Key = key,
                     InputStream = stream,
-                    ContentType = key.GetContentType(),
+                    ContentType = contentType,
                     CannedACL = S3CannedACL.PublicRead,
                     AutoCloseStream = true
                 };
@@ -129,6 +131,7 @@ namespace Audiochan.Infrastructure.Storage
                 try
                 {
                     await _client.PutObjectAsync(putRequest, cancellationToken);
+                    return new SaveBlobResponse($"{_url}/{key}", key, contentType, request.OriginalFileName);
                 }
                 catch (AmazonS3Exception ex)
                 {

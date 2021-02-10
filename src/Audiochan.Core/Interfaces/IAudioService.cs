@@ -20,8 +20,7 @@ namespace Audiochan.Core.Interfaces
         Task<IResult<AudioViewModel>> Update(long audioId, UpdateAudioRequest request, 
             CancellationToken cancellationToken = default);
         Task<IResult> Remove(long audioId, CancellationToken cancellationToken = default);
-        Task<IResult<string>> AddPicture(long audioId, IFormFile file,
-            CancellationToken cancellationToken = default);
+        Task<IResult<string>> AddPicture(long audioId, string data, CancellationToken cancellationToken = default);
         Task<PagedList<PopularTagViewModel>> GetPopularTags(PaginationQuery paginationQuery,
             CancellationToken cancellationToken = default);
     }

@@ -84,9 +84,9 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("last_modified");
 
-                    b.Property<string>("PictureUrl")
+                    b.Property<string>("Picture")
                         .HasColumnType("text")
-                        .HasColumnName("picture_url");
+                        .HasColumnName("picture");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -306,9 +306,9 @@ namespace Audiochan.Infrastructure.Data.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("phone_number_confirmed");
 
-                    b.Property<string>("PictureUrl")
+                    b.Property<string>("Picture")
                         .HasColumnType("text")
-                        .HasColumnName("picture_url");
+                        .HasColumnName("picture");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text")

@@ -8,15 +8,15 @@ namespace Audiochan.Core.Features.Users.Mappings
 {
     public static class UserProfileMapping
     {
-        public static Expression<Func<User, UserDetailsViewModel>> Map(string currentUserId)
+        public static Expression<Func<User, ProfileViewModel>> Map(string currentUserId)
         {
-            return user => new UserDetailsViewModel
+            return user => new ProfileViewModel
             {
                 Id = user.Id,
                 Username = user.UserName,
                 AboutMe = user.About,
                 Website = user.Website,
-                PictureUrl = user.PictureUrl,
+                Picture = user.Picture,
                 AudioCount = user.Audios.Count,
                 FollowerCount = user.Followers.Count,
                 FollowingCount = user.Followings.Count,

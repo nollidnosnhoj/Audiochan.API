@@ -31,7 +31,7 @@ namespace Audiochan.Web.Controllers
         }
 
         [HttpGet("{username}", Name="GetProfile")]
-        [ProducesResponseType(typeof(UserDetailsViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProfileViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [SwaggerOperation(
             Summary = "Return user's profile.",

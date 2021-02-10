@@ -14,7 +14,7 @@ namespace Audiochan.Core.Features.Followers.Mappings
             {
                 Id = u.Target.Id,
                 Username = u.Target.UserName,
-                PictureUrl = u.Target.PictureUrl,
+                PictureUrl = u.Target.Picture,
                 IsFollowing = u.Target.Followers.Any(x => x.ObserverId == currentUserId)
             };
         }

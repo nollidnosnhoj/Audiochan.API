@@ -5,6 +5,7 @@ using Audiochan.Core.Features.Audios.Models;
 using Audiochan.Core.Features.Users.Models;
 using Audiochan.Core.Interfaces;
 using Audiochan.Web.Extensions;
+using Audiochan.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -199,6 +200,23 @@ namespace Audiochan.Web.Controllers
             var result = await _userService.UpdatePassword(_currentUserId, request, cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
+                : result.ReturnErrorResponse();
+        }
+
+        [HttpPatch("picture")]
+        [SwaggerOperation(
+            Summary = "Add picture to user.",
+            Description = "Requires authentication.",
+            OperationId = "AddUserPicture",
+            Tags = new []{"me"}
+        )]
+        public async Task<IActionResult> AddPicture([FromBody] AddPictureRequest request, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.Data))
+                return BadRequest();
+            var result = await _userService.AddPicture(_currentUserId, request.Data, cancellationToken);
+            return result.IsSuccess
+                ? Ok(new {Image = result.Data})
                 : result.ReturnErrorResponse();
         }
     }

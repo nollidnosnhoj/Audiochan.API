@@ -19,7 +19,7 @@ namespace Audiochan.Core.Entities
         public Guid UploadId { get; set; }
         public long FileSize { get; set; }
         public string FileExt { get; set; }
-        public string PictureUrl { get; set; }
+        public string Picture { get; set; }
         public bool IsPublic { get; set; }
         public bool IsLoop { get; set; }
         public string UserId { get; set; }

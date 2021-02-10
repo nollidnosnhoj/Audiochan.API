@@ -1,16 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Result;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Users.Mappings;
 using Audiochan.Core.Features.Users.Models;
 using Audiochan.Core.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,11 +19,13 @@ namespace Audiochan.Core.Features.Users
     {
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IImageService _imageService;
 
-        public UserService(UserManager<User> userManager, ICurrentUserService currentUserService)
+        public UserService(UserManager<User> userManager, ICurrentUserService currentUserService, IImageService imageService)
         {
             _userManager = userManager;
             _currentUserService = currentUserService;
+            _imageService = imageService;
         }
 
         public async Task<IResult<CurrentUserViewModel>> GetCurrentUser(string authUserId, 
@@ -49,7 +50,7 @@ namespace Audiochan.Core.Features.Users
             });
         }
 
-        public async Task<IResult<UserDetailsViewModel>> GetUserProfile(string username, CancellationToken cancellationToken = default)
+        public async Task<IResult<ProfileViewModel>> GetUserProfile(string username, CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
             
@@ -63,14 +64,29 @@ namespace Audiochan.Core.Features.Users
                 .SingleOrDefaultAsync(cancellationToken);
 
             return profile == null
-                ? Result<UserDetailsViewModel>.Fail(ResultStatus.NotFound)
-                : Result<UserDetailsViewModel>.Success(profile);
+                ? Result<ProfileViewModel>.Fail(ResultStatus.NotFound)
+                : Result<ProfileViewModel>.Success(profile);
         }
 
-        public Task<IResult<string>> AddPicture(string userId, IFormFile file,
+        public async Task<IResult<string>> AddPicture(string userId, string data,
             CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var blobName = Path.Combine(userId, Guid.NewGuid().ToString("N") + ".jpg");
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId + "");
+                if (user == null) return Result<string>.Fail(ResultStatus.Unauthorized);
+                var response = await _imageService.UploadImage(data, PictureType.User, blobName, cancellationToken);
+                user.Picture = response.Path;
+                await _userManager.UpdateAsync(user);
+                return Result<string>.Success(response.Url);
+            }
+            catch (Exception)
+            {
+                var task2 = _imageService.RemoveImage(PictureType.User, blobName, cancellationToken);
+                await Task.WhenAll(task2);
+                throw;
+            }
         }
 
         public async Task<IResult> UpdateUsername(string userId, string newUsername, 

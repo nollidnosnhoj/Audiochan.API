@@ -109,5 +109,22 @@ namespace Audiochan.Web.Controllers
             var result = await _audioService.Remove(audioId, cancellationToken);
             return result.IsSuccess ? NoContent() : result.ReturnErrorResponse();
         }
+
+        [HttpPatch("{audioId}/picture")]
+        [SwaggerOperation(
+            Summary = "Add Picture.",
+            Description = "Requires authentication.",
+            OperationId = "AddAudioPicture",
+            Tags = new [] { "audios" })]
+        public async Task<IActionResult> AddPicture(long audioId, [FromBody] AddPictureRequest request, 
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(request.Data))
+                return BadRequest();
+            var result = await _audioService.AddPicture(audioId, request.Data, cancellationToken);
+            return result.IsSuccess
+                ? Ok(new {Image = result.Data})
+                : result.ReturnErrorResponse();
+        }
     }
 }

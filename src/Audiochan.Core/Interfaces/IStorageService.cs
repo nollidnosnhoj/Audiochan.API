@@ -9,6 +9,6 @@ namespace Audiochan.Core.Interfaces
     {
         string GetPresignedUrl(SaveBlobRequest request);
         Task RemoveAsync(string container, string blobName, CancellationToken cancellationToken = default);
-        Task SaveAsync(Stream stream, SaveBlobRequest request, CancellationToken cancellationToken = default);
+        Task<SaveBlobResponse> SaveAsync(Stream stream, SaveBlobRequest request, CancellationToken cancellationToken = default);
     }
 }
