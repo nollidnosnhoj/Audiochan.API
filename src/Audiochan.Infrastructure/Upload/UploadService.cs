@@ -27,8 +27,13 @@ namespace Audiochan.Infrastructure.Upload
             var userId = _currentUserService.GetUserId();
             var uploadId = Guid.NewGuid();
             var blobName = Path.Combine(uploadId.ToString(), "source" + Path.GetExtension(request.FileName));
-            var metaData = new Dictionary<string, string> {{"UserId", userId}};
-            var blobRequest = new SaveBlobRequest(ContainerConstants.Audios, blobName, request.FileName,  metaData);
+            var blobRequest = new SaveBlobRequest
+            {
+                Container = ContainerConstants.Audios,
+                BlobName = blobName,
+                OriginalFileName = request.FileName
+            };
+            blobRequest.Metadata.Add("UserId", userId);
             var presignedUrl = _storageService.GetPresignedUrl(blobRequest);
             return await Task.FromResult(new StorageSignedUrlResult(uploadId, presignedUrl));
         }

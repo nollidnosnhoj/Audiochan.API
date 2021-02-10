@@ -24,16 +24,19 @@ namespace Audiochan.Infrastructure.Image
             CancellationToken cancellationToken = default)
         {
             if (data.Contains("base64"))
-            {
                 data = data.Split("base64")[1].Trim(',');
-            }
             var bytes = Convert.FromBase64String(data);
             using var imageContext = SixLabors.ImageSharp.Image.Load(bytes);
             var resizedImage = imageContext.Clone(x => x.Resize(500, 500));
             var imageStream = new MemoryStream();
             await resizedImage.SaveAsJpegAsync(imageStream, cancellationToken);
             imageStream.Seek(0, SeekOrigin.Begin);
-            var saveRequest = new SaveBlobRequest(GetContainer(type), blobName, string.Empty);
+            var saveRequest = new SaveBlobRequest
+            {
+                Container = GetContainer(type),
+                BlobName = blobName,
+                OriginalFileName = string.Empty
+            };
             return await _storageService.SaveAsync(imageStream, saveRequest, cancellationToken);
         }
 

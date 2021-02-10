@@ -176,12 +176,13 @@ namespace Audiochan.Core.Features.Audios
                     audio.UploadId = Guid.NewGuid();
                     var memoryStream = new MemoryStream();
                     await request.File.CopyToAsync(memoryStream, cancellationToken);
-                    var metaData = new Dictionary<string, string>
+                    var blobRequest = new SaveBlobRequest
                     {
-                        {"UserId", audio.User.Id}
+                        Container = ContainerConstants.Audios,
+                        BlobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt),
+                        OriginalFileName = request.File.FileName
                     };
-                    var blobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt);
-                    var blobRequest = new SaveBlobRequest(ContainerConstants.Audios, blobName, request.FileName, metaData);
+                    blobRequest.Metadata.Add("UserId", audio.User.Id);
                     await _storageService.SaveAsync(memoryStream, blobRequest, cancellationToken);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                 }
@@ -189,7 +190,7 @@ namespace Audiochan.Core.Features.Audios
                 await transaction.CommitAsync(cancellationToken);
                 return Result<AudioViewModel>.Success(audio.MapToDetail(audio.User.Id));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 var blobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt);

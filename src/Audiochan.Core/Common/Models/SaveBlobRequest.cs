@@ -2,9 +2,11 @@
 
 namespace Audiochan.Core.Common.Models
 {
-    public record SaveBlobRequest(
-        string Container,
-        string BlobName,
-        string OriginalFileName,
-        Dictionary<string, string> Metadata = null) { }
+    public record SaveBlobRequest
+    {
+        public string Container { get; init; }
+        public string BlobName { get; init; }
+        public string OriginalFileName { get; init; }
+        public Dictionary<string, string> Metadata { get; init; } = new();
+    }
 }
