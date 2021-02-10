@@ -36,19 +36,19 @@ namespace Audiochan.Core.Common.Extensions
             IdentityOptions identityOptions, string field = "Password")
         {
             if (identityOptions.PasswordRequiresDigit)
-                ruleBuilder.Matches(@"^[0-9]+$")
+                ruleBuilder.Matches(@"[0-9]+")
                     .WithErrorCode(ValidationErrorCodes.RequireDigits)
                     .WithMessage($"{field} must contain one digit.");
             if (identityOptions.PasswordRequiresLowercase)
-                ruleBuilder.Matches(@"^[a-z]+$")
+                ruleBuilder.Matches(@"[a-z]+")
                     .WithErrorCode(ValidationErrorCodes.RequireLowercase)
                     .WithMessage($"{field} must contain one lowercase character.");
             if (identityOptions.PasswordRequiresUppercase)
-                ruleBuilder.Matches(@"^[A-Z]+$")
+                ruleBuilder.Matches(@"[A-Z]+")
                     .WithErrorCode(ValidationErrorCodes.RequireUppercase)
                     .WithMessage($"{field} must contain one uppercase character.");
             if (identityOptions.PasswordRequiresNonAlphanumeric)
-                ruleBuilder.Matches(@"^[^a-zA-Z\d]+$")
+                ruleBuilder.Matches(@"[^a-zA-Z\d]+")
                     .WithErrorCode(ValidationErrorCodes.RequireNonAlphanumeric)
                     .WithMessage($"{field} must contain one non-alphanumeric character.");
             if (identityOptions.PasswordMinimumLength > 0)

@@ -225,7 +225,7 @@ namespace Audiochan.Core.Features.Audios
                 audio.IsPublic = request.IsPublic ?? audio.IsPublic;
                 audio.IsLoop = request.IsLoop ?? audio.IsLoop;
 
-                if (!string.IsNullOrWhiteSpace(request.Genre) && audio.Genre.Name != request.Genre)
+                if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
                 {
                     var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
 
