@@ -35,7 +35,7 @@ namespace Audiochan.Core.Features.Auth
                 .SingleOrDefaultAsync(u => u.UserName == login.ToLower() || u.Email == login, cancellationToken);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
-                return Result<AuthResultDto>.Fail(ResultStatus.Unauthorized);
+                return Result<AuthResultDto>.Fail(ResultStatus.BadRequest, "Invalid Username/Password");
 
             var token = await _tokenService.GenerateAccessToken(user);
 
