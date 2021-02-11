@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Result;
@@ -12,20 +13,27 @@ namespace Audiochan.Core.Common.Extensions
         {
             if (identityResult.Succeeded) return Result.Success();
 
-            var errors = identityResult.Errors.ToDictionary(
-                x => x.Code,
-                x => new[] {x.Description});
-               
-            return Result.Fail(ResultStatus.UnprocessedEntity, message, errors);
+            return Result.Fail(
+                ResultStatus.UnprocessedEntity,
+                message,
+                identityResult.FromIdentityToResultErrors());
         }
         
-        public static IResult<T> ToResult<T>(this IdentityResult identityResult, string message = "")
+        public static IResult<T> ToResult<T>(this IdentityResult identityResult, T data, string message = "")
         {
-            var errors = identityResult.Errors.ToDictionary(
+            if (identityResult.Succeeded) return Result<T>.Success(data);
+            
+            return Result<T>.Fail(
+                ResultStatus.UnprocessedEntity,
+                message,
+                identityResult.FromIdentityToResultErrors());
+        }
+
+        private static Dictionary<string, string[]> FromIdentityToResultErrors(this IdentityResult identityResult)
+        {
+            return identityResult.Errors.ToDictionary(
                 x => x.Code,
                 x => new[] {x.Description});
-
-            return Result<T>.Fail(ResultStatus.UnprocessedEntity, message, errors);
         }
     }
 }
