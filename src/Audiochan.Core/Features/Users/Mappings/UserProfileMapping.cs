@@ -20,7 +20,9 @@ namespace Audiochan.Core.Features.Users.Mappings
                 AudioCount = user.Audios.Count,
                 FollowerCount = user.Followers.Count,
                 FollowingCount = user.Followings.Count,
-                IsFollowing = user.Followers.Any(f => f.ObserverId == currentUserId)
+                IsFollowing = !string.IsNullOrEmpty(currentUserId)
+                    ? user.Followers.Any(f => f.ObserverId == currentUserId)
+                    : null
             };
         }
     }

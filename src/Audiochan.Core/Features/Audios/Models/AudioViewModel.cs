@@ -11,7 +11,7 @@ namespace Audiochan.Core.Features.Audios.Models
         public string Description { get; init; }
         public bool IsPublic { get; init; }
         public bool IsLoop { get; init; }
-        public string Tags { get; init; }
+        public string[] Tags { get; init; }
         public int Duration { get; init; }
         public long FileSize { get; init; }
         public string FileExt { get; init; }

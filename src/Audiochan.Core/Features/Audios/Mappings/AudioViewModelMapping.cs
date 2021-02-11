@@ -23,7 +23,7 @@ namespace Audiochan.Core.Features.Audios.Mappings
                 FileSize = audio.FileSize,
                 FileExt = audio.FileExt,
                 Picture = audio.Picture,
-                Tags = string.Join(' ', audio.Tags.Select(tag => tag.Id)),
+                Tags = audio.Tags.Select(tag => tag.Id).ToArray(),
                 FavoriteCount = audio.Favorited.Count,
                 IsFavorited = currentUserId != null 
                               && currentUserId.Length > 0
