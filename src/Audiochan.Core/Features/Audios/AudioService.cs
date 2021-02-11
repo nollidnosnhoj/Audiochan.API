@@ -53,10 +53,7 @@ namespace Audiochan.Core.Features.Audios
                 .ToListAsync(cancellationToken);
 
             return await _dbContext.Audios
-                .AsNoTracking()
-                .Include(a => a.Favorited)
-                .Include(a => a.User)
-                .FilterVisibility(userId)
+                .DefaultQueryable(userId)
                 .Where(a => followedIds.Contains(a.UserId))
                 .Distinct()
                 .Select(AudioViewModelMapping.Map(userId))
@@ -69,27 +66,13 @@ namespace Audiochan.Core.Features.Audios
         {
             // Get userId of the current user
             var currentUserId = _currentUserService.GetUserId();
-
-            // Build query
-            var queryable = _dbContext.Audios
-                .AsNoTracking()
-                .Include(a => a.Favorited)
-                .Include(a => a.User)
-                .Include(a => a.Genre)
-                .FilterVisibility(currentUserId);
-
-            if (!string.IsNullOrWhiteSpace(query.Username))
-                queryable = queryable.Where(a => a.User.UserName == query.Username);
             
-            if (!string.IsNullOrWhiteSpace(query.Tags))
-                queryable = queryable.FilterByTags(query.Tags);
-
-            if (!string.IsNullOrWhiteSpace(query.Genre))
-                queryable = queryable.FilterByGenre(query.Genre);
-            
-            queryable = queryable.Sort(query.Sort.ToLower());
-
-            return await queryable
+            return await _dbContext.Audios
+                .DefaultQueryable(currentUserId)
+                .FilterByUsername(query.Username)
+                .FilterByTags(query.Tags)
+                .FilterByGenre(query.Genre)
+                .Sort(query.Sort.ToLower())
                 .Select(AudioViewModelMapping.Map(currentUserId))
                 .Paginate(query, cancellationToken);
         }
@@ -99,12 +82,7 @@ namespace Audiochan.Core.Features.Audios
             var currentUserId = _currentUserService.GetUserId();
             
             var audio = await _dbContext.Audios
-                .AsNoTracking()
-                .Include(a => a.Favorited)
-                .Include(a => a.Tags)
-                .Include(a => a.User)
-                .Include(a => a.Genre)
-                .FilterVisibility(currentUserId)
+                .DefaultQueryable(currentUserId)
                 .Where(x => x.Id == audioId)
                 .Select(AudioViewModelMapping.Map(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
@@ -118,12 +96,7 @@ namespace Audiochan.Core.Features.Audios
         {
             var currentUserId = _currentUserService.GetUserId();
             var audio = await _dbContext.Audios
-                .AsNoTracking()
-                .Include(a => a.Favorited)
-                .Include(a => a.Tags)
-                .Include(a => a.User)
-                .Include(a => a.Genre)
-                .FilterVisibility(currentUserId)
+                .DefaultQueryable(currentUserId)
                 .OrderBy(a => Guid.NewGuid())
                 .Select(AudioViewModelMapping.Map(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
@@ -147,11 +120,13 @@ namespace Audiochan.Core.Features.Audios
                 Duration = request.Duration,
                 FileExt = Path.GetExtension(request.FileName),
                 IsPublic = request.IsPublic ?? true,
-                IsLoop = request.IsLoop ?? false
+                IsLoop = request.IsLoop ?? false,
+                FileSize = request.FileSize
             };
                 
             if (request.File is not null)
             {
+                audio.FileSize = request.File.Length;
                 audio.FileExt = Path.GetExtension(request.File.FileName);
                 audio.Title = string.IsNullOrWhiteSpace(audio.Title)
                     ? Path.GetFileNameWithoutExtension(request.File.FileName)
@@ -179,7 +154,7 @@ namespace Audiochan.Core.Features.Audios
                     var blobRequest = new SaveBlobRequest
                     {
                         Container = ContainerConstants.Audios,
-                        BlobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt),
+                        BlobName = audio.UploadId + audio.FileExt,
                         OriginalFileName = request.File.FileName
                     };
                     blobRequest.Metadata.Add("UserId", audio.User.Id);
@@ -275,9 +250,10 @@ namespace Audiochan.Core.Features.Audios
 
             _dbContext.Audios.Remove(audio);
             var removeEntityFromDatabaseTask = _dbContext.SaveChangesAsync(cancellationToken);
-            var blobName = Path.Combine(audio.UploadId.ToString(), $"source{audio.FileExt}");
-            var removeAudioBlobTask = _storageService.RemoveAsync(ContainerConstants.Audios, blobName, cancellationToken);
-            await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask);
+            var audioBlobName = audio.UploadId + audio.FileExt;
+            var removeAudioBlobTask = _storageService.RemoveAsync(ContainerConstants.Audios, audioBlobName, cancellationToken);
+            var removeImageBlobTask = _storageService.RemoveAsync(audio.Picture, cancellationToken);
+            await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask, removeImageBlobTask);
             return Result.Success();
         }
 

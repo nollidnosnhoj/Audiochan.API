@@ -49,11 +49,12 @@ namespace Audiochan.Infrastructure.Storage
         {
             var key = GetKeyName(container, blobName);
 
-            var deleteRequest = new DeleteObjectRequest
-            {
-                BucketName = _bucket,
-                Key = key
-            };
+            await RemoveAsync(key, cancellationToken);
+        }
+
+        public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
+        {
+            var deleteRequest = new DeleteObjectRequest{BucketName = _bucket, Key = key};
 
             try
             {

@@ -7,6 +7,7 @@ namespace Audiochan.Core.Features.Audios.Models
     {
         public Guid UploadId { get; init; }
         public string FileName { get; init; }
+        public int FileSize { get; init; }
         public int Duration { get; init; }
         public IFormFile File { get; init; }
     }

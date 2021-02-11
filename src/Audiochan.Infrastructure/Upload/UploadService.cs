@@ -21,7 +21,7 @@ namespace Audiochan.Infrastructure.Upload
         {
             var userId = _currentUserService.GetUserId();
             var uploadId = Guid.NewGuid();
-            var blobName = Path.Combine(uploadId.ToString(), "source" + Path.GetExtension(request.FileName));
+            var blobName = uploadId + Path.GetExtension(request.FileName);
             var blobRequest = new SaveBlobRequest
             {
                 Container = ContainerConstants.Audios,
