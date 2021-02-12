@@ -193,8 +193,6 @@ namespace Audiochan.Core.Features.Audios
 
                 if (audio.UserId != currentUserId) return Result<AudioViewModel>.Fail(ResultStatus.Forbidden);
 
-                var newTags = await CreateNewTags(request.Tags, cancellationToken);
-
                 audio.Title = request.Title ?? audio.Title;
                 audio.Description = request.Description ?? audio.Description;
                 audio.IsPublic = request.IsPublic ?? audio.IsPublic;
@@ -211,16 +209,21 @@ namespace Audiochan.Core.Features.Audios
                     audio.Genre = genre!;
                 }
 
-                foreach (var audioTag in audio.Tags)
+                if (request.Tags.Count > 0)
                 {
-                    if (newTags.All(t => t.Id != audioTag.Id))
-                        audio.Tags.Remove(audioTag);
-                }
+                    var newTags = await CreateNewTags(request.Tags, cancellationToken);
 
-                foreach (var newTag in newTags)
-                {
-                    if (audio.Tags.All(t => t.Id != newTag.Id))
-                        audio.Tags.Add(newTag);
+                    foreach (var audioTag in audio.Tags)
+                    {
+                        if (newTags.All(t => t.Id != audioTag.Id))
+                            audio.Tags.Remove(audioTag);
+                    }
+
+                    foreach (var newTag in newTags)
+                    {
+                        if (audio.Tags.All(t => t.Id != newTag.Id))
+                            audio.Tags.Add(newTag);
+                    }
                 }
 
                 _dbContext.Audios.Update(audio);
@@ -237,24 +240,35 @@ namespace Audiochan.Core.Features.Audios
 
         public async Task<IResult> Remove(long audioId, CancellationToken cancellationToken = default)
         {
-            var currentUserId = _currentUserService.GetUserId();
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var currentUserId = _currentUserService.GetUserId();
 
-            var audio = await _dbContext.Audios
-                .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
+                var audio = await _dbContext.Audios
+                    .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
 
-            if (audio == null)
-                return Result.Fail(ResultStatus.NotFound);
+                if (audio == null)
+                    return Result.Fail(ResultStatus.NotFound);
 
-            if (audio.UserId != currentUserId)
-                return Result.Fail(ResultStatus.Forbidden);
+                if (audio.UserId != currentUserId)
+                    return Result.Fail(ResultStatus.Forbidden);
+                
+                _dbContext.Audios.Remove(audio);
+                await _dbContext.SaveChangesAsync(cancellationToken);
 
-            _dbContext.Audios.Remove(audio);
-            var removeEntityFromDatabaseTask = _dbContext.SaveChangesAsync(cancellationToken);
-            var audioBlobName = audio.UploadId + audio.FileExt;
-            var removeAudioBlobTask = _storageService.RemoveAsync(ContainerConstants.Audios, audioBlobName, cancellationToken);
-            var removeImageBlobTask = _storageService.RemoveAsync(audio.Picture, cancellationToken);
-            await Task.WhenAll(removeEntityFromDatabaseTask, removeAudioBlobTask, removeImageBlobTask);
-            return Result.Success();
+                var tasks = new List<Task>();
+                tasks.Add(_storageService.RemoveAsync(ContainerConstants.Audios, audio.UploadId + audio.FileExt, cancellationToken));
+                if (string.IsNullOrEmpty(audio.Picture))
+                    tasks.Add(_storageService.RemoveAsync(audio.Picture, cancellationToken));
+                await Task.WhenAll(tasks);
+                return Result.Success();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
         }
 
         public async Task<IResult<string>> AddPicture(long audioId, string data, CancellationToken cancellationToken = default)
@@ -266,15 +280,17 @@ namespace Audiochan.Core.Features.Audios
                 var currentUserId = _currentUserService.GetUserId();
 
                 var audio = await _dbContext.Audios
-                    .Include(a => a.Favorited)
-                    .Include(a => a.User)
-                    .Include(a => a.Tags)
-                    .Include(a => a.Genre)
+                    .AsNoTracking()
                     .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
 
                 if (audio == null) return Result<string>.Fail(ResultStatus.NotFound);
-
                 if (audio.UserId != currentUserId) return Result<string>.Fail(ResultStatus.Forbidden);
+                if (!string.IsNullOrEmpty(audio.Picture))
+                {
+                    await _storageService.RemoveAsync(audio.Picture, cancellationToken);
+                    audio.Picture = string.Empty;
+                }
+                
                 var response = await _imageService.UploadImage(data, PictureType.Audio, blobName, cancellationToken);
                 audio.Picture = response.Path;
                 await _dbContext.SaveChangesAsync(cancellationToken);
@@ -301,7 +317,7 @@ namespace Audiochan.Core.Features.Audios
                 .OrderByDescending(dto => dto.Count)
                 .Paginate(paginationQuery, cancellationToken);
         }
-        
+
         private async Task<List<Tag>> CreateNewTags(IEnumerable<string> requestedTags, 
             CancellationToken cancellationToken = default)
         {

@@ -20,12 +20,17 @@ namespace Audiochan.Core.Features.Users
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
+        private readonly IStorageService _storageService;
 
-        public UserService(UserManager<User> userManager, ICurrentUserService currentUserService, IImageService imageService)
+        public UserService(UserManager<User> userManager, 
+            ICurrentUserService currentUserService, 
+            IImageService imageService, 
+            IStorageService storageService)
         {
             _userManager = userManager;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _storageService = storageService;
         }
 
         public async Task<IResult<CurrentUserViewModel>> GetCurrentUser(string authUserId, 
@@ -76,6 +81,11 @@ namespace Audiochan.Core.Features.Users
             {
                 var user = await _userManager.FindByIdAsync(userId + "");
                 if (user == null) return Result<string>.Fail(ResultStatus.Unauthorized);
+                if (!string.IsNullOrEmpty(user.Picture))
+                {
+                    await _storageService.RemoveAsync(user.Picture, cancellationToken);
+                    user.Picture = string.Empty;
+                }
                 var response = await _imageService.UploadImage(data, PictureType.User, blobName, cancellationToken);
                 user.Picture = response.Path;
                 await _userManager.UpdateAsync(user);
