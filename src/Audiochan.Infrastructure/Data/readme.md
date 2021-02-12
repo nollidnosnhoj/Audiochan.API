@@ -14,4 +14,4 @@ This project is the data-access layer (DAL). Since this project uses Entity Fram
 
 ### Remove migration
 
-`dotnet ef migrations remove -p src/Audiochan.Infrastructure/Data -s src/Audiochan.Web`
+`dotnet ef migrations remove -p src/Audiochan.Infrastructure -s src/Audiochan.Web`
