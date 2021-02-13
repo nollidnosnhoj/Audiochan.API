@@ -24,21 +24,18 @@ namespace Audiochan.Core.Features.Audios
         private readonly ICurrentUserService _currentUserService;
         private readonly IGenreService _genreService;
         private readonly IStorageService _storageService;
-        private readonly IAudioMetadataService _audioMetadataService;
         private readonly IImageService _imageService;
 
         public AudioService(IDatabaseContext dbContext, 
             ICurrentUserService currentUserService,
             IGenreService genreService, 
             IStorageService storageService, 
-            IAudioMetadataService audioMetadataService, 
             IImageService imageService)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _genreService = genreService;
             _storageService = storageService;
-            _audioMetadataService = audioMetadataService;
             _imageService = imageService;
         }
 
@@ -110,6 +107,7 @@ namespace Audiochan.Core.Features.Audios
             CancellationToken cancellationToken = default)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
             var audio = new Audio
             {
                 UploadId = request.UploadId,
@@ -123,17 +121,15 @@ namespace Audiochan.Core.Features.Audios
                 IsLoop = request.IsLoop ?? false,
                 FileSize = request.FileSize
             };
-                
-            if (request.File is not null)
-            {
-                audio.FileSize = request.File.Length;
-                audio.FileExt = Path.GetExtension(request.File.FileName);
-                audio.Title = string.IsNullOrWhiteSpace(audio.Title)
-                    ? Path.GetFileNameWithoutExtension(request.File.FileName)
-                    : audio.Title;
-                audio.Duration = _audioMetadataService.GetDuration(request.File);
-            }
-                
+
+            var blobResponse = await _storageService.GetAsync(
+                container: ContainerConstants.Audios,
+                blobName: audio.UploadId + audio.FileExt,
+                cancellationToken);
+
+            if (!blobResponse)
+                return Result<AudioViewModel>.Fail(ResultStatus.BadRequest, "Cannot find audio in storage.");
+
             try
             {
                 audio.User = await _dbContext.Users
@@ -145,23 +141,7 @@ namespace Audiochan.Core.Features.Audios
 
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-
-                if (request.File is not null)
-                {
-                    audio.UploadId = Guid.NewGuid();
-                    var memoryStream = new MemoryStream();
-                    await request.File.CopyToAsync(memoryStream, cancellationToken);
-                    var blobRequest = new SaveBlobRequest
-                    {
-                        Container = ContainerConstants.Audios,
-                        BlobName = audio.UploadId + audio.FileExt,
-                        OriginalFileName = request.File.FileName
-                    };
-                    blobRequest.Metadata.Add("UserId", audio.User.Id);
-                    await _storageService.SaveAsync(memoryStream, blobRequest, cancellationToken);
-                    await _dbContext.SaveChangesAsync(cancellationToken);
-                }
-
+                
                 await transaction.CommitAsync(cancellationToken);
                 return Result<AudioViewModel>.Success(audio.MapToDetail(audio.User.Id));
             }
@@ -189,13 +169,20 @@ namespace Audiochan.Core.Features.Audios
                     .Include(a => a.Genre)
                     .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
 
-                if (audio == null) return Result<AudioViewModel>.Fail(ResultStatus.NotFound);
+                if (audio == null) 
+                    return Result<AudioViewModel>.Fail(ResultStatus.NotFound);
 
-                if (audio.UserId != currentUserId) return Result<AudioViewModel>.Fail(ResultStatus.Forbidden);
+                if (audio.UserId != currentUserId) 
+                    return Result<AudioViewModel>.Fail(ResultStatus.Forbidden);
 
-                audio.Title = request.Title ?? audio.Title;
+                audio.Title = !string.IsNullOrWhiteSpace(request.Title)
+                    ? request.Title
+                    : audio.Title;
+                
                 audio.Description = request.Description ?? audio.Description;
+                
                 audio.IsPublic = request.IsPublic ?? audio.IsPublic;
+                
                 audio.IsLoop = request.IsLoop ?? audio.IsLoop;
 
                 if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)

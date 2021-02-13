@@ -4,9 +4,7 @@ using Audiochan.Core.Features.Audios.Models;
 using Audiochan.Core.Features.Audios.Validators;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Audiochan.Core.UnitTests.Validations
@@ -14,7 +12,6 @@ namespace Audiochan.Core.UnitTests.Validations
     public class UploadAudioValidationTests
     {
         private readonly IValidator<UploadAudioRequest> _validator;
-        private readonly Mock<IFormFile> _fileMock;
 
         public UploadAudioValidationTests()
         {
@@ -32,7 +29,6 @@ namespace Audiochan.Core.UnitTests.Validations
                 }
             });
             _validator = new UploadAudioRequestValidator(options);
-            _fileMock = new Mock<IFormFile>();
         }
         
         [Fact]
@@ -40,40 +36,6 @@ namespace Audiochan.Core.UnitTests.Validations
         {
             var result = _validator.TestValidate(new UploadAudioRequest{Title=""});
             result.ShouldNotHaveValidationErrorFor(x => x.Title);
-        }
-
-        [Fact]
-        public void CheckIfFileIsInvalidWhenEmpty()
-        {
-            var result = _validator.TestValidate(new UploadAudioRequest {File = null});
-            result.ShouldHaveValidationErrorFor(x => x.File);
-        }
-
-        [Fact]
-        public void CheckIfFileIsInvalidWhenInvalidContentType()
-        {
-            _fileMock.Setup(x => x.FileName).Returns("test.jpg");
-            _fileMock.Setup(x => x.Length).Returns(50);
-            var result = _validator.TestValidate(new UploadAudioRequest {File = _fileMock.Object});
-            result.ShouldHaveValidationErrorFor(x => x.File);
-        }
-
-        [Fact]
-        public void CheckIfFileIsInvalidWhenFileLengthExceeded()
-        {
-            _fileMock.Setup(x => x.FileName).Returns("test.ogg");
-            _fileMock.Setup(x => x.Length).Returns(2000000 * 1000 + 1);
-            var result = _validator.TestValidate(new UploadAudioRequest {File = _fileMock.Object});
-            result.ShouldHaveValidationErrorFor(x => x.File);
-        }
-
-        [Fact]
-        public void CheckIfFileIsValid()
-        {
-            _fileMock.Setup(x => x.FileName).Returns("test.mp3");
-            _fileMock.Setup(x => x.Length).Returns(2000000);
-            var result = _validator.TestValidate(new UploadAudioRequest {File = _fileMock.Object});
-            result.ShouldNotHaveValidationErrorFor(x => x.File);
         }
 
         [Fact]

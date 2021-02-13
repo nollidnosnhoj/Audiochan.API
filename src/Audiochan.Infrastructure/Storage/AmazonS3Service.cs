@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -146,6 +147,29 @@ namespace Audiochan.Infrastructure.Storage
                 ContentType = contentType,
                 OriginalFileName = request.OriginalFileName
             };
+        }
+
+        public async Task<bool> GetAsync(string container, string blobName, CancellationToken cancellationToken = default)
+        {
+            var key = GetKeyName(container, blobName);
+
+            return await GetAsync(key, cancellationToken);
+        }
+
+        public async Task<bool> GetAsync(string key, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var request = new GetObjectMetadataRequest {Key = key, BucketName = _bucket,};
+                await _client.GetObjectMetadataAsync(request, cancellationToken);
+                return true;
+            }
+            catch (AmazonS3Exception ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.NotFound)
+                    return false;
+                throw new StorageException(ex.Message);
+            }
         }
 
         public string GetPresignedUrl(SaveBlobRequest request)

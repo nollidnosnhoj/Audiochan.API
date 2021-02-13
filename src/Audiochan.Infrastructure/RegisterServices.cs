@@ -11,7 +11,6 @@ namespace Audiochan.Infrastructure
     {
         public static IServiceCollection AddInfraServices(this IServiceCollection services)
         {
-            services.AddTransient<IAudioMetadataService, AudioMetadataService>();
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IDateTimeService, DateTimeService>();
