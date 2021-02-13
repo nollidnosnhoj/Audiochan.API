@@ -7,9 +7,9 @@ using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audios.Validators
 {
-    public class UploadAudioRequestValidator : AbstractValidator<CreateAudioRequest>
+    public class CreateAudioRequestValidator : AbstractValidator<CreateAudioRequest>
     {
-        public UploadAudioRequestValidator(IOptions<AudiochanOptions> options)
+        public CreateAudioRequestValidator(IOptions<AudiochanOptions> options)
         {
             var uploadOptions = options.Value.AudioUploadOptions;
             
@@ -19,6 +19,9 @@ namespace Audiochan.Core.Features.Audios.Validators
             RuleFor(req => req.Duration)
                 .NotEmpty()
                 .WithMessage("Duration is required.");
+            RuleFor(req => req.FileSize)
+                .NotEmpty()
+                .WithMessage("FileSize is required.");
             RuleFor(req => req.FileName)
                 .NotEmpty()
                 .WithMessage("Filename is required.")

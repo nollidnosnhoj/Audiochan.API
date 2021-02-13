@@ -28,7 +28,7 @@ namespace Audiochan.Core.UnitTests.Validations
                     FileSize = 262144000
                 }
             });
-            _validator = new UploadAudioRequestValidator(options);
+            _validator = new CreateAudioRequestValidator(options);
         }
         
         [Fact]
