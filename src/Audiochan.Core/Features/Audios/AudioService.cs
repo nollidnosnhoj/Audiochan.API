@@ -121,10 +121,10 @@ namespace Audiochan.Core.Features.Audios
                 IsLoop = request.IsLoop ?? false,
                 FileSize = request.FileSize
             };
-
+            
             var blobResponse = await _storageService.GetAsync(
                 container: ContainerConstants.Audios,
-                blobName: audio.UploadId + audio.FileExt,
+                blobName: GetAudioBlobName(audio),
                 cancellationToken);
 
             if (!blobResponse)
@@ -148,8 +148,7 @@ namespace Audiochan.Core.Features.Audios
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                var blobName = Path.Combine(audio.UploadId.ToString(), "source" + audio.FileExt);
-                await _storageService.RemoveAsync(ContainerConstants.Audios, blobName, cancellationToken);
+                await _storageService.RemoveAsync(ContainerConstants.Audios, GetAudioBlobName(audio), cancellationToken);
                 throw; 
             }
         }
@@ -245,7 +244,7 @@ namespace Audiochan.Core.Features.Audios
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 var tasks = new List<Task>();
-                tasks.Add(_storageService.RemoveAsync(ContainerConstants.Audios, audio.UploadId + audio.FileExt, cancellationToken));
+                tasks.Add(_storageService.RemoveAsync(ContainerConstants.Audios, GetAudioBlobName(audio), cancellationToken));
                 if (string.IsNullOrEmpty(audio.Picture))
                     tasks.Add(_storageService.RemoveAsync(audio.Picture, cancellationToken));
                 await Task.WhenAll(tasks);
@@ -320,6 +319,14 @@ namespace Audiochan.Core.Features.Audios
             }
 
             return tags;
+        }
+
+        private static string GetAudioBlobName(Audio audio, bool includeContainer = false)
+        {
+            var name = audio.UploadId + audio.FileExt;
+            return includeContainer 
+                ? Path.Combine(ContainerConstants.Audios, name) 
+                : name;
         }
     }
 }
