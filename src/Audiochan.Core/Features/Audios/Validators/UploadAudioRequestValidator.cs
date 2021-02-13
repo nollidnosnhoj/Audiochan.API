@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audios.Validators
 {
-    public class UploadAudioRequestValidator : AbstractValidator<UploadAudioRequest>
+    public class UploadAudioRequestValidator : AbstractValidator<CreateAudioRequest>
     {
         public UploadAudioRequestValidator(IOptions<AudiochanOptions> options)
         {

@@ -57,18 +57,16 @@ namespace Audiochan.Web.Controllers
                 : result.ReturnErrorResponse();
         }
 
-        [HttpPost(Name="UploadAudio")]
+        [HttpPost(Name="CreateAudio")]
         [ProducesResponseType(typeof(AudioViewModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         [SwaggerOperation(
-            Summary = "Upload audio.",
+            Summary = "Create audio.",
             Description = "Requires authentication.",
-            OperationId = "UploadAudio",
+            OperationId = "CreateAudio",
             Tags = new [] { "audios" })]
-        public async Task<IActionResult> Upload(
-            [FromForm] UploadAudioRequest request
-            , CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateAudioRequest request, CancellationToken cancellationToken)
         {
             var result = await _audioService.Create(request, cancellationToken);
             return result.IsSuccess 

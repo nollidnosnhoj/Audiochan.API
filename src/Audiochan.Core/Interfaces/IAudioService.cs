@@ -15,7 +15,7 @@ namespace Audiochan.Core.Interfaces
         Task<PagedList<AudioViewModel>> GetList(GetAudioListQuery query, CancellationToken cancellationToken = default);
         Task<IResult<AudioViewModel>> Get(long audioId, CancellationToken cancellationToken = default);
         Task<IResult<AudioViewModel>> GetRandom(CancellationToken cancellationToken = default);
-        Task<IResult<AudioViewModel>> Create(UploadAudioRequest request, 
+        Task<IResult<AudioViewModel>> Create(CreateAudioRequest request, 
             CancellationToken cancellationToken = default);
         Task<IResult<AudioViewModel>> Update(long audioId, UpdateAudioRequest request, 
             CancellationToken cancellationToken = default);

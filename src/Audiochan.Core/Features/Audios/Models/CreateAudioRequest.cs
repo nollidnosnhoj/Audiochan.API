@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Audiochan.Core.Features.Audios.Models
 {
-    public record UploadAudioRequest : UpdateAudioRequest
+    public record CreateAudioRequest : UpdateAudioRequest
     {
         public Guid UploadId { get; init; }
         public string FileName { get; init; }

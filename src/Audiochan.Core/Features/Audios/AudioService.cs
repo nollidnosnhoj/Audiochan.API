@@ -103,7 +103,7 @@ namespace Audiochan.Core.Features.Audios
                 : Result<AudioViewModel>.Success(audio);
         }
 
-        public async Task<IResult<AudioViewModel>> Create(UploadAudioRequest request, 
+        public async Task<IResult<AudioViewModel>> Create(CreateAudioRequest request, 
             CancellationToken cancellationToken = default)
         {
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
