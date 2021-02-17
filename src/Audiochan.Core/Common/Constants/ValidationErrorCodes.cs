@@ -2,11 +2,18 @@
 {
     public class ValidationErrorCodes
     {
-        public const string RequireDigits = "requireDigits";
-        public const string RequireLowercase = "requireLowercase";
-        public const string RequireUppercase = "requireUppercase";
-        public const string RequireNonAlphanumeric = "requireNonAlphanumeric";
-        public const string RequireLength = "requireLength";
-        public const string RequireCharacters = "requireCharacters";
+        public class Password
+        {
+            public const string RequireDigits = "requireDigits";
+            public const string RequireLowercase = "requireLowercase";
+            public const string RequireUppercase = "requireUppercase";
+            public const string RequireNonAlphanumeric = "requireNonAlphanumeric";
+            public const string RequireLength = "requireLength";
+        }
+
+        public class Username
+        {
+            public const string RequireCharacters = "requireCharacters";
+        }
     }
 }
