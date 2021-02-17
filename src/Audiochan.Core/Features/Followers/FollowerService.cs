@@ -64,17 +64,16 @@ namespace Audiochan.Core.Features.Followers
                                && u.Target.UserName == username.ToLower(), cancellationToken);
         }
 
-        public async Task<IResult> Follow(string userId, string username, CancellationToken cancellationToken = default)
+        public async Task<IResult<bool>> Follow(string userId, string username, CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
-                return Result.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultStatus.Unauthorized);
             
             var target = await _dbContext.Users.AsNoTracking()
                 .SingleOrDefaultAsync(u => u.UserName == username.ToLower(), cancellationToken);
 
             if (target == null)
-                return Result<FollowUserViewModel>
-                    .Fail(ResultStatus.NotFound, "The user you are trying to follow was not found.");
+                return Result<bool>.Fail(ResultStatus.NotFound, "The user you are trying to follow was not found.");
 
             var currentUserId = _currentUserService.GetUserId();
 
@@ -94,20 +93,19 @@ namespace Audiochan.Core.Features.Followers
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IResult> Unfollow(string userId, string username, CancellationToken cancellationToken = default)
+        public async Task<IResult<bool>> Unfollow(string userId, string username, CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
-                return Result.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultStatus.Unauthorized);
             
             var target = await _dbContext.Users.AsNoTracking()
                 .SingleOrDefaultAsync(u => u.UserName == username.ToLower(), cancellationToken);
 
             if (target == null)
-                return Result<FollowUserViewModel>
-                    .Fail(ResultStatus.NotFound, "The user you are trying to follow was not found.");
+                return Result<bool>.Fail(ResultStatus.NotFound, "The user you are trying to follow was not found.");
 
             var currentUserId = await _dbContext.Users
                 .AsNoTracking()
@@ -124,7 +122,7 @@ namespace Audiochan.Core.Features.Followers
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
     }
 }

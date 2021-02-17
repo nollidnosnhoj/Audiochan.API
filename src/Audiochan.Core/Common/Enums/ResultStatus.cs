@@ -6,7 +6,6 @@
         NotFound,
         Unauthorized,
         Forbidden,
-        UnprocessedEntity,
-        Success
+        UnprocessedEntity
     }
 }

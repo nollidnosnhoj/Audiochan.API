@@ -9,21 +9,21 @@ namespace Audiochan.Core.Common.Extensions
 {
     public static class IdentityResultExtensions
     {
-        public static IResult ToResult(this IdentityResult identityResult, string message = "")
+        public static IResult<bool> ToResult(this IdentityResult identityResult, string message = "")
         {
-            if (identityResult.Succeeded) return Result.Success();
+            if (identityResult.Succeeded) return Result<bool>.Success(true);
 
-            return Result.Fail(
+            return Result<bool>.Fail(
                 ResultStatus.UnprocessedEntity,
                 message,
                 identityResult.FromIdentityToResultErrors());
         }
         
-        public static IResult<T> ToResult<T>(this IdentityResult identityResult, T data, string message = "")
+        public static IResult<TResponse> ToResult<TResponse>(this IdentityResult identityResult, TResponse data, string message = "")
         {
-            if (identityResult.Succeeded) return Result<T>.Success(data);
+            if (identityResult.Succeeded) return Result<TResponse>.Success(data);
             
-            return Result<T>.Fail(
+            return Result<TResponse>.Fail(
                 ResultStatus.UnprocessedEntity,
                 message,
                 identityResult.FromIdentityToResultErrors());

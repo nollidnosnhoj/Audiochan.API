@@ -99,49 +99,49 @@ namespace Audiochan.Core.Features.Users
             }
         }
 
-        public async Task<IResult> UpdateUsername(string userId, string newUsername, 
+        public async Task<IResult<bool>> UpdateUsername(string userId, string newUsername, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userManager.FindByIdAsync(userId + "");
-            if (user == null) return Result.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
             var result = await _userManager.SetUserNameAsync(user, newUsername);
             if (!result.Succeeded) result.ToResult();
             await _userManager.UpdateNormalizedUserNameAsync(user);
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IResult> UpdateEmail(string userId, string newEmail, 
+        public async Task<IResult<bool>> UpdateEmail(string userId, string newEmail, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userManager.FindByIdAsync(userId + "");
-            if (user == null) return Result.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
             
             // TEMPORARY UNTIL EMAIL CONFIRMATION IS SETUP
             var result = await _userManager.SetEmailAsync(user, newEmail);
             if (!result.Succeeded) return result.ToResult();
             await _userManager.UpdateNormalizedEmailAsync(user);
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IResult> UpdatePassword(string userId, ChangePasswordRequest request, 
+        public async Task<IResult<bool>> UpdatePassword(string userId, ChangePasswordRequest request, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userManager.FindByIdAsync(userId + "");
-            if (user == null) return Result.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
             // TEMPORARY UNTIL EMAIL CONFIRMATION IS SETUP
             var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
             return result.ToResult();
         }
 
-        public async Task<IResult> UpdateUser(string userId, UpdateUserDetailsRequest request, 
+        public async Task<IResult<bool>> UpdateUser(string userId, UpdateUserDetailsRequest request, 
             CancellationToken cancellationToken = default)
         {
             var user = await _userManager.FindByIdAsync(userId + "");
-            if (user == null) return Result.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
             user.About = request.About ?? user.About;
             user.Website = request.Website ?? user.Website;
             await _userManager.UpdateAsync(user);
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
         public async Task<bool> CheckIfUsernameExists(

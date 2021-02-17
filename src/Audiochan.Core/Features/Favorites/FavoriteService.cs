@@ -43,11 +43,11 @@ namespace Audiochan.Core.Features.Favorites
                 .Paginate(query, cancellationToken);
         }
 
-        public async Task<IResult> FavoriteAudio(string userId, long audioId, 
+        public async Task<IResult<bool>> FavoriteAudio(string userId, long audioId, 
             CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
-                return Result.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultStatus.Unauthorized);
 
             var audio = await _dbContext.Audios
                 .AsNoTracking()
@@ -55,11 +55,11 @@ namespace Audiochan.Core.Features.Favorites
                 .SingleOrDefaultAsync(a => a.Id == audioId, cancellationToken);
 
             if (audio == null) 
-                return Result.Fail(ResultStatus.BadRequest, "The audio you are trying to favorite was not found.");
+                return Result<bool>.Fail(ResultStatus.BadRequest, "The audio you are trying to favorite was not found.");
 
             // User cannot favorite their own audio
             if (audio.UserId == userId)
-                return Result.Fail(ResultStatus.Forbidden);
+                return Result<bool>.Fail(ResultStatus.Forbidden);
             
             var favorite =
                 await _dbContext.FavoriteAudios
@@ -73,17 +73,17 @@ namespace Audiochan.Core.Features.Favorites
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<IResult> UnfavoriteAudio(string userId, long audioId, 
+        public async Task<IResult<bool>> UnfavoriteAudio(string userId, long audioId, 
             CancellationToken cancellationToken = default)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == userId, cancellationToken))
-                return Result.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultStatus.Unauthorized);
 
             if (!await _dbContext.Audios.AsNoTracking().AnyAsync(a => a.Id == audioId, cancellationToken))
-                return Result.Fail(ResultStatus.NotFound, "The audio you are trying to favorite was not found.");
+                return Result<bool>.Fail(ResultStatus.NotFound, "The audio you are trying to favorite was not found.");
 
             var favorite =
                 await _dbContext.FavoriteAudios
@@ -96,7 +96,7 @@ namespace Audiochan.Core.Features.Favorites
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
 
         public async Task<bool> CheckIfUserFavorited(string userId, long audioId,

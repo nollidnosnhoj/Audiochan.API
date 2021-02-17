@@ -54,7 +54,7 @@ namespace Audiochan.Core.Features.Auth
             return Result<AuthResultDto>.Success(result);
         }
 
-        public async Task<IResult> Register(CreateUserRequest request, CancellationToken cancellationToken = default)
+        public async Task<IResult<bool>> Register(CreateUserRequest request, CancellationToken cancellationToken = default)
         {
             var user = new User
             {
@@ -67,8 +67,8 @@ namespace Audiochan.Core.Features.Auth
             var identityResult = await _userManager.CreateAsync(user, request.Password);
 
             return identityResult.Succeeded
-                ? Result.Success()
-                : identityResult.ToResult();
+                ? Result<bool>.Success(true)
+                : identityResult.ToResult(false);
         }
 
         public async Task<IResult<AuthResultDto>> Refresh(string refreshToken, 
@@ -110,11 +110,11 @@ namespace Audiochan.Core.Features.Auth
             });
         }
 
-        public async Task<IResult> Revoke(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<IResult<bool>> Revoke(string refreshToken, CancellationToken cancellationToken = default)
         {
             // Fail when refresh token is not defined
             if (string.IsNullOrEmpty(refreshToken))
-                return Result.Fail(ResultStatus.BadRequest, "Refresh token was not defined.");
+                return Result<bool>.Fail(ResultStatus.BadRequest, "Refresh token was not defined.");
             
             var user = await _userManager.Users
                 .Include(u => u.RefreshTokens)
@@ -122,7 +122,7 @@ namespace Audiochan.Core.Features.Auth
                     .Any(r => r.Token == refreshToken && u.Id == r.UserId), cancellationToken);
 
             if (user == null)
-                return Result.Fail(ResultStatus.BadRequest, "Refresh token does not belong to a user.");
+                return Result<bool>.Fail(ResultStatus.BadRequest, "Refresh token does not belong to a user.");
 
             var existingRefreshToken = user.RefreshTokens
                 .Single(r => r.Token == refreshToken);
@@ -133,7 +133,7 @@ namespace Audiochan.Core.Features.Auth
                 await _userManager.UpdateAsync(user);
             }
 
-            return Result.Success();
+            return Result<bool>.Success(true);
         }
     }
 }

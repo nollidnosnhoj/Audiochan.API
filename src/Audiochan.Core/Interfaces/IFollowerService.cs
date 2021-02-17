@@ -17,8 +17,8 @@ namespace Audiochan.Core.Interfaces
 
         Task<bool> CheckFollowing(string userId, string username, CancellationToken cancellationToken = default);
 
-        Task<IResult> Follow(string userId, string username, CancellationToken cancellationToken = default);
+        Task<IResult<bool>> Follow(string userId, string username, CancellationToken cancellationToken = default);
         
-        Task<IResult> Unfollow(string userId, string username, CancellationToken cancellationToken = default);
+        Task<IResult<bool>> Unfollow(string userId, string username, CancellationToken cancellationToken = default);
     }
 }

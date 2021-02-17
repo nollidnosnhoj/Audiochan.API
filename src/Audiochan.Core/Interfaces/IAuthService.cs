@@ -10,8 +10,8 @@ namespace Audiochan.Core.Interfaces
     public interface IAuthService
     {
         Task<IResult<AuthResultDto>> Login(string username, string password, CancellationToken cancellationToken = default);
-        Task<IResult> Register(CreateUserRequest request, CancellationToken cancellationToken = default);
+        Task<IResult<bool>> Register(CreateUserRequest request, CancellationToken cancellationToken = default);
         Task<IResult<AuthResultDto>> Refresh(string refreshToken, CancellationToken cancellationToken = default);
-        Task<IResult> Revoke(string refreshToken, CancellationToken cancellationToken = default);
+        Task<IResult<bool>> Revoke(string refreshToken, CancellationToken cancellationToken = default);
     }
 }
