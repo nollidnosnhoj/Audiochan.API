@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Mappings;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Common.Validators;
 using Audiochan.Core.Entities;
+using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Features.Genres.GetGenre;
 using Audiochan.Core.Features.Tags.CreateTags;
 using Audiochan.Core.Interfaces;
@@ -20,7 +22,7 @@ using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audio.CreateAudio
 {
-    public record CreateAudioCommand : AudioCommand, IRequest<Result<CreateAudioResponse>>
+    public record CreateAudioCommand : AudioCommand, IRequest<Result<AudioViewModel>>
     {
         public Guid UploadId { get; init; }
         public string FileName { get; init; }
@@ -56,7 +58,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
         }
     }
 
-    public class CreateAudioCommandHandler : IRequestHandler<CreateAudioCommand, Result<CreateAudioResponse>>
+    public class CreateAudioCommandHandler : IRequestHandler<CreateAudioCommand, Result<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IStorageService _storageService;
@@ -71,8 +73,10 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
             _mediator = mediator;
         }
 
-        public async Task<Result<CreateAudioResponse>> Handle(CreateAudioCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request, CancellationToken cancellationToken)
         {
+            var currentUserId = _currentUserService.GetUserId();
+            
             await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
             var audio = new Entities.Audio
@@ -95,12 +99,12 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 cancellationToken);
 
             if (!blobResponse)
-                return Result<CreateAudioResponse>.Fail(ResultStatus.BadRequest, "Cannot find audio in storage.");
+                return Result<AudioViewModel>.Fail(ResultStatus.BadRequest, "Cannot find audio in storage.");
 
             try
             {
                 audio.User = await _dbContext.Users
-                    .SingleOrDefaultAsync(u => u.Id == _currentUserService.GetUserId(), cancellationToken);
+                    .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
                 audio.Genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
                 audio.Tags = request.Tags.Count > 0
                     ? await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken)
@@ -110,7 +114,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 
                 await transaction.CommitAsync(cancellationToken);
-                return Result<CreateAudioResponse>.Success(new CreateAudioResponse(audio.Id));
+                return Result<AudioViewModel>.Success(audio.MapToDetail(currentUserId));
             }
             catch (Exception)
             {
