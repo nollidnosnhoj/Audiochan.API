@@ -10,7 +10,7 @@ using MediatR;
 
 namespace Audiochan.Core.Features.Audio.GetAudioList
 {
-    public record GetAudioListQuery : PaginationQuery, IRequest<PagedList<AudioViewModel>>
+    public record GetAudioListQuery : PaginationQuery<AudioViewModel>
     {
         public string Username { get; init; } = string.Empty;
         public string Tags { get; init; } = string.Empty;

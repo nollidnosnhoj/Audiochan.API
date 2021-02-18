@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audio.GetAudioFeed
 {
-    public record GetAudioFeedQuery : PaginationQuery, IRequest<PagedList<AudioViewModel>>
+    public record GetAudioFeedQuery : PaginationQuery<AudioViewModel>
     {
         public string UserId { get; init; }
     }

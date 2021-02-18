@@ -76,7 +76,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "GetAuthenticatedUserFeed",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> GetAuthenticatedUserFeed([FromQuery] PaginationQuery query, 
+        public async Task<IActionResult> GetAuthenticatedUserFeed([FromQuery] PaginationQuery<AudioViewModel> query, 
             CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetAudioFeedQuery

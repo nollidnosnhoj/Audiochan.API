@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Followers.GetFollowings
 {
-    public record GetFollowingsQuery : PaginationQuery, IRequest<PagedList<UserDto>>
+    public record GetFollowingsQuery : PaginationQuery<UserDto>
     {
         public string Username { get; init; }
     }

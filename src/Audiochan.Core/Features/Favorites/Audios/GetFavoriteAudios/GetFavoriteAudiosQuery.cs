@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
 {
-    public record GetFavoriteAudiosQuery : PaginationQuery, IRequest<PagedList<AudioViewModel>>
+    public record GetFavoriteAudiosQuery : PaginationQuery<AudioViewModel>
     {
         public string Username { get; init; }
     }

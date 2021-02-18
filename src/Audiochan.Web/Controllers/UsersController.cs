@@ -52,7 +52,7 @@ namespace Audiochan.Web.Controllers
             Tags = new []{"users"}
         )]
         public async Task<IActionResult> GetUserAudios(string username,
-            PaginationQuery paginationQuery, CancellationToken cancellationToken)
+            PaginationQuery<AudioViewModel> paginationQuery, CancellationToken cancellationToken)
         {
             var query = new GetAudioListQuery
             {
@@ -73,7 +73,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "GetUserFavoriteAudios",
             Tags = new []{"users"}
         )]
-        public async Task<IActionResult> GetUserFavorites(string username, PaginationQuery paginationQuery,
+        public async Task<IActionResult> GetUserFavorites(string username, PaginationQuery<AudioViewModel> paginationQuery,
             CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetFavoriteAudiosQuery
@@ -91,7 +91,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "GetUserFollowers",
             Tags = new []{"users"}
         )]
-        public async Task<IActionResult> GetFollowers(string username, [FromQuery] PaginationQuery query,
+        public async Task<IActionResult> GetFollowers(string username, [FromQuery] PaginationQuery<UserDto> query,
             CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetFollowersQuery
@@ -109,7 +109,7 @@ namespace Audiochan.Web.Controllers
             OperationId = "GetUserFollowings",
             Tags = new []{"users"}
         )]
-        public async Task<IActionResult> GetFollowings(string username, [FromQuery] PaginationQuery query,
+        public async Task<IActionResult> GetFollowings(string username, [FromQuery] PaginationQuery<UserDto> query,
             CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(new GetFollowingsQuery
