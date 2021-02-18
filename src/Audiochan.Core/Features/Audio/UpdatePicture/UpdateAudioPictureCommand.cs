@@ -38,7 +38,6 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
                 var currentUserId = _currentUserService.GetUserId();
 
                 var audio = await _dbContext.Audios
-                    .AsNoTracking()
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
                 if (audio == null) return Result<string>.Fail(ResultStatus.NotFound);
