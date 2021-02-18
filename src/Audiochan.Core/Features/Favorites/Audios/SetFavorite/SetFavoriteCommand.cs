@@ -30,7 +30,7 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
         public async Task<IResult<bool>> Handle(SetFavoriteCommand request, CancellationToken cancellationToken)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == request.UserId, cancellationToken))
-                return Result<bool>.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultError.Unauthorized);
 
             var audio = await _dbContext.Audios
                 .AsNoTracking()
@@ -38,10 +38,10 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
                 .SingleOrDefaultAsync(a => a.Id == request.AudioId, cancellationToken);
             
             if (audio == null) 
-                return Result<bool>.Fail(ResultStatus.NotFound);
+                return Result<bool>.Fail(ResultError.NotFound);
             
             if (audio.UserId == request.UserId)
-                return Result<bool>.Fail(ResultStatus.Forbidden);
+                return Result<bool>.Fail(ResultError.Forbidden);
             
             var favorite =
                 await _dbContext.FavoriteAudios

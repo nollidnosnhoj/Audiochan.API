@@ -3,11 +3,20 @@ using Audiochan.Core.Common.Enums;
 
 namespace Audiochan.Core.Common.Models
 {
+    public enum ResultError
+    {
+        BadRequest,
+        NotFound,
+        Unauthorized,
+        Forbidden,
+        UnprocessedEntity
+    }
+    
     public interface IResult<out TResponse>
     {
         TResponse Data { get; }
         bool IsSuccess { get; }
-        ResultStatus? ErrorCode { get; }
+        ResultError? ErrorCode { get; }
         string Message { get; }
         Dictionary<string, string[]> Errors { get; }
     }
@@ -18,9 +27,9 @@ namespace Audiochan.Core.Common.Models
         public Dictionary<string, string[]> Errors { get; init; }
         public string Message { get; init; }
         public bool IsSuccess { get; init; }
-        public ResultStatus? ErrorCode { get; init; }
+        public ResultError? ErrorCode { get; init; }
 
-        public static Result<TResponse> Fail(ResultStatus errorCode, string message = "", Dictionary<string, string[]> errors = null)
+        public static Result<TResponse> Fail(ResultError errorCode, string message = "", Dictionary<string, string[]> errors = null)
         {
             return new()
             {
@@ -46,17 +55,17 @@ namespace Audiochan.Core.Common.Models
             return result.IsSuccess;
         }
 
-        private static string GetDefaultMessage(ResultStatus errorCode, string message)
+        private static string GetDefaultMessage(ResultError errorCode, string message)
         {
             if (!string.IsNullOrWhiteSpace(message)) return message;
 
             return errorCode switch
             {
-                ResultStatus.NotFound => "The requested resource was not found.",
-                ResultStatus.Unauthorized => "You are not authorized access.",
-                ResultStatus.Forbidden => "You are authorized, but forbidden access.",
-                ResultStatus.UnprocessedEntity => "The request payload is invalid.",
-                ResultStatus.BadRequest => "Unable to process request.",
+                ResultError.NotFound => "The requested resource was not found.",
+                ResultError.Unauthorized => "You are not authorized access.",
+                ResultError.Forbidden => "You are authorized, but forbidden access.",
+                ResultError.UnprocessedEntity => "The request payload is invalid.",
+                ResultError.BadRequest => "Unable to process request.",
                 _ => "An unknown error has occurred."
             };
         }

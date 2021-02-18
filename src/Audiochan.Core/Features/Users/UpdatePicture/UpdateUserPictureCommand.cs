@@ -37,7 +37,7 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
             try
             {
                 var user = await _userManager.FindByIdAsync(request.UserId + "");
-                if (user == null) return Result<string>.Fail(ResultStatus.Unauthorized);
+                if (user == null) return Result<string>.Fail(ResultError.Unauthorized);
                 if (!string.IsNullOrEmpty(user.Picture))
                 {
                     await _storageService.RemoveAsync(user.Picture, cancellationToken);

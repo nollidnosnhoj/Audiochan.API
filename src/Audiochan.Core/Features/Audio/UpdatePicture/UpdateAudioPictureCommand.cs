@@ -40,8 +40,8 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
                 var audio = await _dbContext.Audios
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
-                if (audio == null) return Result<string>.Fail(ResultStatus.NotFound);
-                if (audio.UserId != currentUserId) return Result<string>.Fail(ResultStatus.Forbidden);
+                if (audio == null) return Result<string>.Fail(ResultError.NotFound);
+                if (audio.UserId != currentUserId) return Result<string>.Fail(ResultError.Forbidden);
                 if (!string.IsNullOrEmpty(audio.Picture))
                 {
                     await _storageService.RemoveAsync(audio.Picture, cancellationToken);

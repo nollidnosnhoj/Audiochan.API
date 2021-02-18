@@ -58,10 +58,10 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
                 if (audio == null) 
-                    return Result<AudioViewModel>.Fail(ResultStatus.NotFound);
+                    return Result<AudioViewModel>.Fail(ResultError.NotFound);
 
                 if (audio.UserId != currentUserId) 
-                    return Result<AudioViewModel>.Fail(ResultStatus.Forbidden);
+                    return Result<AudioViewModel>.Fail(ResultError.Forbidden);
 
                 audio.Title = !string.IsNullOrWhiteSpace(request.Title)
                     ? request.Title
@@ -79,7 +79,7 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
 
                     if (genre == null)
                         return Result<AudioViewModel>
-                            .Fail(ResultStatus.BadRequest, "Genre does not exist.");
+                            .Fail(ResultError.BadRequest, "Genre does not exist.");
 
                     audio.Genre = genre!;
                 }

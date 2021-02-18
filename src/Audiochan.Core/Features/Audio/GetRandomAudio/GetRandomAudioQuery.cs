@@ -38,7 +38,7 @@ namespace Audiochan.Core.Features.Audio.GetRandomAudio
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 
-                ? Result<AudioViewModel>.Fail(ResultStatus.NotFound) 
+                ? Result<AudioViewModel>.Fail(ResultError.NotFound) 
                 : Result<AudioViewModel>.Success(audio);
         }
     }

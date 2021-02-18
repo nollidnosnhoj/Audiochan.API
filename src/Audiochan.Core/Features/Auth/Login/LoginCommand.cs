@@ -44,7 +44,7 @@ namespace Audiochan.Core.Features.Auth.Login
                     u.UserName == request.Login.Trim().ToLower() || u.Email == request.Login, cancellationToken);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
-                return Result<AuthResultViewModel>.Fail(ResultStatus.BadRequest, "Invalid Username/Password");
+                return Result<AuthResultViewModel>.Fail(ResultError.BadRequest, "Invalid Username/Password");
 
             var (token, tokenExpiration) = await _tokenService.GenerateAccessToken(user);
 

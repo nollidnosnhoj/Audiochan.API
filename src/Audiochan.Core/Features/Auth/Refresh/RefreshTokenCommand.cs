@@ -34,7 +34,7 @@ namespace Audiochan.Core.Features.Auth.Refresh
         {
             if (string.IsNullOrEmpty(request.RefreshToken))
                 return Result<AuthResultViewModel>
-                    .Fail(ResultStatus.BadRequest, "Refresh token was not defined.");
+                    .Fail(ResultError.BadRequest, "Refresh token was not defined.");
             
             var user = await _userManager.Users
                 .Include(u => u.RefreshTokens)
@@ -42,14 +42,14 @@ namespace Audiochan.Core.Features.Auth.Refresh
                     .Any(t => t.Token == request.RefreshToken && t.UserId == u.Id), cancellationToken);
 
             if (user == null)
-                return Result<AuthResultViewModel>.Fail(ResultStatus.BadRequest, 
+                return Result<AuthResultViewModel>.Fail(ResultError.BadRequest, 
                     "Refresh token does not belong to a user.");
             
             var existingRefreshToken = user.RefreshTokens
                 .Single(r => r.Token == request.RefreshToken);
 
             if (!_tokenService.IsRefreshTokenValid(existingRefreshToken))
-                return Result<AuthResultViewModel>.Fail(ResultStatus.BadRequest, 
+                return Result<AuthResultViewModel>.Fail(ResultError.BadRequest, 
                     "Refresh token is invalid/expired.");
             
             var newRefreshToken = _tokenService.GenerateRefreshToken(user.Id);

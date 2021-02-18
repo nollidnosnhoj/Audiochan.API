@@ -41,10 +41,10 @@ namespace Audiochan.Core.Features.Audio.RemoveAudio
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
                 if (audio == null)
-                    return Result<bool>.Fail(ResultStatus.NotFound);
+                    return Result<bool>.Fail(ResultError.NotFound);
 
                 if (audio.UserId != currentUserId)
-                    return Result<bool>.Fail(ResultStatus.Forbidden);
+                    return Result<bool>.Fail(ResultError.Forbidden);
                 
                 _dbContext.Audios.Remove(audio);
                 await _dbContext.SaveChangesAsync(cancellationToken);

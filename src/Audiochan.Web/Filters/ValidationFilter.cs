@@ -18,7 +18,7 @@ namespace Audiochan.Web.Filters
                     .Where(x => x.Value.Errors.Count > 0)
                     .ToDictionary(kvp => kvp.Key, kvp =>
                         kvp.Value.Errors.Select(x => x.ErrorMessage).ToArray());
-                var result = Result<bool>.Fail(ResultStatus.UnprocessedEntity, string.Empty, errors);
+                var result = Result<bool>.Fail(ResultError.UnprocessedEntity, string.Empty, errors);
                 context.Result = result.ReturnErrorResponse();
                 return;
             }

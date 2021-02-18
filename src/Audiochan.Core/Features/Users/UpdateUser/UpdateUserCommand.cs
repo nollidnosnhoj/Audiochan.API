@@ -28,7 +28,7 @@ namespace Audiochan.Core.Features.Users.UpdateUser
         public async Task<IResult<bool>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultError.Unauthorized);
             user.About = request.About ?? user.About;
             user.Website = request.Website ?? user.Website;
             await _userManager.UpdateAsync(user);

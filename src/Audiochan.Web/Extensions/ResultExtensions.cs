@@ -18,11 +18,11 @@ namespace Audiochan.Web.Extensions
         {
             return result.ErrorCode switch
             {
-                ResultStatus.NotFound => StatusCodes.Status404NotFound,
-                ResultStatus.Unauthorized => StatusCodes.Status401Unauthorized,
-                ResultStatus.Forbidden => StatusCodes.Status403Forbidden,
-                ResultStatus.UnprocessedEntity => StatusCodes.Status422UnprocessableEntity,
-                ResultStatus.BadRequest => StatusCodes.Status400BadRequest,
+                ResultError.NotFound => StatusCodes.Status404NotFound,
+                ResultError.Unauthorized => StatusCodes.Status401Unauthorized,
+                ResultError.Forbidden => StatusCodes.Status403Forbidden,
+                ResultError.UnprocessedEntity => StatusCodes.Status422UnprocessableEntity,
+                ResultError.BadRequest => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError
             };
         }

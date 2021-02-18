@@ -44,7 +44,7 @@ namespace Audiochan.Core.Features.Users.UpdatePassword
         public async Task<IResult<bool>> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultError.Unauthorized);
             // TEMPORARY UNTIL EMAIL CONFIRMATION IS SETUP
             var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
             return result.ToResult();

@@ -39,7 +39,7 @@ namespace Audiochan.Core.Features.Users.UpdateUsername
         public async Task<IResult<bool>> Handle(UpdateUsernameCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultError.Unauthorized);
             var result = await _userManager.SetUserNameAsync(user, request.NewUsername);
             if (!result.Succeeded) result.ToResult();
             await _userManager.UpdateNormalizedUserNameAsync(user);

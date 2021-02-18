@@ -39,7 +39,7 @@ namespace Audiochan.Core.Features.Users.UpdateEmail
         public async Task<IResult<bool>> Handle(UpdateEmailCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null) return Result<bool>.Fail(ResultStatus.Unauthorized);
+            if (user == null) return Result<bool>.Fail(ResultError.Unauthorized);
             
             // TEMPORARY UNTIL EMAIL CONFIRMATION IS SETUP
             var result = await _userManager.SetEmailAsync(user, request.NewEmail);

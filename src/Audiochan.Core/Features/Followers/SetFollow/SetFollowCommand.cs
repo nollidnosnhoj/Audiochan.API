@@ -26,16 +26,16 @@ namespace Audiochan.Core.Features.Followers.SetFollow
         public async Task<IResult<bool>> Handle(SetFollowCommand request, CancellationToken cancellationToken)
         {
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == request.UserId, cancellationToken))
-                return Result<bool>.Fail(ResultStatus.Unauthorized);
+                return Result<bool>.Fail(ResultError.Unauthorized);
             
             var target = await _dbContext.Users.AsNoTracking()
                 .SingleOrDefaultAsync(u => u.UserName == request.Username.Trim().ToLower(), cancellationToken);
 
             if (target == null)
-                return Result<bool>.Fail(ResultStatus.NotFound);
+                return Result<bool>.Fail(ResultError.NotFound);
 
             if (target.Id == request.UserId)
-                return Result<bool>.Fail(ResultStatus.Forbidden);
+                return Result<bool>.Fail(ResultError.Forbidden);
 
             var followedUser = await _dbContext.FollowedUsers
                 .SingleOrDefaultAsync(u => u.TargetId == target.Id 

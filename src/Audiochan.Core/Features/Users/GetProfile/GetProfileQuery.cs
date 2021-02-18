@@ -42,7 +42,7 @@ namespace Audiochan.Core.Features.Users.GetProfile
                 .SingleOrDefaultAsync(cancellationToken);
 
             return profile == null
-                ? Result<ProfileViewModel>.Fail(ResultStatus.NotFound)
+                ? Result<ProfileViewModel>.Fail(ResultError.NotFound)
                 : Result<ProfileViewModel>.Success(profile);
         }
     }

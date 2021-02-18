@@ -99,7 +99,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 cancellationToken);
 
             if (!blobResponse)
-                return Result<AudioViewModel>.Fail(ResultStatus.BadRequest, "Cannot find audio in storage.");
+                return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Cannot find audio in storage.");
 
             try
             {

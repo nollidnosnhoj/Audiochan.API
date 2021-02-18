@@ -13,7 +13,7 @@ namespace Audiochan.Core.Common.Extensions
             if (identityResult.Succeeded) return Result<bool>.Success(true);
 
             return Result<bool>.Fail(
-                ResultStatus.UnprocessedEntity,
+                ResultError.UnprocessedEntity,
                 message,
                 identityResult.FromIdentityToResultErrors());
         }
@@ -23,7 +23,7 @@ namespace Audiochan.Core.Common.Extensions
             if (identityResult.Succeeded) return Result<TResponse>.Success(data);
             
             return Result<TResponse>.Fail(
-                ResultStatus.UnprocessedEntity,
+                ResultError.UnprocessedEntity,
                 message,
                 identityResult.FromIdentityToResultErrors());
         }

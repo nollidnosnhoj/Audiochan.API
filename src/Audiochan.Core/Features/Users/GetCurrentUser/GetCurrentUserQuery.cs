@@ -37,7 +37,7 @@ namespace Audiochan.Core.Features.Users.GetCurrentUser
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (user == null)
-                return Result<CurrentUserViewModel>.Fail(ResultStatus.Unauthorized);
+                return Result<CurrentUserViewModel>.Fail(ResultError.Unauthorized);
 
             var roles = await _userManager.GetRolesAsync(user);
 
