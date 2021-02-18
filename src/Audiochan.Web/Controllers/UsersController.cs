@@ -1,11 +1,15 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audios.Models;
-using Audiochan.Core.Features.Users.Models;
-using Audiochan.Core.Interfaces;
+using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audio.GetAudioList;
+using Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios;
+using Audiochan.Core.Features.Followers.GetFollowers;
+using Audiochan.Core.Features.Followers.GetFollowings;
+using Audiochan.Core.Features.Users.GetProfile;
 using Audiochan.Web.Extensions;
 using Audiochan.Web.Models;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -15,19 +19,11 @@ namespace Audiochan.Web.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IAudioService _audioService;
-        private readonly IFollowerService _followerService;
-        private readonly IFavoriteService _favoriteService;
-        private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
-        public UsersController(IFollowerService followerService, 
-            IFavoriteService favoriteService, IUserService userService, 
-            IAudioService audioService)
+        public UsersController(IMediator mediator)
         {
-            _followerService = followerService;
-            _favoriteService = favoriteService;
-            _userService = userService;
-            _audioService = audioService;
+            _mediator = mediator;
         }
 
         [HttpGet("{username}", Name="GetProfile")]
@@ -40,7 +36,7 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> GetUserProfile(string username, CancellationToken cancellationToken)
         {
-            var result = await _userService.GetUserProfile(username, cancellationToken);
+            var result = await _mediator.Send(new GetProfileQuery(username), cancellationToken);
 
             return result.IsSuccess
                 ? Ok(result.Data)
@@ -65,7 +61,7 @@ namespace Audiochan.Web.Controllers
                 Size = paginationQuery.Size
             };
 
-            var list = await _audioService.GetList(query, cancellationToken);
+            var list = await _mediator.Send(query, cancellationToken);
 
             return Ok(list);
         }
@@ -80,11 +76,16 @@ namespace Audiochan.Web.Controllers
         public async Task<IActionResult> GetUserFavorites(string username, PaginationQuery paginationQuery,
             CancellationToken cancellationToken)
         {
-            return Ok(await _favoriteService.GetUserFavorites(username, paginationQuery, cancellationToken));
+            return Ok(await _mediator.Send(new GetFavoriteAudiosQuery
+            {
+                Username = username,
+                Page = paginationQuery.Page,
+                Size = paginationQuery.Size
+            }, cancellationToken));
         }
 
         [HttpGet("{username}/followers", Name="GetUserFollowers")]
-        [ProducesResponseType(typeof(PagedList<UserViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedList<UserDto>), StatusCodes.Status200OK)]
         [SwaggerOperation(
             Summary = "Return a list of the user's followers.",
             OperationId = "GetUserFollowers",
@@ -93,11 +94,16 @@ namespace Audiochan.Web.Controllers
         public async Task<IActionResult> GetFollowers(string username, [FromQuery] PaginationQuery query,
             CancellationToken cancellationToken)
         {
-            return Ok(await _followerService.GetUsersFollowers(username.ToLower(), query, cancellationToken));
+            return Ok(await _mediator.Send(new GetFollowersQuery
+            {
+                Username = username,
+                Page = query.Page,
+                Size = query.Size
+            }, cancellationToken));
         }
         
         [HttpGet("{username}/followings", Name="GetUserFollowings")]
-        [ProducesResponseType(typeof(PagedList<UserViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedList<UserDto>), StatusCodes.Status200OK)]
         [SwaggerOperation(
             Summary = "Return a list of the user's followings.",
             OperationId = "GetUserFollowings",
@@ -106,7 +112,12 @@ namespace Audiochan.Web.Controllers
         public async Task<IActionResult> GetFollowings(string username, [FromQuery] PaginationQuery query,
             CancellationToken cancellationToken)
         {
-            return Ok(await _followerService.GetUsersFollowings(username.ToLower(), query, cancellationToken));
+            return Ok(await _mediator.Send(new GetFollowingsQuery
+            {
+                Username = username,
+                Page = query.Page,
+                Size = query.Size
+            }, cancellationToken));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Audiochan.Core.Features.Auth.Models;
-using Audiochan.Core.Features.Auth.Validators;
+﻿using Audiochan.Core.Features.Auth.Login;
 using FluentValidation;
 using FluentValidation.TestHelper;
 using Xunit;
@@ -8,24 +7,24 @@ namespace Audiochan.Core.UnitTests.Validations
 {
     public class LoginValidationTests
     {
-        private readonly IValidator<LoginRequest> _validator;
+        private readonly IValidator<LoginCommand> _validator;
 
         public LoginValidationTests()
         {
-            _validator = new LoginRequestRequestValidator();
+            _validator = new LoginCommandValidator();
         }
 
         [Fact]
         public void CheckIfUsernameIsEmpty()
         {
-            var result = _validator.TestValidate(new LoginRequest());
-            result.ShouldHaveValidationErrorFor(x => x.Username);
+            var result = _validator.TestValidate(new LoginCommand());
+            result.ShouldHaveValidationErrorFor(x => x.Login);
         }
         
         [Fact]
         public void CheckIfPasswordIsEmpty()
         {
-            var result = _validator.TestValidate(new LoginRequest());
+            var result = _validator.TestValidate(new LoginCommand());
             result.ShouldHaveValidationErrorFor(x => x.Password);
         }
     }

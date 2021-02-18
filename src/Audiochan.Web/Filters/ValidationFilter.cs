@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Models.Result;
+using Audiochan.Core.Common.Models;
 using Audiochan.Web.Extensions;
 
 namespace Audiochan.Web.Filters

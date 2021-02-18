@@ -28,7 +28,7 @@ namespace Audiochan.Web.Configurations
                 })
                 .AddRoleManager<RoleManager<Role>>()
                 .AddSignInManager<SignInManager<User>>()
-                .AddEntityFrameworkStores<DatabaseContext>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             return services;
