@@ -30,7 +30,7 @@ namespace Audiochan.Infrastructure.Security
             _dateTimeService = dateTimeService;
         }
 
-        public async Task<string> GenerateAccessToken(User user)
+        public async Task<(string, long)> GenerateAccessToken(User user)
         {
             var claims = await GetClaims(user);
             
@@ -50,7 +50,7 @@ namespace Audiochan.Infrastructure.Security
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            return (tokenHandler.WriteToken(token), DateTimeToUnixEpoch(expirationDate));
         }
 
         private async Task<List<Claim>> GetClaims(User user)

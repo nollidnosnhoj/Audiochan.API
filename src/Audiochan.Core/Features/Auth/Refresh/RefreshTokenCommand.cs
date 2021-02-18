@@ -58,11 +58,12 @@ namespace Audiochan.Core.Features.Auth.Refresh
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
 
-            var accessToken = await _tokenService.GenerateAccessToken(user);
+            var (token, tokenExpiration) = await _tokenService.GenerateAccessToken(user);
 
             return Result<AuthResultViewModel>.Success(new AuthResultViewModel
             {
-                AccessToken = accessToken,
+                AccessToken = token,
+                AccessTokenExpires = tokenExpiration,
                 RefreshToken = newRefreshToken.Token,
                 RefreshTokenExpires = _tokenService.DateTimeToUnixEpoch(newRefreshToken.Expiry)
             });

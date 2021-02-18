@@ -6,7 +6,7 @@ namespace Audiochan.Core.Interfaces
 {
     public interface ITokenService
     {
-        Task<string> GenerateAccessToken(User user);
+        Task<(string, long)> GenerateAccessToken(User user);
         RefreshToken GenerateRefreshToken(string userId);
         long DateTimeToUnixEpoch(DateTime dateTime);
         bool IsRefreshTokenValid(RefreshToken existingToken);
