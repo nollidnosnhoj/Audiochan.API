@@ -29,6 +29,7 @@ namespace Audiochan.Infrastructure.Upload
                 OriginalFileName = fileName
             };
             blobRequest.Metadata.Add("UserId", userId);
+            blobRequest.Metadata.Add("OriginalFilename", fileName);
             var uploadLink = _storageService.GetPresignedUrl(blobRequest);
             return new GetUploadUrlResponse {UploadId = uploadId, Url = uploadLink};
         }
