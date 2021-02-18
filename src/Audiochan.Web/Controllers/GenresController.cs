@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Genres.Models;
-using Audiochan.Core.Interfaces;
+using Audiochan.Core.Features.Genres.ListGenre;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,11 +13,11 @@ namespace Audiochan.Web.Controllers
     [Route("[controller]")]
     public class GenresController : ControllerBase
     {
-        private readonly IGenreService _genreService;
+        private readonly IMediator _mediator;
 
-        public GenresController(IGenreService genreService)
+        public GenresController(IMediator mediator)
         {
-            _genreService = genreService;
+            _mediator = mediator;
         }
 
         [HttpGet(Name = "GetGenres")]
@@ -26,10 +26,10 @@ namespace Audiochan.Web.Controllers
             Summary = "Returns a list of available genres.",
             OperationId = "GetGenres",
             Tags = new []{"genres"})]
-        public async Task<IActionResult> GetGenres([FromQuery] ListGenresQueryParams queryParams, 
+        public async Task<IActionResult> GetGenres([FromQuery] ListGenreQuery queryParams, 
             CancellationToken cancellationToken)
         {
-            return Ok(await _genreService.ListGenre(queryParams, cancellationToken));
+            return Ok(await _mediator.Send(queryParams, cancellationToken));
         }
     }
 }

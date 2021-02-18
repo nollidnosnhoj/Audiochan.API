@@ -25,7 +25,7 @@ namespace Audiochan.Web
 
                 try
                 {
-                    var context = services.GetRequiredService<DatabaseContext>();
+                    var context = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<Role>>();
                     await context.Database.MigrateAsync();

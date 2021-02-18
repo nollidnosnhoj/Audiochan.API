@@ -21,7 +21,7 @@ namespace Audiochan.Web.Controllers
         [HttpPost]
         public IActionResult GetUploadUrl([FromBody] GetUploadUrlRequest request)
         {
-            return Ok(_uploadService.GetUploadUrl(request));
+            return Ok(_uploadService.GetUploadUrl(request.FileName));
         }
     }
 }

@@ -17,16 +17,16 @@ namespace Audiochan.Infrastructure.Upload
             _currentUserService = currentUserService;
         }
 
-        public GetUploadUrlResponse GetUploadUrl(GetUploadUrlRequest request)
+        public GetUploadUrlResponse GetUploadUrl(string fileName)
         {
             var userId = _currentUserService.GetUserId();
             var uploadId = Guid.NewGuid();
-            var blobName = uploadId + Path.GetExtension(request.FileName);
+            var blobName = uploadId + Path.GetExtension(fileName);
             var blobRequest = new SaveBlobRequest
             {
                 Container = ContainerConstants.Audios,
                 BlobName = blobName,
-                OriginalFileName = request.FileName
+                OriginalFileName = fileName
             };
             blobRequest.Metadata.Add("UserId", userId);
             var uploadLink = _storageService.GetPresignedUrl(blobRequest);

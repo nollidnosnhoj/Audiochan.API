@@ -1,9 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Features.Auth.Models;
-using Audiochan.Core.Interfaces;
+using Audiochan.Core.Features.Auth.Login;
+using Audiochan.Core.Features.Auth.Refresh;
+using Audiochan.Core.Features.Auth.Register;
+using Audiochan.Core.Features.Auth.Revoke;
 using Audiochan.Web.Extensions;
 using Audiochan.Web.Models;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,25 +16,25 @@ namespace Audiochan.Web.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IMediator _mediator;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IMediator mediator)
         {
-            _authService = authService;
+            _mediator = mediator;
         }
 
         [HttpPost("login", Name="Login")]
-        [ProducesResponseType(typeof(AuthResultDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthResultViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [SwaggerOperation(
             Summary = "Obtain access and refresh token using your login credentials.",
             OperationId = "Login",
             Tags = new []{ "auth" }
         )]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request, 
+        public async Task<IActionResult> Login([FromBody] LoginCommand request, 
             CancellationToken cancellationToken)
         {
-            var authResult = await _authService.Login(request.Username!, request.Password!, cancellationToken);
+            var authResult = await _mediator.Send(request, cancellationToken);
             return authResult.IsSuccess 
                 ? Ok(authResult.Data) 
                 : authResult.ReturnErrorResponse();
@@ -46,17 +49,17 @@ namespace Audiochan.Web.Controllers
             OperationId = "CreateAccount",
             Tags = new []{ "auth" }
         )]
-        public async Task<IActionResult> Register([FromBody] CreateUserRequest request,
+        public async Task<IActionResult> Register([FromBody] RegisterCommand request,
             CancellationToken cancellationToken)
         {
-            var result = await _authService.Register(request, cancellationToken);
+            var result = await _mediator.Send(request, cancellationToken);
             return result.IsSuccess
                 ? Ok()
                 : result.ReturnErrorResponse();
         }
 
         [HttpPost("refresh", Name="RefreshAccessToken")]
-        [ProducesResponseType(typeof(AuthResultDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthResultViewModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [SwaggerOperation(
             Summary = "Refresh access token using valid refresh token.",
@@ -64,10 +67,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "RefreshAccessToken",
             Tags = new []{"auth"}
         )]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request,
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand request,
             CancellationToken cancellationToken)
         {
-            var authResult = await _authService.Refresh(request.RefreshToken, cancellationToken);
+            var authResult = await _mediator.Send(request, cancellationToken);
             return authResult.IsSuccess 
                 ? Ok(authResult.Data) 
                 : authResult.ReturnErrorResponse();
@@ -81,10 +84,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "RevokeRefreshToken",
             Tags = new []{"auth"}
         )]
-        public async Task<IActionResult> Revoke([FromBody] RefreshTokenRequest request, 
+        public async Task<IActionResult> Revoke([FromBody] RevokeTokenCommand request, 
             CancellationToken cancellationToken)
         {
-            var result = await _authService.Revoke(request.RefreshToken, cancellationToken);
+            var result = await _mediator.Send(request, cancellationToken);
             return result.IsSuccess
                 ? Ok()
                 : result.ReturnErrorResponse();

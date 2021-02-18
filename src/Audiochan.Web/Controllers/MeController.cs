@@ -1,11 +1,20 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audios.Models;
-using Audiochan.Core.Features.Users.Models;
+using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audio.GetAudioFeed;
+using Audiochan.Core.Features.Followers.CheckIfFollowing;
+using Audiochan.Core.Features.Followers.SetFollow;
+using Audiochan.Core.Features.Users.GetCurrentUser;
+using Audiochan.Core.Features.Users.UpdateEmail;
+using Audiochan.Core.Features.Users.UpdatePassword;
+using Audiochan.Core.Features.Users.UpdatePicture;
+using Audiochan.Core.Features.Users.UpdateUser;
+using Audiochan.Core.Features.Users.UpdateUsername;
 using Audiochan.Core.Interfaces;
 using Audiochan.Web.Extensions;
 using Audiochan.Web.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,17 +27,12 @@ namespace Audiochan.Web.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class MeController : ControllerBase
     {
-        private readonly IAudioService _audioService;
-        private readonly IUserService _userService;
-        private readonly IFollowerService _followerService;
+        private readonly IMediator _mediator;
         private readonly string _currentUserId;
 
-        public MeController(ICurrentUserService currentUserService, IAudioService audioService, 
-            IUserService userService, IFollowerService followerService)
+        public MeController(ICurrentUserService currentUserService, IMediator mediator)
         {
-            _audioService = audioService;
-            _userService = userService;
-            _followerService = followerService;
+            _mediator = mediator;
             _currentUserId = currentUserService.GetUserId();
         }
 
@@ -57,7 +61,7 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> GetAuthenticatedUser(CancellationToken cancellationToken)
         {
-            var result = await _userService.GetCurrentUser(_currentUserId, cancellationToken);
+            var result = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
             return result.IsSuccess 
                 ? Ok(result.Data) 
                 : result.ReturnErrorResponse();
@@ -75,7 +79,10 @@ namespace Audiochan.Web.Controllers
         public async Task<IActionResult> GetAuthenticatedUserFeed([FromQuery] PaginationQuery query, 
             CancellationToken cancellationToken)
         {
-            var result = await _audioService.GetFeed(_currentUserId, query, cancellationToken);
+            var result = await _mediator.Send(new GetAudioFeedQuery
+            {
+                UserId = _currentUserId
+            }, cancellationToken);
             return Ok(result);
         }
         
@@ -90,7 +97,7 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> IsFollow(string username, CancellationToken cancellationToken)
         {
-            return await _followerService.CheckFollowing(_currentUserId, username, cancellationToken)
+            return await _mediator.Send(new CheckIfFollowingCommand(_currentUserId, username), cancellationToken)
                 ? Ok()
                 : NotFound();
         }
@@ -107,7 +114,7 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> Follow(string username, CancellationToken cancellationToken)
         {
-            var result = await _followerService.Follow(_currentUserId, username.ToLower(), cancellationToken);
+            var result = await _mediator.Send(new SetFollowCommand(_currentUserId, username, true), cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
                 : result.ReturnErrorResponse();
@@ -125,7 +132,7 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> Unfollow(string username, CancellationToken cancellationToken)
         {
-            var result = await _followerService.Unfollow(_currentUserId, username.ToLower(), cancellationToken);
+            var result = await _mediator.Send(new SetFollowCommand(_currentUserId, username, false), cancellationToken);
             return result.IsSuccess 
                 ? NoContent() 
                 : result.ReturnErrorResponse();
@@ -140,10 +147,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "UpdateUser",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDetailsRequest request,
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserCommand request,
             CancellationToken cancellationToken)
         {
-            var result = await _userService.UpdateUser(_currentUserId, request, cancellationToken);
+            var result = await _mediator.Send(request with {UserId = _currentUserId}, cancellationToken);
             return result.IsSuccess
                 ? Ok()
                 : result.ReturnErrorResponse();
@@ -158,10 +165,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "UpdateUsername",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> ChangeUsername([FromBody] UpdateUsernameRequest request,
+        public async Task<IActionResult> ChangeUsername([FromBody] UpdateUsernameCommand request,
             CancellationToken cancellationToken)
         {
-            var result = await _userService.UpdateUsername(_currentUserId, request.Username!, cancellationToken);
+            var result = await _mediator.Send(request with {UserId = _currentUserId}, cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
                 : result.ReturnErrorResponse();
@@ -176,10 +183,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "UpdateEmail",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> ChangeEmail([FromBody] UpdateEmailRequest request,
+        public async Task<IActionResult> ChangeEmail([FromBody] UpdateEmailCommand request,
             CancellationToken cancellationToken)
         {
-            var result = await _userService.UpdateEmail(_currentUserId, request.Email!, cancellationToken);
+            var result = await _mediator.Send(request with {UserId = _currentUserId}, cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
                 : result.ReturnErrorResponse();
@@ -194,10 +201,10 @@ namespace Audiochan.Web.Controllers
             OperationId = "UpdatePassword",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request,
+        public async Task<IActionResult> ChangePassword([FromBody] UpdatePasswordCommand request,
             CancellationToken cancellationToken)
         {
-            var result = await _userService.UpdatePassword(_currentUserId, request, cancellationToken);
+            var result = await _mediator.Send(request with {UserId = _currentUserId}, cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
                 : result.ReturnErrorResponse();
@@ -214,7 +221,8 @@ namespace Audiochan.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(request.Data))
                 return BadRequest();
-            var result = await _userService.AddPicture(_currentUserId, request.Data, cancellationToken);
+            var result = await _mediator.Send(new UpdateUserPictureCommand(_currentUserId, request.Data),
+                cancellationToken);
             return result.IsSuccess
                 ? Ok(new {Image = result.Data})
                 : result.ReturnErrorResponse();

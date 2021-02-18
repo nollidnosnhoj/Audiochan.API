@@ -1,7 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Features.Favorites.Audios.CheckIfFavoritedAudio;
+using Audiochan.Core.Features.Favorites.Audios.SetFavorite;
 using Audiochan.Core.Interfaces;
 using Audiochan.Web.Extensions;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +17,13 @@ namespace Audiochan.Web.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class FavoritesController : ControllerBase
     {
-        private readonly IFavoriteService _favoriteService;
+        private readonly IMediator _mediator;
         private readonly ICurrentUserService _currentUserService;
 
-        public FavoritesController(IFavoriteService favoriteService, ICurrentUserService currentUserService)
+        public FavoritesController(ICurrentUserService currentUserService, IMediator mediator)
         {
-            _favoriteService = favoriteService;
             _currentUserService = currentUserService;
+            _mediator = mediator;
         }
 
         [HttpHead("audios/{audioId}", Name="CheckIfUserFavoritedAudio")]
@@ -34,7 +37,8 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> IsFavorite(long audioId, CancellationToken cancellationToken)
         {
-            return await _favoriteService.CheckIfUserFavorited(_currentUserService.GetUserId(), audioId, cancellationToken)
+            var currentUserId = _currentUserService.GetUserId();
+            return await _mediator.Send(new CheckIfFavoritedAudioCommand(currentUserId, audioId), cancellationToken)
                 ? Ok()
                 : NotFound();
         }
@@ -51,7 +55,8 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> Favorite(long audioId, CancellationToken cancellationToken)
         {
-            var result = await _favoriteService.FavoriteAudio(_currentUserService.GetUserId(), audioId, cancellationToken);
+            var currentUserId = _currentUserService.GetUserId();
+            var result = await _mediator.Send(new SetFavoriteCommand(currentUserId, audioId, true), cancellationToken);
             return result.IsSuccess 
                 ? Ok() 
                 : result.ReturnErrorResponse();
@@ -69,7 +74,8 @@ namespace Audiochan.Web.Controllers
         )]
         public async Task<IActionResult> Unfavorite(long audioId, CancellationToken cancellationToken)
         {
-            var result = await _favoriteService.UnfavoriteAudio(_currentUserService.GetUserId(), audioId, cancellationToken);
+            var currentUserId = _currentUserService.GetUserId();
+            var result = await _mediator.Send(new SetFavoriteCommand(currentUserId, audioId, false), cancellationToken);
             return result.IsSuccess 
                 ? NoContent() 
                 : result.ReturnErrorResponse();

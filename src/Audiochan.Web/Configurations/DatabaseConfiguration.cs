@@ -12,13 +12,13 @@ namespace Audiochan.Web.Configurations
         public static IServiceCollection ConfigureDatabase(this IServiceCollection services, 
             IConfiguration configuration, IWebHostEnvironment environment)
         {
-            services.AddDbContext<DatabaseContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("Database"));
                 options.EnableSensitiveDataLogging().UseSnakeCaseNamingConvention();
             });
             
-            services.AddScoped<IDatabaseContext>(provider => provider.GetService<DatabaseContext>()!);
+            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
 
             return services;
         }
