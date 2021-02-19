@@ -18,7 +18,7 @@ namespace Audiochan.Core.Features.Audio.GetAudio
         public int FavoriteCount { get; init; }
         public bool IsFavorited { get; init; }
         public DateTime Created { get; init; }
-        public DateTime? Updated { get; init; }
+        public DateTime? LastModified { get; init; }
         public GenreDto Genre { get; init; }
         public UserDto User { get; init; }
         // TODO: I want to remove UploadId eventually from the view model.

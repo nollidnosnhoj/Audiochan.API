@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Mappings;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,13 @@ namespace Audiochan.Core.Features.Audio.GetRandomAudio
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public GetRandomAudioQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService)
+        public GetRandomAudioQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
         
         public async Task<Result<AudioViewModel>> Handle(GetRandomAudioQuery request, CancellationToken cancellationToken)
@@ -34,7 +37,7 @@ namespace Audiochan.Core.Features.Audio.GetRandomAudio
             var audio = await _dbContext.Audios
                 .DefaultQueryable(currentUserId)
                 .OrderBy(a => Guid.NewGuid())
-                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
+                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new {currentUserId})
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 

@@ -3,44 +3,51 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Followers.GetFollowers;
+using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Followers.GetFollowings
 {
-    public record GetFollowingsQuery : PaginationQuery<UserDto>
+    public record GetFollowingsQuery : PaginationQuery<FollowingViewModel>
     {
         public string Username { get; init; }
     }
-    
-    public class GetFollowingsQueryHandler : IRequestHandler<GetFollowingsQuery, PagedList<UserDto>>
+
+    public class GetFollowingsMappingProfile : Profile
     {
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IApplicationDbContext _dbContext;
-
-        public GetFollowingsQueryHandler(ICurrentUserService currentUserService, IApplicationDbContext dbContext)
+        public GetFollowingsMappingProfile()
         {
-            _currentUserService = currentUserService;
-            _dbContext = dbContext;
+            CreateMap<FollowedUser, FollowingViewModel>()
+                .ForMember(dest => dest.Username, opts =>
+                    opts.MapFrom(src => src.Target.UserName))
+                .ForMember(dest => dest.Picture, opts =>
+                    opts.MapFrom(src => src.Target.Picture));
         }
-        
-        public async Task<PagedList<UserDto>> Handle(GetFollowingsQuery request, CancellationToken cancellationToken)
-        {
-            var currentUserId = _currentUserService.GetUserId();
+    }
+    
+    public class GetFollowingsQueryHandler : IRequestHandler<GetFollowingsQuery, PagedList<FollowingViewModel>>
+    {
+        private readonly IApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
+        public GetFollowingsQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        {
+            _dbContext = dbContext;
+            _mapper = mapper;
+        }
+
+        public async Task<PagedList<FollowingViewModel>> Handle(GetFollowingsQuery request, CancellationToken cancellationToken)
+        {
             return await _dbContext.FollowedUsers
                 .AsNoTracking()
                 .Include(u => u.Target)
                 .Include(u => u.Observer)
-                .ThenInclude(u => u.Followers)
                 .Where(u => u.Observer.UserName == request.Username.Trim().ToLower())
-                .Select(f => new UserDto(
-                    f.TargetId,
-                    f.Target.UserName,
-                    f.Target.Picture,
-                    f.Target.Followers.Any(x => x.ObserverId == currentUserId)))
+                .ProjectTo<FollowingViewModel>(_mapper.ConfigurationProvider)
                 .PaginateAsync(request, cancellationToken);
         }
     }

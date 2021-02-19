@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +22,25 @@ namespace Audiochan.Core.Features.Genres.ListGenre
         public ListGenresSort Sort { get; } = default;
     }
 
+    public class ListGenreMappingProfile : Profile
+    {
+        public ListGenreMappingProfile()
+        {
+            CreateMap<Genre, GenreViewModel>()
+                .ForMember(dest => dest.Count, opts =>
+                    opts.MapFrom(src => src.Audios.Count));
+        }
+    }
+
     public class ListGenreQueryHandler : IRequestHandler<ListGenreQuery, List<GenreViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public ListGenreQueryHandler(IApplicationDbContext dbContext)
+        public ListGenreQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
         public async Task<List<GenreViewModel>> Handle(ListGenreQuery request, CancellationToken cancellationToken)
@@ -44,13 +58,9 @@ namespace Audiochan.Core.Features.Genres.ListGenre
                     break;
             }
 
-            return await queryable.Select(genre => new GenreViewModel
-            {
-                Id = genre.Id,
-                Name = genre.Name,
-                Slug = genre.Slug,
-                Count = genre.Audios.Count
-            }).ToListAsync(cancellationToken);
+            return await queryable
+                .ProjectTo<GenreViewModel>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -3,14 +3,13 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Mappings;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Validators;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Features.Genres.GetGenre;
 using Audiochan.Core.Features.Tags.CreateTags;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -35,12 +34,14 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMediator mediator)
+        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMediator mediator, IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mediator = mediator;
+            _mapper = mapper;
         }
         
         public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
@@ -104,7 +105,9 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
                 _dbContext.Audios.Update(audio);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
-                return Result<AudioViewModel>.Success(MappingProfile.AudioMapToViewmodel(currentUserId).Compile().Invoke(audio));
+                var viewModel = _mapper.Map<AudioViewModel>(audio);
+                viewModel = viewModel with {IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)};
+                return Result<AudioViewModel>.Success(viewModel);
             }
             catch (Exception)
             {

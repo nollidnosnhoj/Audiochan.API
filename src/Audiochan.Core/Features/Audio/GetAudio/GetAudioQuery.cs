@@ -2,9 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Mappings;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,11 +20,13 @@ namespace Audiochan.Core.Features.Audio.GetAudio
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public GetAudioQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService)
+        public GetAudioQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
 
         public async Task<Result<AudioViewModel>> Handle(GetAudioQuery request, CancellationToken cancellationToken)
@@ -33,7 +36,7 @@ namespace Audiochan.Core.Features.Audio.GetAudio
             var audio = await _dbContext.Audios
                 .DefaultQueryable(currentUserId)
                 .Where(x => x.Id == request.Id)
-                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
+                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 

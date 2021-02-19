@@ -7,6 +7,5 @@ namespace Audiochan.Core.Features.Users.GetCurrentUser
         public string Id { get; init; }
         public string Username { get; init; }
         public string Email { get; init; }
-        public ICollection<string> Roles { get; init; } = new List<string>();
     }
 }

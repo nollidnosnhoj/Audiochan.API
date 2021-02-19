@@ -2,11 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Mappings;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Features.Audio;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,13 @@ namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public GetFavoriteAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService)
+        public GetFavoriteAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
+            _mapper = mapper;
         }
         
         public async Task<PagedList<AudioViewModel>> Handle(GetFavoriteAudiosQuery request, CancellationToken cancellationToken)
@@ -42,7 +45,7 @@ namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
                 .Where(fa => fa.User.UserName == request.Username.Trim().ToLower())
                 .OrderByDescending(fa => fa.Created)
                 .Select(fa => fa.Audio)
-                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
+                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider)
                 .PaginateAsync(request, cancellationToken);
         }
     }
