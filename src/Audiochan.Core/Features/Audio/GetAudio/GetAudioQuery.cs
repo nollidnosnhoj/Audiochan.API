@@ -33,7 +33,7 @@ namespace Audiochan.Core.Features.Audio.GetAudio
             var audio = await _dbContext.Audios
                 .DefaultQueryable(currentUserId)
                 .Where(x => x.Id == request.Id)
-                .Select(AudioMappings.Map(currentUserId))
+                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 

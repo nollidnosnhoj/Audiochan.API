@@ -37,9 +37,9 @@ namespace Audiochan.Core.Features.Audio.GetAudioFeed
                 .DefaultQueryable(request.UserId)
                 .Where(a => followedIds.Contains(a.UserId))
                 .Distinct()
-                .Select(AudioMappings.Map(request.UserId))
+                .Select(MappingProfile.AudioMapToViewmodel(request.UserId))
                 .OrderByDescending(a => a.Created)
-                .Paginate(request, cancellationToken);
+                .PaginateAsync(request, cancellationToken);
         }
     }
 }

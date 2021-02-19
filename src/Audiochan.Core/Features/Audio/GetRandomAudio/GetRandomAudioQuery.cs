@@ -34,7 +34,7 @@ namespace Audiochan.Core.Features.Audio.GetRandomAudio
             var audio = await _dbContext.Audios
                 .DefaultQueryable(currentUserId)
                 .OrderBy(a => Guid.NewGuid())
-                .Select(AudioMappings.Map(currentUserId))
+                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
                 .SingleOrDefaultAsync(cancellationToken);
 
             return audio == null 

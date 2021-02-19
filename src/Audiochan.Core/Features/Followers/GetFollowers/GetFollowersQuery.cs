@@ -40,7 +40,7 @@ namespace Audiochan.Core.Features.Followers.GetFollowers
                     f.Observer.UserName,
                     f.Observer.Picture,
                     f.Observer.Followers.Any(x => x.ObserverId == currentUserId)))
-                .Paginate(request, cancellationToken);
+                .PaginateAsync(request, cancellationToken);
         }
     }
 }

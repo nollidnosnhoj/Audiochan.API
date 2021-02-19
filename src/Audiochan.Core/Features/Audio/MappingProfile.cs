@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audio.GetAudio;
 
-namespace Audiochan.Core.Common.Mappings
+namespace Audiochan.Core.Features.Audio
 {
-    public static class AudioMappings
+    public static class MappingProfile
     {
-        public static Expression<Func<Audio, AudioViewModel>> Map(string currentUserId)
+        public static Expression<Func<Entities.Audio, AudioViewModel>> AudioMapToViewmodel(string currentUserId)
         {
             return audio => new AudioViewModel
             {
@@ -36,8 +35,5 @@ namespace Audiochan.Core.Common.Mappings
                 UploadId = audio.UploadId
             };
         }
-        
-        public static AudioViewModel MapToDetail(this Audio audio, string currentUserId) => 
-            Map(currentUserId).Compile().Invoke(audio);
     }
 }

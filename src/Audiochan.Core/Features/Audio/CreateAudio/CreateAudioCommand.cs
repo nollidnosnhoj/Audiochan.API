@@ -114,7 +114,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 
                 await transaction.CommitAsync(cancellationToken);
-                return Result<AudioViewModel>.Success(audio.MapToDetail(currentUserId));
+                return Result<AudioViewModel>.Success(MappingProfile.AudioMapToViewmodel(currentUserId).Compile().Invoke(audio));
             }
             catch (Exception)
             {

@@ -64,8 +64,8 @@ namespace Audiochan.Core.Features.Audio.GetAudioList
             };
 
             return await queryable
-                .Select(AudioMappings.Map(currentUserId))
-                .Paginate(request, cancellationToken);
+                .Select(MappingProfile.AudioMapToViewmodel(currentUserId))
+                .PaginateAsync(request, cancellationToken);
         }
     }
 }
