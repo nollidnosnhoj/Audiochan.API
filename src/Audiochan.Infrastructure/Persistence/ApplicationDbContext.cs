@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Audiochan.Infrastructure.Data
+namespace Audiochan.Infrastructure.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<User, Role, string>, IApplicationDbContext
     {

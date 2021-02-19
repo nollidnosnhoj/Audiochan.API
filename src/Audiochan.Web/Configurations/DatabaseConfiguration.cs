@@ -1,5 +1,5 @@
 ﻿using Audiochan.Core.Interfaces;
-using Audiochan.Infrastructure.Data;
+using Audiochan.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

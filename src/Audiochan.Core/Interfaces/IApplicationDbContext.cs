@@ -9,7 +9,6 @@ namespace Audiochan.Core.Interfaces
     public interface IApplicationDbContext
     {
         DbSet<Audio> Audios { get; }
-        // DbSet<AudioTag> AudioTags { get; }
         DbSet<FavoriteAudio> FavoriteAudios { get; }
         DbSet<FollowedUser> FollowedUsers { get; }
         DbSet<Genre> Genres { get; }

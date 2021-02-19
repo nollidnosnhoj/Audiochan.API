@@ -1,6 +1,6 @@
 ﻿using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
-using Audiochan.Infrastructure.Data;
+using Audiochan.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

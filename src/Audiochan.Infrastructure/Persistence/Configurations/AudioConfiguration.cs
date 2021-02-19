@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Audiochan.Infrastructure.Data.Configurations
+namespace Audiochan.Infrastructure.Persistence.Configurations
 {
     public class AudioConfiguration : IEntityTypeConfiguration<Audio>
     {
