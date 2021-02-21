@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Audiochan.Infrastructure.Persistence
 {
     public class ApplicationDbContext : IdentityDbContext<User, Role, string>, IApplicationDbContext
     {
         private readonly IDateTimeService _dateTimeService;
+        private IDbContextTransaction _currentTransaction;
         
         public ApplicationDbContext(DbContextOptions options, 
             IDateTimeService dateTimeService) : base(options)
@@ -47,6 +49,42 @@ namespace Audiochan.Infrastructure.Persistence
             var result = await base.SaveChangesAsync(cancellationToken);
 
             return result;
+        }
+
+        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            if (_currentTransaction != null) return;
+            _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await SaveChangesAsync(cancellationToken);
+                await (_currentTransaction?.CommitAsync(cancellationToken) ?? Task.CompletedTask);
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
+            }
+        }
+
+        public void RollbackTransaction()
+        {
+            try
+            {
+                _currentTransaction?.Rollback();
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
