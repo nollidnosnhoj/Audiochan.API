@@ -47,11 +47,12 @@ namespace Audiochan.Core.Features.Auth.Register
         {
             var user = new User
             {
-                UserName = request.Username!.ToLower(),
-                DisplayName = request.Username,
+                UserName = request.Username.Trim().ToLower(),
                 Email = request.Email,
                 Joined = _dateTimeService.Now
             };
+
+            user.DisplayName = user.UserName;
 
             var identityResult = await _userManager.CreateAsync(user, request.Password);
 

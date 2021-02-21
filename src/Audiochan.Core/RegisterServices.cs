@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Audiochan.Core.Common.Behaviors;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ namespace Audiochan.Core
         {
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DbContextTransactionPipelineBehavior<,>));
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             return services;
         }
     }

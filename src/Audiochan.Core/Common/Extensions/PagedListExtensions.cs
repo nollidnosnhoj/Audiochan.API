@@ -10,7 +10,7 @@ namespace Audiochan.Core.Common.Extensions
     public static class PagedListExtensions
     {
         
-        public static async Task<PagedList<TResponse>> Paginate<TResponse>(
+        public static async Task<PagedList<TResponse>> PaginateAsync<TResponse>(
             this IQueryable<TResponse> queryable, 
             int page, 
             int limit, 
@@ -26,17 +26,17 @@ namespace Audiochan.Core.Common.Extensions
             return new PagedList<TResponse>(list, count, page, limit);
         }
         
-        public static async Task<PagedList<TResponse>> Paginate<TResponse>(this IQueryable<TResponse> queryable
+        public static async Task<PagedList<TResponse>> PaginateAsync<TResponse>(this IQueryable<TResponse> queryable
             , PaginationQuery<TResponse> paginationQuery
             , CancellationToken cancellationToken = default)
         {
-            return await queryable.Paginate(paginationQuery.Page, paginationQuery.Size, cancellationToken);
+            return await queryable.PaginateAsync(paginationQuery.Page, paginationQuery.Size, cancellationToken);
         }
 
-        public static async Task<PagedList<TResponse>> Paginate<TResponse>(this IQueryable<TResponse> queryable,
+        public static async Task<PagedList<TResponse>> PaginateAsync<TResponse>(this IQueryable<TResponse> queryable,
             CancellationToken cancellationToken = default)
         {
-            return await queryable.Paginate(1, 30, cancellationToken);
+            return await queryable.PaginateAsync(1, 30, cancellationToken);
         }
     }
 }

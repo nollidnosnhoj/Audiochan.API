@@ -404,18 +404,5 @@ namespace Audiochan.Core.Common.Extensions
                 ? contentType
                 : "application/octet-stream";
         }
-
-        public static string GetAudioPath(this Guid uploadId, string fileExtension)
-        {
-            return Path.Combine(ContainerConstants.Audios, uploadId.ToString(), $"source{fileExtension}");
-        }
-
-        public static string GetBlobName(this Audio audio, bool includeContainer = false)
-        {
-            var name = audio.UploadId + audio.FileExt;
-            return includeContainer 
-                ? Path.Combine(ContainerConstants.Audios, name) 
-                : name;
-        }
     }
 }

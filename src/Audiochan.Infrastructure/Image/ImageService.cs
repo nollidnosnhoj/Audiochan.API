@@ -23,14 +23,7 @@ namespace Audiochan.Infrastructure.Image
         public async Task<SaveBlobResponse> UploadImage(string data, PictureType type, string blobName, 
             CancellationToken cancellationToken = default)
         {
-            if (data.Contains("base64"))
-                data = data.Split("base64")[1].Trim(',');
-            var bytes = Convert.FromBase64String(data);
-            using var imageContext = SixLabors.ImageSharp.Image.Load(bytes);
-            var resizedImage = imageContext.Clone(x => x.Resize(500, 500));
-            var imageStream = new MemoryStream();
-            await resizedImage.SaveAsJpegAsync(imageStream, cancellationToken);
-            imageStream.Seek(0, SeekOrigin.Begin);
+            var imageStream = await ProcessImage(data, cancellationToken);
             var saveRequest = new SaveBlobRequest
             {
                 Container = GetContainer(type),
@@ -43,6 +36,26 @@ namespace Audiochan.Infrastructure.Image
         public async Task RemoveImage(PictureType type, string blobName, CancellationToken cancellationToken = default)
         {
             await _storageService.RemoveAsync(GetContainer(type), blobName, cancellationToken);
+        }
+
+        private static async Task<Stream> ProcessImage(string imageData, CancellationToken cancellationToken = default)
+        {
+            // Parse the base64 data
+            if (imageData.Contains("base64"))
+                imageData = imageData.Split("base64")[1].Trim(',');
+            
+            var bytes = Convert.FromBase64String(imageData);
+            
+            // Resize the image to 500 x 500.
+            using var imageContext = SixLabors.ImageSharp.Image.Load(bytes);
+            var resizedImage = imageContext.Clone(x => x.Resize(500, 500));
+            
+            // Save the image context to JPEG
+            var imageStream = new MemoryStream();
+            await resizedImage.SaveAsJpegAsync(imageStream, cancellationToken);
+            imageStream.Seek(0, SeekOrigin.Begin);
+            
+            return imageStream;
         }
 
         private static string GetContainer(PictureType type)

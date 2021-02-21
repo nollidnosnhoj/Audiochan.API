@@ -63,7 +63,7 @@ namespace Audiochan.Infrastructure.Storage
             }
             catch (AmazonS3Exception ex)
             {
-                throw new StorageException(ex.Message);
+                throw new StorageException(ex.Message, ex);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Audiochan.Infrastructure.Storage
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    throw new StorageException(ex.Message);
+                    throw new StorageException(ex.Message, ex);
                 }
             }
             else
@@ -136,7 +136,7 @@ namespace Audiochan.Infrastructure.Storage
                 }
                 catch (AmazonS3Exception ex)
                 {
-                    throw new StorageException(ex.Message);
+                    throw new StorageException(ex.Message, ex);
                 }
             }
             
@@ -149,14 +149,14 @@ namespace Audiochan.Infrastructure.Storage
             };
         }
 
-        public async Task<bool> GetAsync(string container, string blobName, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(string container, string blobName, CancellationToken cancellationToken = default)
         {
             var key = GetKeyName(container, blobName);
 
-            return await GetAsync(key, cancellationToken);
+            return await ExistsAsync(key, cancellationToken);
         }
 
-        public async Task<bool> GetAsync(string key, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -168,34 +168,41 @@ namespace Audiochan.Infrastructure.Storage
             {
                 if (ex.StatusCode == HttpStatusCode.NotFound)
                     return false;
-                throw new StorageException(ex.Message);
+                throw new StorageException(ex.Message, ex);
             }
         }
 
         public string GetPresignedUrl(SaveBlobRequest request)
         {
-            var expiration = _dateTimeService.Now.AddMinutes(5);
-            var key = GetKeyName(request.Container, request.BlobName);
-            var contentType = key.GetContentType();
-            var presignedUrlRequest = new GetPreSignedUrlRequest
+            try
             {
-                BucketName = _bucket,
-                Key = key,
-                Expires = expiration,
-                ContentType = contentType,
-                Verb = HttpVerb.PUT
-            };
-
-            if (request.Metadata is not null && request.Metadata.Count > 0)
-            {
-                foreach (var (metaDataKey, metaDataValue) in request.Metadata)
+                var expiration = _dateTimeService.Now.AddMinutes(5);
+                var key = GetKeyName(request.Container, request.BlobName);
+                var contentType = key.GetContentType();
+                var presignedUrlRequest = new GetPreSignedUrlRequest
                 {
-                    presignedUrlRequest.Metadata.Add(metaDataKey, metaDataValue);
+                    BucketName = _bucket,
+                    Key = key,
+                    Expires = expiration,
+                    ContentType = contentType,
+                    Verb = HttpVerb.PUT
+                };
+
+                if (request.Metadata is not null && request.Metadata.Count > 0)
+                {
+                    foreach (var (metaDataKey, metaDataValue) in request.Metadata)
+                    {
+                        presignedUrlRequest.Metadata.Add(metaDataKey, metaDataValue);
+                    }
                 }
+
+                var presignedUrl = _client.GetPreSignedURL(presignedUrlRequest);
+                return presignedUrl;
             }
-            
-            var presignedUrl = _client.GetPreSignedURL(presignedUrlRequest);
-            return presignedUrl;
+            catch (AmazonS3Exception ex)
+            {
+                throw new StorageException(ex.Message, ex);
+            }
         }
 
         private static string GetKeyName(string container, string blobName)

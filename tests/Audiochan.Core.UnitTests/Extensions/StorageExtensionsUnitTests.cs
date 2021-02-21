@@ -32,13 +32,5 @@ namespace Audiochan.Core.UnitTests.Extensions
             var contentType = path.GetContentType();
             contentType.Should().Be("audio/mpeg");
         }
-
-        [Fact]
-        public void GetAudioPath()
-        {
-            var path = Path.Combine(ContainerConstants.Audios, _uploadId.ToString(), "source.mp3");
-            var audioPath = _uploadId.GetAudioPath(".mp3");
-            audioPath.Should().Be(path);
-        }
     }
 }

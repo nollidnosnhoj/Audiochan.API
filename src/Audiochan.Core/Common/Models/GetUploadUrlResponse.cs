@@ -6,6 +6,5 @@ namespace Audiochan.Core.Common.Models
     {
         public Guid UploadId { get; init; }
         public string Url { get; init; }
-        public string FileName { get; init; } = string.Empty;
     }
 }

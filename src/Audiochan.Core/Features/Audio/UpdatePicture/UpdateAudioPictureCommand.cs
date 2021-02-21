@@ -32,7 +32,6 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
         public async Task<IResult<string>> Handle(UpdateAudioPictureCommand request, CancellationToken cancellationToken)
         {
             var blobName = request.Id + "_" + Guid.NewGuid().ToString("N") + ".jpg";
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
             try
             {
                 var currentUserId = _currentUserService.GetUserId();
@@ -51,14 +50,11 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
                 var response = await _imageService.UploadImage(request.ImageData, PictureType.Audio, blobName, cancellationToken);
                 audio.Picture = response.Path;
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
                 return Result<string>.Success(response.Url);
             }
             catch (Exception)
             {
-                var task1 = transaction.RollbackAsync(cancellationToken);
-                var task2 = _imageService.RemoveImage(PictureType.Audio, blobName, cancellationToken);
-                await Task.WhenAll(task1, task2);
+                await _imageService.RemoveImage(PictureType.Audio, blobName, cancellationToken);
                 throw;
             }
         }
