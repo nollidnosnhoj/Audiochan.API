@@ -39,7 +39,6 @@ namespace Audiochan.Core.Features.Audio.GetAudioFeed
             return await _dbContext.Audios
                 .DefaultQueryable(request.UserId)
                 .Where(a => followedIds.Contains(a.UserId))
-                .Distinct()
                 .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new {currentUserId = request.UserId})
                 .OrderByDescending(a => a.Created)
                 .PaginateAsync(request, cancellationToken);

@@ -46,74 +46,65 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
         
         public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
         {
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-            try
+            var currentUserId = _currentUserService.GetUserId();
+
+            var audio = await _dbContext.Audios
+                .Include(a => a.Favorited)
+                .Include(a => a.User)
+                .Include(a => a.Tags)
+                .Include(a => a.Genre)
+                .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+
+            if (audio == null) 
+                return Result<AudioViewModel>.Fail(ResultError.NotFound);
+
+            if (audio.UserId != currentUserId) 
+                return Result<AudioViewModel>.Fail(ResultError.Forbidden);
+
+            if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
             {
-                var currentUserId = _currentUserService.GetUserId();
+                var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
 
-                var audio = await _dbContext.Audios
-                    .Include(a => a.Favorited)
-                    .Include(a => a.User)
-                    .Include(a => a.Tags)
-                    .Include(a => a.Genre)
-                    .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+                if (genre == null)
+                    return Result<AudioViewModel>
+                        .Fail(ResultError.BadRequest, "Genre does not exist.");
 
-                if (audio == null) 
-                    return Result<AudioViewModel>.Fail(ResultError.NotFound);
+                audio.Genre = genre!;
+            }
 
-                if (audio.UserId != currentUserId) 
-                    return Result<AudioViewModel>.Fail(ResultError.Forbidden);
+            if (request.Tags.Count > 0)
+            {
+                var newTags = await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken);
 
-                audio.Title = !string.IsNullOrWhiteSpace(request.Title)
-                    ? request.Title
-                    : audio.Title;
-                
-                audio.Description = request.Description ?? audio.Description;
-                
-                audio.IsPublic = request.IsPublic ?? audio.IsPublic;
-                
-                audio.IsLoop = request.IsLoop ?? audio.IsLoop;
-
-                if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
+                foreach (var audioTag in audio.Tags)
                 {
-                    var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
-
-                    if (genre == null)
-                        return Result<AudioViewModel>
-                            .Fail(ResultError.BadRequest, "Genre does not exist.");
-
-                    audio.Genre = genre!;
+                    if (newTags.All(t => t.Id != audioTag.Id))
+                        audio.Tags.Remove(audioTag);
                 }
 
-                if (request.Tags.Count > 0)
+                foreach (var newTag in newTags)
                 {
-                    var newTags = await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken);
-
-                    foreach (var audioTag in audio.Tags)
-                    {
-                        if (newTags.All(t => t.Id != audioTag.Id))
-                            audio.Tags.Remove(audioTag);
-                    }
-
-                    foreach (var newTag in newTags)
-                    {
-                        if (audio.Tags.All(t => t.Id != newTag.Id))
-                            audio.Tags.Add(newTag);
-                    }
+                    if (audio.Tags.All(t => t.Id != newTag.Id))
+                        audio.Tags.Add(newTag);
                 }
+            }
+            
+            audio.Title = !string.IsNullOrWhiteSpace(request.Title)
+                ? request.Title
+                : audio.Title;
+            audio.Description = request.Description ?? audio.Description;
+            audio.IsPublic = request.IsPublic ?? audio.IsPublic;
+            audio.IsLoop = request.IsLoop ?? audio.IsLoop;
 
-                _dbContext.Audios.Update(audio);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                var viewModel = _mapper.Map<AudioViewModel>(audio);
-                viewModel = viewModel with {IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)};
-                return Result<AudioViewModel>.Success(viewModel);
-            }
-            catch (Exception)
+            _dbContext.Audios.Update(audio);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            
+            var viewModel = _mapper.Map<AudioViewModel>(audio) with
             {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
+                IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
+            };
+            
+            return Result<AudioViewModel>.Success(viewModel);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Common.Validators;
@@ -66,7 +67,11 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public CreateAudioCommandHandler(IApplicationDbContext dbContext, IStorageService storageService, ICurrentUserService currentUserService, IMediator mediator, IMapper mapper)
+        public CreateAudioCommandHandler(IApplicationDbContext dbContext,
+            IStorageService storageService,
+            ICurrentUserService currentUserService,
+            IMediator mediator,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _storageService = storageService;
@@ -79,8 +84,6 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
         {
             var currentUserId = _currentUserService.GetUserId();
             
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
             var audio = new Entities.Audio
             {
                 UploadId = request.UploadId,
@@ -95,12 +98,12 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 FileSize = request.FileSize
             };
             
-            var blobResponse = await _storageService.GetAsync(
+            var blobExist = await _storageService.ExistsAsync(
                 container: ContainerConstants.Audios,
-                blobName: audio.GetBlobName(),
+                blobName: BlobHelpers.GetAudioBlobName(audio),
                 cancellationToken);
 
-            if (!blobResponse)
+            if (!blobExist)
                 return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Cannot find audio in storage.");
 
             try
@@ -115,15 +118,16 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 
-                await transaction.CommitAsync(cancellationToken);
-                var viewModel = _mapper.Map<AudioViewModel>(audio);
-                viewModel = viewModel with {IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)};
+                var viewModel = _mapper.Map<AudioViewModel>(audio) with
+                {
+                    IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
+                };
+                
                 return Result<AudioViewModel>.Success(viewModel);
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync(cancellationToken);
-                await _storageService.RemoveAsync(ContainerConstants.Audios, audio.GetBlobName(), cancellationToken);
+                await _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio), cancellationToken);
                 throw; 
             }
         }
