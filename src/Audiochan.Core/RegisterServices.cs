@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Audiochan.Core.Common.Behaviors;
+using Audiochan.Core.Common.Pipelines;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;

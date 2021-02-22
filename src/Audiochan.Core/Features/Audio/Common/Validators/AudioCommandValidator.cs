@@ -1,7 +1,8 @@
 ﻿using Audiochan.Core.Common.Models;
+using Audiochan.Core.Features.Audio.Common.Models;
 using FluentValidation;
 
-namespace Audiochan.Core.Common.Validators
+namespace Audiochan.Core.Features.Audio.Common.Validators
 {
     public class AudioCommandValidator : AbstractValidator<AudioCommand>
     {

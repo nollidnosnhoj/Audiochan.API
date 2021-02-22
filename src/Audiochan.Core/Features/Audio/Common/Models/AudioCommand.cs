@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Audiochan.Core.Common.Models
+namespace Audiochan.Core.Features.Audio.Common.Models
 {
     public abstract record AudioCommand
     {
