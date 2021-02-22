@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Models;
@@ -22,15 +23,8 @@ namespace Audiochan.Infrastructure.Upload
             var userId = _currentUserService.GetUserId();
             var uploadId = Guid.NewGuid();
             var blobName = uploadId + Path.GetExtension(fileName);
-            var blobRequest = new SaveBlobRequest
-            {
-                Container = ContainerConstants.Audios,
-                BlobName = blobName,
-                OriginalFileName = fileName
-            };
-            blobRequest.Metadata.Add("UserId", userId);
-            blobRequest.Metadata.Add("OriginalFilename", fileName);
-            var uploadLink = _storageService.GetPresignedUrl(blobRequest);
+            var metadata = new Dictionary<string, string> {{"UserId", userId}, {"OriginalFilename", fileName}};
+            var uploadLink = _storageService.GetPresignedUrl(ContainerConstants.Audios, blobName, fileName, 5, metadata);
             return new GetUploadUrlResponse {UploadId = uploadId, Url = uploadLink};
         }
     }

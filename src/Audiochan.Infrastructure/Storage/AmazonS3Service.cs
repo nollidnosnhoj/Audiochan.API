@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -12,6 +13,7 @@ using Audiochan.Core.Common.Exceptions;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Interfaces;
+using Audiochan.Infrastructure.Storage.Extensions;
 using Audiochan.Infrastructure.Storage.Options;
 using Microsoft.Extensions.Options;
 
@@ -67,17 +69,21 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public async Task<SaveBlobResponse> SaveAsync(Stream stream, SaveBlobRequest request, CancellationToken cancellationToken = default)
+        public async Task<SaveBlobResponse> SaveAsync(Stream stream, 
+            string container, 
+            string blobName, 
+            Dictionary<string, string> metadata = null, 
+            CancellationToken cancellationToken = default)
         {
             long? length = stream.CanSeek 
                 ? stream.Length 
                 : null;
 
             var threshold = Math.Min(_chunkThreshold, 5000000000);
-            var key = GetKeyName(request.Container, request.BlobName);
+            var key = GetKeyName(container, blobName);
             var blobUrl = string.Join('/', _url, key);
             var contentType = key.GetContentType();
-
+            
             if (length >= threshold)
             {
                 var transferUtility = new TransferUtility(_client);
@@ -90,16 +96,10 @@ namespace Audiochan.Infrastructure.Storage
                     ContentType = contentType,
                     AutoCloseStream = true,
                     Headers = {ContentLength = length.Value},
-                    CannedACL = S3CannedACL.PublicRead
+                    CannedACL = S3CannedACL.PublicRead,
                 };
                 
-                if (request.Metadata is not null && request.Metadata.Count > 0)
-                {
-                    foreach (var (metaDataKey, metaDataValue) in request.Metadata)
-                    {
-                        fileTransferUtilityRequest.Metadata.Add(metaDataKey, metaDataValue);
-                    }
-                }
+                fileTransferUtilityRequest.AddMetadataCollection(metadata);
 
                 try
                 {
@@ -122,13 +122,7 @@ namespace Audiochan.Infrastructure.Storage
                     AutoCloseStream = true
                 };
                 
-                if (request.Metadata is not null && request.Metadata.Count > 0)
-                {
-                    foreach (var (metaDataKey, metaDataValue) in request.Metadata)
-                    {
-                        putRequest.Metadata.Add(metaDataKey, metaDataValue);
-                    }
-                }
+                putRequest.AddMetadataCollection(metadata);
 
                 try
                 {
@@ -145,7 +139,6 @@ namespace Audiochan.Infrastructure.Storage
                 Url = blobUrl,
                 Path = key,
                 ContentType = contentType,
-                OriginalFileName = request.OriginalFileName
             };
         }
 
@@ -172,12 +165,16 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public string GetPresignedUrl(SaveBlobRequest request)
+        public string GetPresignedUrl(string container, 
+            string blobName, 
+            string originalFileName, 
+            int expirationInMinutes, 
+            Dictionary<string, string> metadata = null)
         {
             try
             {
                 var expiration = _dateTimeService.Now.AddMinutes(5);
-                var key = GetKeyName(request.Container, request.BlobName);
+                var key = GetKeyName(container, blobName);
                 var contentType = key.GetContentType();
                 var presignedUrlRequest = new GetPreSignedUrlRequest
                 {
@@ -188,13 +185,7 @@ namespace Audiochan.Infrastructure.Storage
                     Verb = HttpVerb.PUT
                 };
 
-                if (request.Metadata is not null && request.Metadata.Count > 0)
-                {
-                    foreach (var (metaDataKey, metaDataValue) in request.Metadata)
-                    {
-                        presignedUrlRequest.Metadata.Add(metaDataKey, metaDataValue);
-                    }
-                }
+                presignedUrlRequest.AddMetadataCollection(metadata);
 
                 var presignedUrl = _client.GetPreSignedURL(presignedUrlRequest);
                 return presignedUrl;

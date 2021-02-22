@@ -24,13 +24,12 @@ namespace Audiochan.Infrastructure.Image
             CancellationToken cancellationToken = default)
         {
             var imageStream = await ProcessImage(data, cancellationToken);
-            var saveRequest = new SaveBlobRequest
-            {
-                Container = GetContainer(type),
-                BlobName = blobName,
-                OriginalFileName = string.Empty
-            };
-            return await _storageService.SaveAsync(imageStream, saveRequest, cancellationToken);
+            return await _storageService.SaveAsync(
+                stream: imageStream,
+                container: GetContainer(type),
+                blobName: blobName,
+                metadata: null,
+                cancellationToken: cancellationToken);
         }
 
         public async Task RemoveImage(PictureType type, string blobName, CancellationToken cancellationToken = default)
