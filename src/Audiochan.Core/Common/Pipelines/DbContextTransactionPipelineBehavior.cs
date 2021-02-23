@@ -26,9 +26,9 @@ namespace Audiochan.Core.Common.Pipelines
 
             try
             {
-                await _dbContext.BeginTransactionAsync(cancellationToken);
+                _dbContext.BeginTransaction();
                 result = await next();
-                await _dbContext.CommitTransactionAsync(cancellationToken);
+                _dbContext.CommitTransaction();
             }
             catch (Exception)
             {

@@ -14,8 +14,8 @@ namespace Audiochan.Core.Interfaces
         DbSet<Genre> Genres { get; }
         DbSet<Tag> Tags { get; }
         DbSet<User> Users { get; }
-        Task BeginTransactionAsync(CancellationToken cancellationToken = default);
-        Task CommitTransactionAsync(CancellationToken cancellationToken = default);
+        void BeginTransaction();
+        void CommitTransaction();
         void RollbackTransaction();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

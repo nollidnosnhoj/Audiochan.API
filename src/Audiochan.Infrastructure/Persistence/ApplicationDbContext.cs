@@ -51,23 +51,30 @@ namespace Audiochan.Infrastructure.Persistence
             return result;
         }
 
-        public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+        public void BeginTransaction()
         {
             if (_currentTransaction != null) return;
-            _currentTransaction = await Database.BeginTransactionAsync(cancellationToken);
+            _currentTransaction = Database.BeginTransaction();
         }
 
-        public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+        public void CommitTransaction()
         {
             try
             {
-                await SaveChangesAsync(cancellationToken);
-                await (_currentTransaction?.CommitAsync(cancellationToken) ?? Task.CompletedTask);
+                _currentTransaction?.Commit();
             }
             catch
             {
                 RollbackTransaction();
                 throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
             }
         }
 
