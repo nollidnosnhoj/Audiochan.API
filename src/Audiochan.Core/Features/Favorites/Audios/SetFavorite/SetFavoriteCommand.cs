@@ -34,36 +34,22 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
 
             var audio = await _dbContext.Audios
                 .AsNoTracking()
-                .Select(a => new {a.Id, a.UserId})
+                .Include(a => a.Favorited)
                 .SingleOrDefaultAsync(a => a.Id == request.AudioId, cancellationToken);
             
             if (audio == null) 
                 return Result<bool>.Fail(ResultError.NotFound);
             
-            if (audio.UserId == request.UserId)
+            if (audio.CanModify(request.UserId))
                 return Result<bool>.Fail(ResultError.Forbidden);
-            
-            var favorite =
-                await _dbContext.FavoriteAudios
-                    .SingleOrDefaultAsync(fa => fa.AudioId == request.AudioId && fa.UserId == request.UserId,
-                        cancellationToken);
 
-            if (favorite != null && !request.IsFavoriting)
-            {
-                _dbContext.FavoriteAudios.Remove(favorite);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                return Result<bool>.Success(false);
-            }
+            var favorited = request.IsFavoriting 
+                ? audio.AddFavorite(request.UserId) 
+                : audio.RemoveFavorite(request.UserId);
 
-            if (favorite == null && request.IsFavoriting)
-            {
-                favorite = new FavoriteAudio {UserId = request.UserId, AudioId = request.AudioId};
-                await _dbContext.FavoriteAudios.AddAsync(favorite, cancellationToken);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                return Result<bool>.Success(true);
-            }
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result<bool>.Success(favorite != null);
+            return Result<bool>.Success(favorited);
         }
     }
 }

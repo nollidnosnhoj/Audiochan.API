@@ -59,7 +59,7 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
             if (audio == null) 
                 return Result<AudioViewModel>.Fail(ResultError.NotFound);
 
-            if (audio.UserId != currentUserId) 
+            if (!audio.CanModify(currentUserId)) 
                 return Result<AudioViewModel>.Fail(ResultError.Forbidden);
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
@@ -67,35 +67,22 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
                 var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
 
                 if (genre == null)
-                    return Result<AudioViewModel>
-                        .Fail(ResultError.BadRequest, "Genre does not exist.");
+                    return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Genre does not exist.");
 
-                audio.Genre = genre!;
+                audio.UpdateGenre(genre);
             }
 
             if (request.Tags.Count > 0)
             {
                 var newTags = await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken);
 
-                foreach (var audioTag in audio.Tags)
-                {
-                    if (newTags.All(t => t.Id != audioTag.Id))
-                        audio.Tags.Remove(audioTag);
-                }
-
-                foreach (var newTag in newTags)
-                {
-                    if (audio.Tags.All(t => t.Id != newTag.Id))
-                        audio.Tags.Add(newTag);
-                }
+                audio.UpdateTags(newTags);
             }
             
-            audio.Title = !string.IsNullOrWhiteSpace(request.Title)
-                ? request.Title
-                : audio.Title;
-            audio.Description = request.Description ?? audio.Description;
-            audio.IsPublic = request.IsPublic ?? audio.IsPublic;
-            audio.IsLoop = request.IsLoop ?? audio.IsLoop;
+            audio.UpdateTitle(request.Title);
+            audio.UpdateDescription(request.Description);
+            audio.UpdatePublicStatus(request.IsPublic);
+            audio.UpdateLoop(request.IsLoop);
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync(cancellationToken);

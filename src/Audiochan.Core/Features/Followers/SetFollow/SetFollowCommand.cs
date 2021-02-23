@@ -37,31 +37,13 @@ namespace Audiochan.Core.Features.Followers.SetFollow
             if (target.Id == request.UserId)
                 return Result<bool>.Fail(ResultError.Forbidden);
 
-            var followedUser = await _dbContext.FollowedUsers
-                .SingleOrDefaultAsync(u => u.TargetId == target.Id 
-                                           && u.ObserverId == request.UserId, cancellationToken);
+            var isFollowed = request.IsFollowing
+                ? target.AddFollower(request.UserId)
+                : target.RemoveFollower(request.UserId);
 
-            if (followedUser != null && !request.IsFollowing)
-            {
-                _dbContext.FollowedUsers.Remove(followedUser);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                return Result<bool>.Success(false);
-            }
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-            if (followedUser == null && request.IsFollowing)
-            {
-                followedUser = new FollowedUser
-                {
-                    TargetId = target.Id,
-                    ObserverId = request.UserId,
-                };
-
-                await _dbContext.FollowedUsers.AddAsync(followedUser, cancellationToken);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                return Result<bool>.Success(true);
-            }
-
-            return Result<bool>.Success(followedUser != null);
+            return Result<bool>.Success(isFollowed);
         }
     }
 }

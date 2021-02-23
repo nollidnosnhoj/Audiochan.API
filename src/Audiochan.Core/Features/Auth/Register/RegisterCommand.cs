@@ -45,17 +45,8 @@ namespace Audiochan.Core.Features.Auth.Register
 
         public async Task<IResult<bool>> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var user = new User
-            {
-                UserName = request.Username.Trim().ToLower(),
-                Email = request.Email,
-                Joined = _dateTimeService.Now
-            };
-
-            user.DisplayName = user.UserName;
-
+            var user = new User(request.Username.Trim().ToLower(), request.Email, _dateTimeService.Now);
             var identityResult = await _userManager.CreateAsync(user, request.Password);
-
             return identityResult.ToResult();
         }
     }

@@ -32,18 +32,10 @@ namespace Audiochan.Core.Features.Users.UpdateUser
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null) return Result<bool>.Fail(ResultError.Unauthorized);
             
-            // Rule: display name can only deviate by capitalization
-            if (!string.IsNullOrWhiteSpace(request.DisplayName))
-            {
-                if (string.Equals(user.UserName.Trim(), request.DisplayName.Trim(),
-                    StringComparison.CurrentCultureIgnoreCase))
-                {
-                    user.DisplayName = request.DisplayName;
-                }
-            }
+            user.UpdateDisplayName(request.DisplayName);
+            user.UpdateAbout(request.About);
+            user.UpdateWebsite(request.Website);
             
-            user.About = request.About ?? user.About;
-            user.Website = request.Website ?? user.Website;
             await _userManager.UpdateAsync(user);
             return Result<bool>.Success(true);
         }

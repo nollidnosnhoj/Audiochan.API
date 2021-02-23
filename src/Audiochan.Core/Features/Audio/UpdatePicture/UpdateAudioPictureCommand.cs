@@ -40,15 +40,15 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
                 if (audio == null) return Result<string>.Fail(ResultError.NotFound);
-                if (audio.UserId != currentUserId) return Result<string>.Fail(ResultError.Forbidden);
+                if (audio.CanModify(currentUserId)) return Result<string>.Fail(ResultError.Forbidden);
                 if (!string.IsNullOrEmpty(audio.Picture))
                 {
                     await _storageService.RemoveAsync(audio.Picture, cancellationToken);
-                    audio.Picture = string.Empty;
+                    audio.UpdatePicture(string.Empty);
                 }
                 
                 var response = await _imageService.UploadImage(request.ImageData, PictureType.Audio, blobName, cancellationToken);
-                audio.Picture = response.Path;
+                audio.UpdatePicture(response.Path);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 return Result<string>.Success(response.Url);
             }

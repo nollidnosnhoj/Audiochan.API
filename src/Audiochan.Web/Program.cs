@@ -31,12 +31,7 @@ namespace Audiochan.Web
                     await context.Database.MigrateAsync();
                     if (!await userManager.Users.AnyAsync())
                     {
-                        var superuser = new User
-                        {
-                            UserName = "superuser",
-                            DisplayName = "Superuser",
-                            Email = "superuser@localhost",
-                        };
+                        var superuser = new User("superuser", "superuser@localhost", DateTime.UtcNow);
 
                         // TODO: Do not hardcode superuser password when deploying into production haha
                         await userManager.CreateAsync(superuser, "Password1");

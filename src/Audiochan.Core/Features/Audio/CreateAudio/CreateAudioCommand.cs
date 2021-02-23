@@ -20,6 +20,7 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audio.CreateAudio
@@ -81,40 +82,38 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
             _mapper = mapper;
         }
 
-        public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request,
+            CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
-            
-            var audio = new Entities.Audio
-            {
-                UploadId = request.UploadId,
-                Title = !string.IsNullOrWhiteSpace(request.Title)
-                    ? request.Title
-                    : Path.GetFileNameWithoutExtension(request.FileName),
-                Description = request.Description,
-                Duration = request.Duration,
-                FileExt = Path.GetExtension(request.FileName),
-                IsPublic = request.IsPublic ?? true,
-                IsLoop = request.IsLoop ?? false,
-                FileSize = request.FileSize
-            };
-            
-            var blobExist = await _storageService.ExistsAsync(
-                container: ContainerConstants.Audios,
-                blobName: BlobHelpers.GetAudioBlobName(audio),
-                cancellationToken);
 
-            if (!blobExist)
+            var currentUser = await _dbContext.Users
+                .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+
+            var audio = new Entities.Audio(
+                request.UploadId,
+                request.FileName,
+                request.FileSize,
+                request.Duration,
+                currentUser);
+
+            audio.UpdateTitle(request.Title);
+            audio.UpdateDescription(request.Description);
+            audio.UpdateLoop(request.IsLoop ?? false);
+            audio.UpdatePublicStatus(request.IsPublic ?? true);
+
+            if (!await CheckIfAudioBlobExists(audio, cancellationToken))
                 return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Cannot find audio in storage.");
-
+            
             try
             {
-                audio.User = await _dbContext.Users
-                    .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
-                audio.Genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
-                audio.Tags = request.Tags.Count > 0
+                var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
+                audio.UpdateGenre(genre);
+                
+                var tags = request.Tags.Count > 0
                     ? await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken)
                     : new List<Tag>();
+                audio.UpdateTags(tags);
 
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
@@ -131,6 +130,14 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
                 await _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio), cancellationToken);
                 throw; 
             }
+        }
+
+        private async Task<bool> CheckIfAudioBlobExists(Entities.Audio audio, CancellationToken cancellationToken = default)
+        {
+            return await _storageService.ExistsAsync(
+                container: ContainerConstants.Audios,
+                blobName: BlobHelpers.GetAudioBlobName(audio),
+                cancellationToken);
         }
     }
 }

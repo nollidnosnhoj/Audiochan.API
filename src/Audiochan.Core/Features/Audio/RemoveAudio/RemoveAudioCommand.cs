@@ -38,7 +38,7 @@ namespace Audiochan.Core.Features.Audio.RemoveAudio
             if (audio == null)
                 return Result<bool>.Fail(ResultError.NotFound);
 
-            if (audio.UserId != currentUserId)
+            if (!audio.CanModify(currentUserId))
                 return Result<bool>.Fail(ResultError.Forbidden);
             
             _dbContext.Audios.Remove(audio);
