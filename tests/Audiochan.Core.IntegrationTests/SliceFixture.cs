@@ -18,6 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
+using Respawn;
 using Xunit;
 
 namespace Audiochan.Core.IntegrationTests
@@ -30,7 +32,7 @@ namespace Audiochan.Core.IntegrationTests
     
     public class SliceFixture : IAsyncLifetime
     {
-        // private readonly Checkpoint _checkpoint;
+        private readonly Checkpoint _checkpoint;
         private readonly IConfiguration _configuration;
         private static IServiceScopeFactory _scopeFactory;
         private readonly WebApplicationFactory<Startup> _factory;
@@ -41,10 +43,12 @@ namespace Audiochan.Core.IntegrationTests
             _factory = new AudiochanTestApplicationFactory();
             _configuration = _factory.Services.GetRequiredService<IConfiguration>();
             _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
-            // _checkpoint = new Checkpoint
-            // {
-            //     TablesToIgnore = new[] { "__EFMigrationsHistory" }
-            // };
+            _checkpoint = new Checkpoint
+            {
+                TablesToIgnore = new[] { "__EFMigrationsHistory" },
+                SchemasToInclude = new [] { "public" },
+                DbAdapter = DbAdapter.Postgres
+            };
             EnsureDatabase();
         }
 
@@ -275,9 +279,9 @@ namespace Audiochan.Core.IntegrationTests
 
         public async Task InitializeAsync()
         {
-            // await using var conn = new NpgsqlConnection(_configuration.GetConnectionString("Database"));
-            // await conn.OpenAsync();
-            // await _checkpoint.Reset(conn);
+            await using var conn = new NpgsqlConnection(_configuration.GetConnectionString("Database"));
+            await conn.OpenAsync();
+            await _checkpoint.Reset(conn);
         }
 
         public Task DisposeAsync()
