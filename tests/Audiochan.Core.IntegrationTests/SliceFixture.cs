@@ -137,8 +137,16 @@ namespace Audiochan.Core.IntegrationTests
             var userManager = scope.ServiceProvider.GetService<UserManager<User>>()
                               ?? throw new Exception("No user manager");
 
-            var user = new User { UserName = userName, Email = userName, DisplayName = userName };
+            var user = await userManager.FindByNameAsync(userName);
 
+            if (user != null)
+            {
+                _currentUserId = user.Id;
+                return _currentUserId;
+            }
+
+            user = new User { UserName = userName, Email = email, DisplayName = userName };
+            
             var result = await userManager.CreateAsync(user, password);
 
             if (roles.Any())
@@ -251,7 +259,7 @@ namespace Audiochan.Core.IntegrationTests
             });
         }
 
-        public Task<T> FindAsync<T>(int id)
+        public Task<T> FindAsync<T, TKey>(TKey id)
             where T : class
         {
             return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
@@ -282,6 +290,7 @@ namespace Audiochan.Core.IntegrationTests
             await using var conn = new NpgsqlConnection(_configuration.GetConnectionString("Database"));
             await conn.OpenAsync();
             await _checkpoint.Reset(conn);
+            _currentUserId = null;
         }
 
         public Task DisposeAsync()
