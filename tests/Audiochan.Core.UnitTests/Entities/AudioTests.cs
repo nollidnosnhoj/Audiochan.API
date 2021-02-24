@@ -16,15 +16,15 @@ namespace Audiochan.Core.UnitTests.Entities
         [Fact]
         public void NewAudio_ShouldThrow_WhenFileNameIsNullOrEmpty()
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), null, 0, 0, ValidUser))
+            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), null, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("null", "fileName");
             
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), string.Empty, 0, 0, ValidUser))
+            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), string.Empty, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("empty", "fileName");
             
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), "  ", 0, 0, ValidUser))
+            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), "  ", 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("whitespace", "fileName");
         }
@@ -33,7 +33,7 @@ namespace Audiochan.Core.UnitTests.Entities
         [InlineData("audio.mp3")]
         public void NewAudio_ShouldNotThrow_WhenFilenameDoesHaveExtension(string fileName)
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, ValidUser))
+            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, "ValidUserId"))
                 .Should()
                 .NotThrow<ArgumentException>();
         }
@@ -42,7 +42,7 @@ namespace Audiochan.Core.UnitTests.Entities
         [InlineData("shouldfail")]
         public void NewAudio_ShouldThrow_WhenFilenameDoesNotHaveExtension(string fileName)
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, ValidUser))
+            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, "ValidUserId"))
                 .Should()
                 .Throw<ArgumentException>("no file extension", "filename");
         }
@@ -51,7 +51,7 @@ namespace Audiochan.Core.UnitTests.Entities
         public void NewAudio_ShouldHaveExtension_BasedOnFileName()
         {
             var expectedTitle = "audio";
-            var audio = new Audio(Guid.NewGuid(), "audio.mp3", 0, 0, ValidUser);
+            var audio = new Audio(Guid.NewGuid(), "audio.mp3", 0, 0, "ValidUserId");
             audio.Title.Should().Be(expectedTitle);
         }
 
@@ -93,7 +93,7 @@ namespace Audiochan.Core.UnitTests.Entities
         {
             // Assign
             const string currentUserId = "testId";
-            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, ValidUser);
+            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, "ValidUserId");
             
             // Act
             audio.AddFavorite(currentUserId);
@@ -107,7 +107,7 @@ namespace Audiochan.Core.UnitTests.Entities
         {
             // Assign
             const string currentUserId = "testId";
-            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, ValidUser);
+            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, "ValidUserId");
             audio.Favorited.Add(new FavoriteAudio {AudioId = audio.Id, UserId = currentUserId});
             
             // Act
