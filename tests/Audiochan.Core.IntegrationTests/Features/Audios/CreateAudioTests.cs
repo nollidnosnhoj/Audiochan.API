@@ -55,6 +55,22 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             // ASSERT
             result.IsSuccess.Should().Be(true);
             result.Data.Should().NotBeNull();
+            result.Data.UploadId.Should().Be(uploadId);
+            result.Data.Title.Should().Be("Test Audio");
+            result.Data.Description.Should().Be("This is a test audio");
+            result.Data.FileExt.Should().Be(".mp3");
+            result.Data.Duration.Should().Be(100);
+            result.Data.FileSize.Should().Be(10000);
+            result.Data.Tags.Length.Should().Be(3);
+            result.Data.Tags.Should().Contain(x => x == "apples");
+            result.Data.Tags.Should().Contain(x => x == "oranges");
+            result.Data.Tags.Should().Contain(x => x == "banana");
+            result.Data.Genre.Name.Should().Be("Dubstep");
+            result.Data.IsPublic.Should().Be(false);
+            result.Data.IsLoop.Should().Be(true);
+            result.Data.User.Should().NotBeNull();
+            result.Data.User.Id.Should().Be(userId);
+            
             created.Should().NotBeNull();
             created.UploadId.Should().Be(uploadId);
             created.Title.Should().Be("Test Audio");
