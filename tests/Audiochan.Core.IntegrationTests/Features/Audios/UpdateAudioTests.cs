@@ -112,10 +112,5 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             created.Tags.Should().Contain(x => x.Id == "caramel");
             created.IsLoop.Should().Be(command.IsLoop ?? audio.IsLoop);
         }
-
-        private async Task SetupValidAudio()
-        {
-            
-        }
     }
 }
