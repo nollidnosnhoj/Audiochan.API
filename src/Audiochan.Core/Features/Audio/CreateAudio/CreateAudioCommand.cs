@@ -90,12 +90,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
             var currentUser = await _dbContext.Users
                 .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
 
-            var audio = new Entities.Audio(
-                request.UploadId,
-                request.FileName,
-                request.FileSize,
-                request.Duration,
-                currentUser);
+            var audio = new Entities.Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUser);
 
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
