@@ -45,6 +45,12 @@ namespace Audiochan.Core.UnitTests.Builders
             return this;
         }
 
+        public AudioBuilder GenreId(long id)
+        {
+            _audio.GenreId = id;
+            return this;
+        }
+
         public AudioBuilder Public(bool isPublic)
         {
             _audio.IsPublic = isPublic;
