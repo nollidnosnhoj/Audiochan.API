@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
 using Audiochan.Core.Entities;
@@ -34,6 +35,46 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(false);
             result.ErrorCode.Should().Be(ResultError.NotFound);
+        }
+
+        [Fact]
+        public async Task ShouldNotGetAudio_WhenAudioIsPrivateAndUserIsNotTheOwner()
+        {
+            // Assign
+            var adminId = await _fixture.RunAsAdministratorAsync();
+            var audio = new AudioBuilder(Guid.NewGuid() + ".mp3", adminId)
+                .Public(false)
+                .Build();
+            await _fixture.InsertAsync(audio);
+            
+            // Act
+            await _fixture.RunAsDefaultUserAsync();
+            var result = await _fixture.SendAsync(new GetAudioQuery(audio.Id));
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().Be(false);
+            result.ErrorCode.Should().Be(ResultError.NotFound);
+        }
+        
+        [Fact]
+        public async Task ShouldGetAudio_WhenAudioIsPrivateAndUserIsTheOwner()
+        {
+            // Assign
+            var adminId = await _fixture.RunAsAdministratorAsync();
+            var audio = new AudioBuilder(Guid.NewGuid() + ".mp3", adminId)
+                .Public(false)
+                .Build();
+            await _fixture.InsertAsync(audio);
+            
+            // Act
+            var result = await _fixture.SendAsync(new GetAudioQuery(audio.Id));
+            
+            // Assert
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().Be(true);
+            result.Data.Should().NotBeNull();
+            result.Data.Should().BeOfType<AudioViewModel>();
         }
 
         [Fact]
