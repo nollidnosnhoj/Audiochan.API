@@ -24,8 +24,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldNotRemoveAudio_WhenUserCannotModify()
         {
             // Assign
-            var ownerId = await _fixture
-                .RunAsUserAsync("kopacetic", "kopacetic@localhost", "kopacetic@123", Array.Empty<string>());
+            var ownerId = await _fixture.RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
             
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
@@ -73,7 +72,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             await _fixture.InsertAsync(audio);
             
             var favoriterId = await _fixture
-                .RunAsUserAsync("kopacetic", "kopacetic@localhost", "kopacetic@123", Array.Empty<string>());
+                .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
 
             await _fixture.InsertAsync(new FavoriteAudio
             {

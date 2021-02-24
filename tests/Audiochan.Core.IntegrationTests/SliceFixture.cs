@@ -122,15 +122,15 @@ namespace Audiochan.Core.IntegrationTests
         
         public async Task<string> RunAsDefaultUserAsync()
         {
-            return await RunAsUserAsync("testuser", "test@local", "Testing1234!", Array.Empty<string>());
+            return await RunAsUserAsync("testuser", "Testing1234!", Array.Empty<string>());
         }
 
         public async Task<string> RunAsAdministratorAsync()
         {
-            return await RunAsUserAsync("admin", "administrator@local", "Administrator1234!", new[] { UserRoleConstants.Admin });
+            return await RunAsUserAsync("admin", "Administrator1234!", new[] { UserRoleConstants.Admin });
         }
 
-        public async Task<string> RunAsUserAsync(string userName, string email, string password, string[] roles)
+        public async Task<string> RunAsUserAsync(string userName, string password, string[] roles)
         {
             using var scope = _scopeFactory.CreateScope();
 
@@ -145,7 +145,13 @@ namespace Audiochan.Core.IntegrationTests
                 return _currentUserId;
             }
 
-            user = new User { UserName = userName, Email = email, DisplayName = userName, Joined = DateTime.UtcNow };
+            user = new User
+            {
+                UserName = userName,
+                Email = userName + "@localhost",
+                DisplayName = userName,
+                Joined = DateTime.UtcNow
+            };
             
             var result = await userManager.CreateAsync(user, password);
 
