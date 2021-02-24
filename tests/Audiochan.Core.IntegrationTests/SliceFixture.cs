@@ -145,7 +145,7 @@ namespace Audiochan.Core.IntegrationTests
                 return _currentUserId;
             }
 
-            user = new User { UserName = userName, Email = email, DisplayName = userName };
+            user = new User { UserName = userName, Email = email, DisplayName = userName, Joined = DateTime.UtcNow };
             
             var result = await userManager.CreateAsync(user, password);
 
