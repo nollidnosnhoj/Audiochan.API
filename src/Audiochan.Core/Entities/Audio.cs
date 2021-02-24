@@ -56,7 +56,7 @@ namespace Audiochan.Core.Entities
 
         public void UpdateTitle(string title)
         {
-            if (string.IsNullOrWhiteSpace(title))
+            if (!string.IsNullOrWhiteSpace(title))
             {
                 this.Title = title;
             }
