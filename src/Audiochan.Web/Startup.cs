@@ -1,8 +1,8 @@
 using Audiochan.Core;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure;
+using Audiochan.Infrastructure.Storage.Options;
 using Audiochan.Web.Configurations;
 using Audiochan.Web.Middlewares;
 using Audiochan.Web.Services;
@@ -27,19 +27,14 @@ namespace Audiochan.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // var jwtSetting = new JwtSetting();
-            // Configuration.GetSection(nameof(JwtSetting)).Bind(jwtSetting);
-            // services.AddSingleton(jwtSetting);
-
+            services.Configure<AmazonS3Options>(Configuration.GetSection(nameof(AmazonS3Options)));
             services.Configure<AudiochanOptions>(Configuration.GetSection(nameof(AudiochanOptions)));
             services.Configure<JwtOptions>(Configuration.GetSection(nameof(JwtOptions)));
             services.Configure<IdentityOptions>(Configuration.GetSection(nameof(IdentityOptions)));
 
             services
-                .ConfigureDatabase(Configuration, Environment)
                 .AddCoreServices()
-                .AddInfraServices()
-                .ConfigureStorage(Configuration)
+                .AddInfraServices(Configuration, Environment.IsDevelopment())
                 .ConfigureIdentity(Configuration)
                 .ConfigureAuthentication(Configuration)
                 .ConfigureAuthorization()
