@@ -87,9 +87,6 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
         {
             var currentUserId = _currentUserService.GetUserId();
 
-            var currentUser = await _dbContext.Users
-                .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
-
             var audio = new Entities.Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUserId);
 
             audio.UpdateTitle(request.Title);
@@ -112,6 +109,9 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
 
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+                
+                var currentUser = await _dbContext.Users
+                    .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
                 
                 var viewModel = _mapper.Map<AudioViewModel>(audio) with
                 {
