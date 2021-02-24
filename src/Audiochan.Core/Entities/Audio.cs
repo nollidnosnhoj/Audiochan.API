@@ -40,19 +40,19 @@ namespace Audiochan.Core.Entities
         public long Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int Duration { get; }
-        public Guid UploadId { get; }
-        public long FileSize { get; }
-        public string FileExt { get; }
+        public int Duration { get; set; }
+        public Guid UploadId { get; set; }
+        public long FileSize { get; set; }
+        public string FileExt { get; set; }
         public string Picture { get; set; }
         public bool IsPublic { get; set; }
         public bool IsLoop { get; set; }
-        public string UserId { get; }
-        public User User { get; }
+        public string UserId { get; set; }
+        public User User { get; set; }
         public long? GenreId { get; set; }
         public Genre Genre { get; set; }
-        public ICollection<Tag> Tags { get; }
-        public ICollection<FavoriteAudio> Favorited { get; }
+        public ICollection<Tag> Tags { get; set; }
+        public ICollection<FavoriteAudio> Favorited { get; set; }
 
         public void UpdateTitle(string title)
         {
