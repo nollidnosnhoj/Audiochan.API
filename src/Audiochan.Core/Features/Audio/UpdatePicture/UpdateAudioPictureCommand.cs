@@ -40,7 +40,7 @@ namespace Audiochan.Core.Features.Audio.UpdatePicture
                     .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
                 if (audio == null) return Result<string>.Fail(ResultError.NotFound);
-                if (audio.CanModify(currentUserId)) return Result<string>.Fail(ResultError.Forbidden);
+                if (!audio.CanModify(currentUserId)) return Result<string>.Fail(ResultError.Forbidden);
                 if (!string.IsNullOrEmpty(audio.Picture))
                 {
                     await _storageService.RemoveAsync(audio.Picture, cancellationToken);
