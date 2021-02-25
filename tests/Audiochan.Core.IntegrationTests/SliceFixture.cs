@@ -9,7 +9,7 @@ using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.UnitTests.Mocks;
 using Audiochan.Infrastructure.Persistence;
-using Audiochan.Web;
+using Audiochan.API;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
