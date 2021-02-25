@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,9 +6,8 @@ using Audiochan.Core.Common.Models;
 using Audiochan.Core.Features.Audio.Common.Models;
 using Audiochan.Core.Features.Audio.Common.Validators;
 using Audiochan.Core.Features.Audio.GetAudio;
-using Audiochan.Core.Features.Genres.GetGenre;
-using Audiochan.Core.Features.Tags.CreateTags;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Services;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -33,16 +31,22 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
     public class UpdateAudioCommandHandler : IRequestHandler<UpdateAudioCommand, Result<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly TagService _tagService;
+        private readonly GenreService _genreService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMediator mediator, IMapper mapper)
+        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, 
+            ICurrentUserService currentUserService, 
+            IMapper mapper, 
+            TagService tagService, 
+            GenreService genreService)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
-            _mediator = mediator;
             _mapper = mapper;
+            _tagService = tagService;
+            _genreService = genreService;
         }
         
         public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
@@ -64,7 +68,7 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
             {
-                var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
+                var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
 
                 if (genre == null)
                     return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Genre does not exist.");
@@ -74,7 +78,7 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
 
             if (request.Tags.Count > 0)
             {
-                var newTags = await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken);
+                var newTags = await _tagService.CreateTags(request.Tags, cancellationToken);
 
                 audio.UpdateTags(newTags);
             }
