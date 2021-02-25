@@ -29,7 +29,7 @@ namespace Audiochan.Web
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<Role>>();
                     await context.Database.MigrateAsync();
-                    ApplicationDbSeeder.GetSeed(context, userManager, roleManager);
+                    await ApplicationDbSeeder.GetSeedAsync(context, userManager, roleManager);
                 }
                 catch(Exception ex)
                 {

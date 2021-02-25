@@ -293,9 +293,14 @@ namespace Audiochan.Core.IntegrationTests
 
         public async Task InitializeAsync()
         {
-            await using var conn = new NpgsqlConnection(_configuration.GetConnectionString("Database"));
-            await conn.OpenAsync();
-            await _checkpoint.Reset(conn);
+            await using (var conn = new NpgsqlConnection(_configuration.GetConnectionString("Database")))
+            {
+                await conn.OpenAsync();
+                await _checkpoint.Reset(conn);
+            }
+
+            await ExecuteDbContextAsync(ApplicationDbSeeder.AddDefaultGenresAsync);
+            
             _currentUserId = null;
         }
 

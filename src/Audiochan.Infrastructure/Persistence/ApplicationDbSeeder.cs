@@ -1,45 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Infrastructure.Persistence
 {
     public static class ApplicationDbSeeder
     {
-        public static void GetSeed(ApplicationDbContext context, UserManager<User> userManager,
+        public static async Task GetSeedAsync(ApplicationDbContext context, UserManager<User> userManager,
             RoleManager<Role> roleManager)
         {
-            if (!userManager.Users.Any())
+            if (!await userManager.Users.AnyAsync())
             {
                 var superuser = new User("superuser", "superuser@localhost", DateTime.UtcNow);
 
                 // TODO: Do not hardcode superuser password when deploying into production haha
-                userManager
-                    .CreateAsync(superuser, "Password1")
-                    .GetAwaiter()
-                    .GetResult();
+                await userManager.CreateAsync(superuser, "Password1");
 
-                var superUserRole = roleManager.FindByNameAsync(UserRoleConstants.Admin).GetAwaiter().GetResult();
+                var superUserRole = await roleManager.FindByNameAsync(UserRoleConstants.Admin);
 
                 if (superUserRole == null)
                 {
-                    roleManager.CreateAsync(new Role {Name = UserRoleConstants.Admin})
-                        .GetAwaiter()
-                        .GetResult();
+                    await roleManager.CreateAsync(new Role {Name = UserRoleConstants.Admin});
                 }
 
-                userManager.AddToRoleAsync(superuser, UserRoleConstants.Admin)
-                    .GetAwaiter()
-                    .GetResult();
+                await userManager.AddToRoleAsync(superuser, UserRoleConstants.Admin);
             }
 
-            AddGenreSeeds(context);
+            await AddDefaultGenresAsync(context);
         }
 
-        private static void AddGenreSeeds(ApplicationDbContext context)
+        public static async Task<int> AddDefaultGenresAsync(ApplicationDbContext context)
         {
             if (!context.Genres.Any())
             {
@@ -73,9 +68,11 @@ namespace Audiochan.Infrastructure.Persistence
                     new() {Name = "World", Slug = "world"}
                 };
 
-                context.Genres.AddRange(genres);
-                context.SaveChanges();
+                await context.Genres.AddRangeAsync(genres);
+                return await context.SaveChangesAsync();
             }
+
+            return await Task.FromResult(0);
         }
     }
 }
