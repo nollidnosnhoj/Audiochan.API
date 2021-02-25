@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audio.CreateAudio;
+using Audiochan.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -25,8 +26,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         {
             // ASSIGN
             var userId = await _fixture.RunAsDefaultUserAsync();
-            var genre = new Genre {Name = "Dubstep", Slug = "dubstep"};
-            await _fixture.InsertAsync(genre);
+
             var uploadId = Guid.NewGuid();
             
             // ACT
