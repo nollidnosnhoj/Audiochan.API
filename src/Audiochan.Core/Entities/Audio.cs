@@ -14,13 +14,16 @@ namespace Audiochan.Core.Entities
             this.Favorited = new HashSet<FavoriteAudio>();
         }
         
-        public Audio(Guid uploadId, string fileName, int fileSize, int duration, User user) : this()
+        public Audio(Guid uploadId, string fileName, int fileSize, int duration, string userId) : this()
         {
             if (uploadId == Guid.Empty)
                 throw new ArgumentException("UploadId cannot be empty.", nameof(uploadId));
             
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException(nameof(fileName));
+
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentNullException(nameof(userId));
 
             var fileExtension = Path.GetExtension(fileName);
             
@@ -32,8 +35,7 @@ namespace Audiochan.Core.Entities
             this.FileSize = fileSize;
             this.Duration = duration;
             this.Title = Path.GetFileNameWithoutExtension(fileName);
-            this.User = user ?? throw new ArgumentNullException(nameof(user));
-            this.UserId = user.Id;
+            this.UserId = userId;
             this.IsPublic = true;
         }
 

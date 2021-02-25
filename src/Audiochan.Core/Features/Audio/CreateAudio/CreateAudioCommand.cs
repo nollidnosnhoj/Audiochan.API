@@ -13,14 +13,12 @@ using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audio.Common.Models;
 using Audiochan.Core.Features.Audio.Common.Validators;
 using Audiochan.Core.Features.Audio.GetAudio;
-using Audiochan.Core.Features.Genres.GetGenre;
-using Audiochan.Core.Features.Tags.CreateTags;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Services;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audio.CreateAudio
@@ -64,22 +62,24 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
     public class CreateAudioCommandHandler : IRequestHandler<CreateAudioCommand, Result<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
+        private readonly TagService _tagService;
+        private readonly GenreService _genreService;
         private readonly IStorageService _storageService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
         public CreateAudioCommandHandler(IApplicationDbContext dbContext,
             IStorageService storageService,
             ICurrentUserService currentUserService,
-            IMediator mediator,
-            IMapper mapper)
+            IMapper mapper, 
+            TagService tagService, GenreService genreService)
         {
             _dbContext = dbContext;
             _storageService = storageService;
             _currentUserService = currentUserService;
-            _mediator = mediator;
             _mapper = mapper;
+            _tagService = tagService;
+            _genreService = genreService;
         }
 
         public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request,
@@ -87,15 +87,7 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
         {
             var currentUserId = _currentUserService.GetUserId();
 
-            var currentUser = await _dbContext.Users
-                .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
-
-            var audio = new Entities.Audio(
-                request.UploadId,
-                request.FileName,
-                request.FileSize,
-                request.Duration,
-                currentUser);
+            var audio = new Entities.Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUserId);
 
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
@@ -107,19 +99,23 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
             
             try
             {
-                var genre = await _mediator.Send(new GetGenreQuery(request.Genre), cancellationToken);
+                var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
                 audio.UpdateGenre(genre);
                 
                 var tags = request.Tags.Count > 0
-                    ? await _mediator.Send(new CreateTagsCommand(request.Tags), cancellationToken)
+                    ? await _tagService.CreateTags(request.Tags, cancellationToken)
                     : new List<Tag>();
                 audio.UpdateTags(tags);
 
                 await _dbContext.Audios.AddAsync(audio, cancellationToken);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 
+                var currentUser = await _dbContext.Users
+                    .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+                
                 var viewModel = _mapper.Map<AudioViewModel>(audio) with
                 {
+                    User = new UserDto(currentUser.Id, currentUser.UserName, currentUser.Picture),
                     IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
                 };
                 
