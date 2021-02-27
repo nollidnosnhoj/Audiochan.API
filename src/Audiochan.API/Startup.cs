@@ -33,6 +33,7 @@ namespace Audiochan.API
             services.Configure<IdentityOptions>(Configuration.GetSection(nameof(IdentityOptions)));
 
             services
+                .AddMemoryCache()
                 .AddCoreServices()
                 .AddInfraServices(Configuration, Environment.IsDevelopment())
                 .ConfigureIdentity(Configuration)
@@ -42,6 +43,7 @@ namespace Audiochan.API
                 .AddScoped<ICurrentUserService, CurrentUserService>()
                 .ConfigureControllers()
                 .ConfigureRouting()
+                .ConfigureRateLimiting(Configuration)
                 .ConfigureCors()
                 .ConfigureSwagger(Configuration);
         }
@@ -49,6 +51,8 @@ namespace Audiochan.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCorsConfig();
+            app.UseRateLimiting();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             
             if (env.IsDevelopment())
@@ -63,7 +67,6 @@ namespace Audiochan.API
             }
             
             app.UseRouting();
-            app.UseCorsConfig();
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
