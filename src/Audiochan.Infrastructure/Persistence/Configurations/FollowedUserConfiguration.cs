@@ -14,14 +14,12 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
             builder
                 .HasOne(fu => fu.Observer)
                 .WithMany(user => user.Followers)
-                .HasForeignKey(fu => fu.ObserverId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(fu => fu.ObserverId);
 
             builder
                 .HasOne(fu => fu.Target)
                 .WithMany(user => user.Followings)
-                .HasForeignKey(fu => fu.TargetId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(fu => fu.TargetId);
         }
     }
 }

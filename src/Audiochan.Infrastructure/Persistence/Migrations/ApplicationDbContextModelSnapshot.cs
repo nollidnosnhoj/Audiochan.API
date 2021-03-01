@@ -535,14 +535,14 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                         .WithMany("Followers")
                         .HasForeignKey("ObserverId")
                         .HasConstraintName("fk_followed_users_users_observer_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Audiochan.Core.Entities.User", "Target")
                         .WithMany("Followings")
                         .HasForeignKey("TargetId")
                         .HasConstraintName("fk_followed_users_users_target_id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Observer");
