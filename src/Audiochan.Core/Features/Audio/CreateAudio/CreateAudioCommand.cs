@@ -8,10 +8,10 @@ using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Requests;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audio.Common.Models;
-using Audiochan.Core.Features.Audio.Common.Validators;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Services;
@@ -23,7 +23,7 @@ using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audio.CreateAudio
 {
-    public record CreateAudioCommand : AudioCommand, IRequest<Result<AudioViewModel>>
+    public record CreateAudioCommand : AudioCommandRequest, IRequest<Result<AudioViewModel>>
     {
         public Guid UploadId { get; init; }
         public string FileName { get; init; }

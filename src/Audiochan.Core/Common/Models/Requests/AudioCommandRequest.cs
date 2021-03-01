@@ -1,10 +1,19 @@
-﻿using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audio.Common.Models;
+﻿using System.Collections.Generic;
 using FluentValidation;
 
-namespace Audiochan.Core.Features.Audio.Common.Validators
+namespace Audiochan.Core.Common.Models.Requests
 {
-    public class AudioCommandValidator : AbstractValidator<AudioCommand>
+    public abstract record AudioCommandRequest
+    {
+        public string Title { get; init; }
+        public string Description { get; init; }
+        public bool? IsPublic { get; init; }
+        public bool? IsLoop { get; init; }
+        public string Genre { get; init; }
+        public List<string> Tags { get; init; } = new();
+    }
+    
+    public class AudioCommandValidator : AbstractValidator<AudioCommandRequest>
     {
         public AudioCommandValidator()
         {

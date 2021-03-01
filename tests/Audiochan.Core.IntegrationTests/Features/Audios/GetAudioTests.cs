@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audio.CreateAudio;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.UnitTests.Builders;

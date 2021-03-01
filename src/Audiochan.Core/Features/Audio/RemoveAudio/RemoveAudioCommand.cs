@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

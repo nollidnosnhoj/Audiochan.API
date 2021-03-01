@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Audiochan.Core.Common.Models
+namespace Audiochan.Core.Common.Models.Responses
 {
     public record PagedList<T>(List<T> Items, int Count, int Page, int Size)
     {

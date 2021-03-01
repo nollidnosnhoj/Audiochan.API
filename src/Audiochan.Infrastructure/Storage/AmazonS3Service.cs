@@ -12,6 +12,7 @@ using Amazon.S3.Transfer;
 using Audiochan.Core.Common.Exceptions;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure.Storage.Extensions;
 using Audiochan.Infrastructure.Storage.Options;

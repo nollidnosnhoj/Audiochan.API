@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audio.Common.Models;
-using Audiochan.Core.Features.Audio.Common.Validators;
+using Audiochan.Core.Common.Models.Requests;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Services;
@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audio.UpdateAudio
 {
-    public record UpdateAudioCommand : AudioCommand, IRequest<Result<AudioViewModel>>
+    public record UpdateAudioCommand : AudioCommandRequest, IRequest<Result<AudioViewModel>>
     {
         [JsonIgnore] public long Id { get; init; }
     }

@@ -14,6 +14,8 @@ using Audiochan.Core.Features.Users.UpdateUser;
 using Audiochan.Core.Features.Users.UpdateUsername;
 using Audiochan.Core.Interfaces;
 using Audiochan.API.Extensions;
+using Audiochan.Core.Common.Models.Requests;
+using Audiochan.Core.Common.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -76,7 +78,7 @@ namespace Audiochan.API.Controllers
             OperationId = "GetAuthenticatedUserFeed",
             Tags = new []{"me"}
         )]
-        public async Task<IActionResult> GetAuthenticatedUserFeed([FromQuery] PaginationQuery<AudioViewModel> query, 
+        public async Task<IActionResult> GetAuthenticatedUserFeed([FromQuery] PaginationQueryRequest<AudioViewModel> query, 
             CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetAudioFeedQuery

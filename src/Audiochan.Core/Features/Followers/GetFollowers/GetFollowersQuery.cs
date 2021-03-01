@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Requests;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using AutoMapper;
@@ -12,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Followers.GetFollowers
 {
-    public record GetFollowersQuery : PaginationQuery<FollowerViewModel>
+    public record GetFollowersQuery : PaginationQueryRequest<FollowerViewModel>
     {
         public string Username { get; init; }
     }

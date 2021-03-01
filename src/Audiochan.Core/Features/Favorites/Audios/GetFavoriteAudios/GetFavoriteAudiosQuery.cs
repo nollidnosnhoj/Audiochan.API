@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models;
+using Audiochan.Core.Common.Models.Requests;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audio;
 using Audiochan.Core.Features.Audio.GetAudio;
 using Audiochan.Core.Interfaces;
@@ -13,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
 {
-    public record GetFavoriteAudiosQuery : PaginationQuery<AudioViewModel>
+    public record GetFavoriteAudiosQuery : PaginationQueryRequest<AudioViewModel>
     {
         public string Username { get; init; }
     }

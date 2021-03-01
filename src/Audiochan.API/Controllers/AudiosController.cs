@@ -10,6 +10,7 @@ using Audiochan.Core.Features.Audio.RemoveAudio;
 using Audiochan.Core.Features.Audio.UpdateAudio;
 using Audiochan.Core.Features.Audio.UpdatePicture;
 using Audiochan.API.Extensions;
+using Audiochan.Core.Common.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
