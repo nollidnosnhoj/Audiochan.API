@@ -9,7 +9,11 @@ namespace Audiochan.Core.Entities
     {
         public User()
         {
-            
+            Audios = new HashSet<Audio>();
+            FavoriteAudios = new HashSet<FavoriteAudio>();
+            Followings = new HashSet<FollowedUser>();
+            Followers = new HashSet<FollowedUser>();
+            RefreshTokens = new HashSet<RefreshToken>();
         }
         
         public User(string username, string email, DateTime joined)
@@ -18,11 +22,6 @@ namespace Audiochan.Core.Entities
             this.Email = email;
             this.Joined = joined;
             this.DisplayName = username;
-            Audios = new HashSet<Audio>();
-            FavoriteAudios = new HashSet<FavoriteAudio>();
-            Followings = new HashSet<FollowedUser>();
-            Followers = new HashSet<FollowedUser>();
-            RefreshTokens = new HashSet<RefreshToken>();
         }
 
         public string DisplayName { get; set; }
