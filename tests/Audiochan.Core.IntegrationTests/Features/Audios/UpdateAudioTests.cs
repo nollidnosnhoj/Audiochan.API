@@ -27,7 +27,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldNotUpdate_WhenUserCannotModify()
         {
             // Assign
-            var ownerId = await _fixture
+            var (ownerId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
             
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
@@ -55,7 +55,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldUpdate_WhenInputIsValid()
         {
             // Assign
-            var ownerId = await _fixture
+            var (ownerId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
             
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();

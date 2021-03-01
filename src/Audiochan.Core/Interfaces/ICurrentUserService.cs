@@ -4,6 +4,6 @@
     {
         string GetUserId();
         string GetUsername();
-        bool IsAuthenticated(long? userId = null);
+        bool IsAuthenticated();
     }
 }

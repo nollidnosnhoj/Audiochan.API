@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audio.RemoveAudio;
@@ -25,7 +24,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldNotRemoveAudio_WhenUserCannotModify()
         {
             // Assign
-            var ownerId = await _fixture.RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
+            var (ownerId, _) = await _fixture.RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
             
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
@@ -47,7 +46,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         [Fact]
         public async Task ShouldRemoveAudio()
         {
-            var ownerId = await _fixture.RunAsDefaultUserAsync();
+            var (ownerId, _) = await _fixture.RunAsDefaultUserAsync();
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
             await _fixture.InsertAsync(audio);
 
@@ -66,13 +65,13 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldRemoveFavorited_WhenAudioIsRemoved()
         {
             // Assign
-            var ownerId = await _fixture.RunAsDefaultUserAsync();
+            var (ownerId, _) = await _fixture.RunAsDefaultUserAsync();
             
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
             await _fixture.InsertAsync(audio);
             
-            var favoriterId = await _fixture
+            var (favoriterId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
 
             await _fixture.InsertAsync(new FavoriteAudio

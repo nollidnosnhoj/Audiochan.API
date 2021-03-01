@@ -26,7 +26,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldNotGetAudio_WhenAudioIdIsInvalid()
         {
             // Assign
-            var ownerId = await _fixture.RunAsDefaultUserAsync();
+            var (ownerId, _) = await _fixture.RunAsDefaultUserAsync();
             var audio = new AudioBuilder("myaudio.mp3", ownerId).Build();
             await _fixture.InsertAsync(audio);
             
@@ -43,7 +43,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldGetAudio_WhenAudioIsPrivateAndUserIsOwner()
         {
             // Assign
-            var adminId = await _fixture.RunAsAdministratorAsync();
+            var (adminId, _) = await _fixture.RunAsAdministratorAsync();
             var audio = new AudioBuilder(Guid.NewGuid() + ".mp3", adminId)
                 .Public(false)
                 .Build();

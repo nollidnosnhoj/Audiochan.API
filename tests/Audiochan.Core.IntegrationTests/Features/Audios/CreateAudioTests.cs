@@ -25,7 +25,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task Should_Create_New_Audio()
         {
             // ASSIGN
-            var userId = await _fixture.RunAsDefaultUserAsync();
+            var (userId, _) = await _fixture.RunAsDefaultUserAsync();
 
             var uploadId = Guid.NewGuid();
             

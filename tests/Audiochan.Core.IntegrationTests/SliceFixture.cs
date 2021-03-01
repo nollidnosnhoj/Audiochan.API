@@ -37,6 +37,7 @@ namespace Audiochan.Core.IntegrationTests
         private static IServiceScopeFactory _scopeFactory;
         private readonly WebApplicationFactory<Startup> _factory;
         private static string _currentUserId;
+        private static string _currentUsername;
 
         public SliceFixture()
         {
@@ -120,17 +121,17 @@ namespace Audiochan.Core.IntegrationTests
             }
         }
         
-        public async Task<string> RunAsDefaultUserAsync()
+        public async Task<(string, string)> RunAsDefaultUserAsync()
         {
             return await RunAsUserAsync("testuser", "Testing1234!", Array.Empty<string>());
         }
 
-        public async Task<string> RunAsAdministratorAsync()
+        public async Task<(string, string)> RunAsAdministratorAsync()
         {
             return await RunAsUserAsync("admin", "Administrator1234!", new[] { UserRoleConstants.Admin });
         }
 
-        public async Task<string> RunAsUserAsync(string userName, string password, string[] roles)
+        public async Task<(string, string)> RunAsUserAsync(string userName, string password, string[] roles)
         {
             using var scope = _scopeFactory.CreateScope();
 
@@ -142,7 +143,8 @@ namespace Audiochan.Core.IntegrationTests
             if (user != null)
             {
                 _currentUserId = user.Id;
-                return _currentUserId;
+                _currentUsername = user.UserName;
+                return (_currentUserId, _currentUsername);
             }
 
             user = new User
@@ -171,8 +173,8 @@ namespace Audiochan.Core.IntegrationTests
             if (result.Succeeded)
             {
                 _currentUserId = user.Id;
-
-                return _currentUserId;
+                _currentUsername = user.UserName;
+                return (_currentUserId, _currentUsername);
             }
 
             var errors = string.Join(Environment.NewLine, result.ToResult().Errors);
@@ -317,7 +319,7 @@ namespace Audiochan.Core.IntegrationTests
 
             services.Remove(currentUserServiceDescriptor);
 
-            services.AddTransient(_ => CurrentUserServiceMock.Create(_currentUserId).Object);
+            services.AddTransient(_ => CurrentUserServiceMock.Create(_currentUserId, _currentUsername).Object);
         }
         
         private static void ReplaceStorageService(IServiceCollection services)
