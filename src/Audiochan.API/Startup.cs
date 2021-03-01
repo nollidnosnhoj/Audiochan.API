@@ -54,18 +54,6 @@ namespace Audiochan.API
             app.UseCorsConfig();
             app.UseRateLimiting();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            
-            if (env.IsDevelopment())
-            {
-                app.UseStaticFiles(new StaticFileOptions()
-                {
-                    OnPrepareResponse = context =>
-                    {
-                        context.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-                    }
-                });
-            }
-            
             app.UseRouting();
             app.UseAuthentication();
             app.UseRouting();
