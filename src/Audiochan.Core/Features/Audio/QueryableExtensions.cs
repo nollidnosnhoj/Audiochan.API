@@ -59,7 +59,9 @@ namespace Audiochan.Core.Features.Audio
         {
             return sort.ToLower() switch
             {
-                "favorites" => queryable.OrderByDescending(a => a.Favorited.Count),
+                "favorites" => queryable.OrderByDescending(a => a.Favorited.Count)
+                    .ThenByDescending(a => a.Created),
+                "latest" => queryable.OrderByDescending(a => a.Created),
                 _ => queryable.OrderByDescending(a => a.Created)
             };
         }
