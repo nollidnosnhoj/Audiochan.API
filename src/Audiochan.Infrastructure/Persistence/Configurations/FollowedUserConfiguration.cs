@@ -11,15 +11,15 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
             builder
                 .HasKey(fu => new { FollowerId = fu.ObserverId, FolloweeId = fu.TargetId });
 
-            builder
-                .HasOne(fu => fu.Observer)
-                .WithMany(user => user.Followers)
-                .HasForeignKey(fu => fu.ObserverId);
+            builder.HasOne(o => o.Observer)
+                .WithMany(f => f.Followings)
+                .HasForeignKey(o => o.ObserverId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder
-                .HasOne(fu => fu.Target)
-                .WithMany(user => user.Followings)
-                .HasForeignKey(fu => fu.TargetId);
+            builder.HasOne(o => o.Target)
+                .WithMany(f => f.Followers)
+                .HasForeignKey(o => o.TargetId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

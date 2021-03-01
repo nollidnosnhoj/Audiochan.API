@@ -29,7 +29,8 @@ namespace Audiochan.Core.Features.Followers.SetFollow
             if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == request.UserId, cancellationToken))
                 return Result<bool>.Fail(ResultError.Unauthorized);
             
-            var target = await _dbContext.Users.AsNoTracking()
+            var target = await _dbContext.Users
+                .Include(u => u.Followers)
                 .SingleOrDefaultAsync(u => u.UserName == request.Username.Trim().ToLower(), cancellationToken);
 
             if (target == null)

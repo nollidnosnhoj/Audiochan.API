@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Audiochan.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210301105250_InitialMigration")]
+    [Migration("20210301215125_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -534,14 +534,14 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Audiochan.Core.Entities.FollowedUser", b =>
                 {
                     b.HasOne("Audiochan.Core.Entities.User", "Observer")
-                        .WithMany("Followers")
+                        .WithMany("Followings")
                         .HasForeignKey("ObserverId")
                         .HasConstraintName("fk_followed_users_users_observer_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Audiochan.Core.Entities.User", "Target")
-                        .WithMany("Followings")
+                        .WithMany("Followers")
                         .HasForeignKey("TargetId")
                         .HasConstraintName("fk_followed_users_users_target_id")
                         .OnDelete(DeleteBehavior.Cascade)

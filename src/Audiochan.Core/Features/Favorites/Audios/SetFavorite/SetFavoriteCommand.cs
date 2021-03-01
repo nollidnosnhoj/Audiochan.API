@@ -34,7 +34,6 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
                 return Result<bool>.Fail(ResultError.Unauthorized);
 
             var audio = await _dbContext.Audios
-                .AsNoTracking()
                 .Include(a => a.Favorited)
                 .SingleOrDefaultAsync(a => a.Id == request.AudioId, cancellationToken);
             
