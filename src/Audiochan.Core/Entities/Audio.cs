@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Entities.Base;
 
 namespace Audiochan.Core.Entities
@@ -34,9 +35,10 @@ namespace Audiochan.Core.Entities
             this.FileExt = fileExtension;
             this.FileSize = fileSize;
             this.Duration = duration;
-            this.Title = Path.GetFileNameWithoutExtension(fileName);
             this.UserId = userId;
             this.IsPublic = true;
+
+            this.Title = Path.GetFileNameWithoutExtension(fileName).Truncate(30);
         }
 
         public long Id { get; set; }

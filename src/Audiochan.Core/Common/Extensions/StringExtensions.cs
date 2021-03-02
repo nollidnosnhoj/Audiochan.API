@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Audiochan.Core.Common.Extensions
@@ -70,6 +71,17 @@ namespace Audiochan.Core.Common.Extensions
 
             var startUnderscores = Regex.Match(input, @"^_+");
             return startUnderscores + Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2").ToLower();
+        }
+
+        public static string Truncate(this string input, int length, bool includeDots = true)
+        {
+            var stringBuilder = new StringBuilder(length);
+            if (includeDots)
+                stringBuilder.Append(input.Substring(0, length - 4)).Append(" ...");
+            else
+                stringBuilder.Append(input.Substring(0, length));
+
+            return stringBuilder.ToString();
         }
     }
 }

@@ -38,6 +38,15 @@ namespace Audiochan.Core.UnitTests.Entities
                 .NotThrow<ArgumentException>();
         }
 
+        [Fact]
+        public void NewAudio_ShouldTruncate_WhenFilenameIsMoreThanThirtyCharactersLong()
+        {
+            const string fileName = "Vn4Emz1X9FJodmQxtKYszmnZBH6SM4o34MmVLXYKOjvizDK39l.mp3";
+            var audio = new Audio(Guid.NewGuid(), fileName, 100, 100, "ValidUserId");
+            audio.Title.Length.Should().Be(30);
+            audio.Title.Should().EndWith(" ...");
+        }
+
         [Theory]
         [InlineData("shouldfail")]
         public void NewAudio_ShouldThrow_WhenFilenameDoesNotHaveExtension(string fileName)
