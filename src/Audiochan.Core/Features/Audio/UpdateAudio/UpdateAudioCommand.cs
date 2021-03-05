@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audio.GetAudio;
@@ -86,7 +85,6 @@ namespace Audiochan.Core.Features.Audio.UpdateAudio
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
             audio.UpdatePublicStatus(request.IsPublic);
-            audio.UpdateLoop(request.IsLoop);
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync(cancellationToken);

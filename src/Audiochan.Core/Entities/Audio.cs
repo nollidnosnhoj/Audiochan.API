@@ -50,7 +50,6 @@ namespace Audiochan.Core.Entities
         public string FileExt { get; set; }
         public string Picture { get; set; }
         public bool IsPublic { get; set; }
-        public bool IsLoop { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
         public long? GenreId { get; set; }
@@ -76,12 +75,6 @@ namespace Audiochan.Core.Entities
         {
             if (status.HasValue)
                 this.IsPublic = status.Value;
-        }
-
-        public void UpdateLoop(bool? isLoop)
-        {
-            if (isLoop.HasValue)
-                this.IsLoop = isLoop.Value;
         }
 
         public void UpdateGenre(Genre genre)

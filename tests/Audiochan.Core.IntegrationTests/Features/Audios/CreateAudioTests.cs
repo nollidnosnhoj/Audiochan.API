@@ -40,7 +40,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 Description = "This is a test audio",
                 Tags = new List<string>{ "apples", "oranges", "banana" },
                 Genre = "dubstep",
-                IsLoop = true,
                 IsPublic = false
             });
 
@@ -67,7 +66,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             result.Data.Tags.Should().Contain(x => x == "banana");
             result.Data.Genre.Name.Should().Be("Dubstep");
             result.Data.IsPublic.Should().Be(false);
-            result.Data.IsLoop.Should().Be(true);
             result.Data.User.Should().NotBeNull();
             result.Data.User.Id.Should().Be(userId);
             
@@ -84,7 +82,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             created.Tags.Should().Contain(x => x.Id == "banana");
             created.Genre.Name.Should().Be("Dubstep");
             created.IsPublic.Should().Be(false);
-            created.IsLoop.Should().Be(true);
             created.UserId.Should().Be(userId);
         }
     }

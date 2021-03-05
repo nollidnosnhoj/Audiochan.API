@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audio.GetAudio;
@@ -72,7 +71,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 Description = "This is a test description",
                 Genre = "dubstep",
                 Tags = new List<string> {"apples", "oranges", "caramel"},
-                IsLoop = true
             };
 
             var result = await _fixture.SendAsync(command);
@@ -100,7 +98,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             result.Data.Tags.Should().Contain(x => x == "apples");
             result.Data.Tags.Should().Contain(x => x == "oranges");
             result.Data.Tags.Should().Contain(x => x == "caramel");
-            result.Data.IsLoop.Should().Be(command.IsLoop ?? audio.IsLoop);
 
             created.Should().NotBeNull();
             created.Title.Should().Be(command.Title);
@@ -111,7 +108,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             created.Tags.Should().Contain(x => x.Id == "apples");
             created.Tags.Should().Contain(x => x.Id == "oranges");
             created.Tags.Should().Contain(x => x.Id == "caramel");
-            created.IsLoop.Should().Be(command.IsLoop ?? audio.IsLoop);
         }
     }
 }

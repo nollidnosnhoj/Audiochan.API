@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audio.CreateAudio;
 using Audiochan.Core.Features.Audio.GetAudio;
@@ -96,7 +94,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             result.Data.Tags.Length.Should().Be(2);
             result.Data.Tags.Should().Contain("apples");
             result.Data.Tags.Should().Contain("oranges");
-            result.Data.IsLoop.Should().Be(audio.Data.IsLoop);
         }
     }
 }

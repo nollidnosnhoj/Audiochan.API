@@ -56,12 +56,6 @@ namespace Audiochan.Core.UnitTests.Builders
             _audio.IsPublic = isPublic;
             return this;
         }
-        
-        public AudioBuilder Loop(bool isLoop)
-        {
-            _audio.IsLoop = isLoop;
-            return this;
-        }
 
         public Audio Build()
         {

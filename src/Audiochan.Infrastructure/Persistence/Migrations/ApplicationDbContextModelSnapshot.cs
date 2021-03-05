@@ -72,10 +72,6 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("genre_id");
 
-                    b.Property<bool>("IsLoop")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_loop");
-
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean")
                         .HasColumnName("is_public");

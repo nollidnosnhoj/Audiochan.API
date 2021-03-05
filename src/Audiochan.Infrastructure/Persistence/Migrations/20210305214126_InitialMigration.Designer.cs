@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Audiochan.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210301215125_InitialMigration")]
+    [Migration("20210305214126_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,10 +73,6 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                     b.Property<long?>("GenreId")
                         .HasColumnType("bigint")
                         .HasColumnName("genre_id");
-
-                    b.Property<bool>("IsLoop")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_loop");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean")

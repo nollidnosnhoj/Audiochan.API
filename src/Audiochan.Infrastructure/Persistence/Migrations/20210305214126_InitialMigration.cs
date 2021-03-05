@@ -115,7 +115,6 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                     file_ext = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     picture = table.Column<string>(type: "text", nullable: true),
                     is_public = table.Column<bool>(type: "boolean", nullable: false),
-                    is_loop = table.Column<bool>(type: "boolean", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: false),
                     genre_id = table.Column<long>(type: "bigint", nullable: true),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),

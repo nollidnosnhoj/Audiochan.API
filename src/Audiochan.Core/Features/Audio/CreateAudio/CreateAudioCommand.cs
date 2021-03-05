@@ -91,7 +91,6 @@ namespace Audiochan.Core.Features.Audio.CreateAudio
 
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
-            audio.UpdateLoop(request.IsLoop ?? false);
             audio.UpdatePublicStatus(request.IsPublic ?? true);
 
             if (!await CheckIfAudioBlobExists(audio, cancellationToken))
