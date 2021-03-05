@@ -73,14 +73,10 @@ namespace Audiochan.Core.Common.Extensions
             return startUnderscores + Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2").ToLower();
         }
 
-        public static string Truncate(this string input, int length, bool includeDots = true)
+        public static string Truncate(this string input, int length)
         {
             var stringBuilder = new StringBuilder(length);
-            if (includeDots)
-                stringBuilder.Append(input.Substring(0, length - 4)).Append(" ...");
-            else
-                stringBuilder.Append(input.Substring(0, length));
-
+            stringBuilder.Append(input.Length > 30 ? input.Substring(0, length) : input);
             return stringBuilder.ToString();
         }
     }
