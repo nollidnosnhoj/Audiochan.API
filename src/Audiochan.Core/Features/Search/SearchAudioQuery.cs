@@ -40,7 +40,7 @@ namespace Audiochan.Core.Features.Search
                 .DefaultQueryable(currentUserId)
                 .FilterBySearchTerm(request.Q)
                 .FilterByGenre(request.Genre)
-                .FilterByTags(request.Tags)
+                .FilterByTags(request.Tags, ",")
                 .Sort(request.Sort)
                 .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
                 .PaginateAsync(request, cancellationToken);
