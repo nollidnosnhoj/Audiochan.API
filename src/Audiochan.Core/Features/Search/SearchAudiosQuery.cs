@@ -13,26 +13,26 @@ using MediatR;
 
 namespace Audiochan.Core.Features.Search
 {
-    public record SearchAudioQuery : AudioListQueryRequest
+    public record SearchAudiosQuery : AudioListQueryRequest
     {
         public string Q { get; init; }
         public string Tags { get; init; }
     }
 
-    public class SearchAudioQueryHandler : IRequestHandler<SearchAudioQuery, PagedList<AudioViewModel>>
+    public class SearchAudiosQueryHandler : IRequestHandler<SearchAudiosQuery, PagedList<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public SearchAudioQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public SearchAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mapper = mapper;
         }
 
-        public async Task<PagedList<AudioViewModel>> Handle(SearchAudioQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<AudioViewModel>> Handle(SearchAudiosQuery request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 

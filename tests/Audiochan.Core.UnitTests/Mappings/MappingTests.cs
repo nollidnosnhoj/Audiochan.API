@@ -7,7 +7,7 @@ using Audiochan.Core.Features.Followers.GetFollowers;
 using Audiochan.Core.Features.Followers.GetFollowings;
 using Audiochan.Core.Features.Genres.ListGenre;
 using Audiochan.Core.Features.Users.GetCurrentUser;
-using Audiochan.Core.Features.Users.GetProfile;
+using Audiochan.Core.Features.Users.GetUser;
 using AutoMapper;
 using Xunit;
 
@@ -26,7 +26,7 @@ namespace Audiochan.Core.UnitTests.Mappings
                 cfg.AddProfile<GetFollowingsMappingProfile>();
                 cfg.AddProfile<GetFollowersMappingProfile>();
                 cfg.AddProfile<CurrentUserMappingProfile>();
-                cfg.AddProfile<ProfileMappingProfile>();
+                cfg.AddProfile<UserMappingProfile>();
                 cfg.AddProfile<ListGenreMappingProfile>();
             });
             _mapper = _configuration.CreateMapper();
@@ -43,7 +43,7 @@ namespace Audiochan.Core.UnitTests.Mappings
         [InlineData(typeof(FollowedUser), typeof(FollowerViewModel))]
         [InlineData(typeof(FollowedUser), typeof(FollowingViewModel))]
         [InlineData(typeof(User), typeof(CurrentUserViewModel))]
-        [InlineData(typeof(User), typeof(ProfileViewModel))]
+        [InlineData(typeof(User), typeof(UserViewModel))]
         [InlineData(typeof(Genre), typeof(GenreViewModel))]
         public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination)
         {

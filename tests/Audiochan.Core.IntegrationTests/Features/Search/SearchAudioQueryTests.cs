@@ -44,7 +44,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
                 }
             }
 
-            var result = await _fixture.SendAsync(new SearchAudioQuery
+            var result = await _fixture.SendAsync(new SearchAudiosQuery
             {
                 Q = "example"
             });
@@ -80,7 +80,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
                 });
             }
 
-            var result = await _fixture.SendAsync(new SearchAudioQuery
+            var result = await _fixture.SendAsync(new SearchAudiosQuery
             {
                 Tags = "testtag1, testtag2"
             });
