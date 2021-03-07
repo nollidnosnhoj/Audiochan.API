@@ -8,8 +8,6 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Audio> builder)
         {
-            builder.HasKey(x => x.Id);
-            
             builder.Property(x => x.Title)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -32,6 +30,9 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasKey(x => x.Id);
+            builder.HasIndex(x => x.Title);
         }
     }
 }

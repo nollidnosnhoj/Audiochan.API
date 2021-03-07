@@ -41,11 +41,11 @@ namespace Audiochan.Core.Features.Audio
             return queryable;
         }
 
-        public static IQueryable<Entities.Audio> FilterByTags(this IQueryable<Entities.Audio> queryable, string tags)
+        public static IQueryable<Entities.Audio> FilterByTags(this IQueryable<Entities.Audio> queryable, string tags, string delimiter)
         {
             if (!string.IsNullOrWhiteSpace(tags))
             {
-                var parsedTags = tags.Split(',')
+                var parsedTags = tags.Split(delimiter)
                     .Select(t => t.Trim().ToLower())
                     .ToArray();
             
