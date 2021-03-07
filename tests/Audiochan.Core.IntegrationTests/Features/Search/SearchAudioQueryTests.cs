@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audio.CreateAudio;
-using Audiochan.Core.Features.Audio.GetAudioList;
+using Audiochan.Core.Features.Audios.CreateAudio;
 using Audiochan.Core.Features.Search;
 using Audiochan.Core.UnitTests.Builders;
 using Bogus;

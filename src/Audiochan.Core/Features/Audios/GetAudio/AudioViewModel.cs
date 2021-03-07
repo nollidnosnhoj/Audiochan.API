@@ -1,7 +1,7 @@
 ﻿using System;
 using Audiochan.Core.Common.Models;
 
-namespace Audiochan.Core.Features.Audio.GetAudio
+namespace Audiochan.Core.Features.Audios.GetAudio
 {
     public record AudioViewModel
     {

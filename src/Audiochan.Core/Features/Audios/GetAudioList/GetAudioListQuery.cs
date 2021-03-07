@@ -1,16 +1,15 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 
-namespace Audiochan.Core.Features.Audio.GetAudioList
+namespace Audiochan.Core.Features.Audios.GetAudioList
 {
     public record GetAudioListQuery : AudioListQueryRequest
     {

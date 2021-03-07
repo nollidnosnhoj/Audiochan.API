@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Services;
 using AutoMapper;
@@ -12,7 +12,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Features.Audio.UpdateAudio
+namespace Audiochan.Core.Features.Audios.UpdateAudio
 {
     public record UpdateAudioCommand : AudioCommandRequest, IRequest<Result<AudioViewModel>>
     {

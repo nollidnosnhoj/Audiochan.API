@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios.GetAudio;
 using AutoMapper;
 
-namespace Audiochan.Core.Features.Audio
+namespace Audiochan.Core.Features.Audios
 {
     public class AudioMappingProfile : Profile
     {

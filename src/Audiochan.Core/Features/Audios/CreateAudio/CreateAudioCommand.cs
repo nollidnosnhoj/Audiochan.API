@@ -12,7 +12,7 @@ using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Services;
 using AutoMapper;
@@ -21,7 +21,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Audiochan.Core.Features.Audio.CreateAudio
+namespace Audiochan.Core.Features.Audios.CreateAudio
 {
     public record CreateAudioCommand : AudioCommandRequest, IRequest<Result<AudioViewModel>>
     {

@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Helpers;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Features.Audio.RemoveAudio
+namespace Audiochan.Core.Features.Audios.RemoveAudio
 {
     public record RemoveAudioCommand(long Id) : IRequest<IResult<bool>>
     {

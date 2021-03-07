@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audio;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Features.Followers.GetFollowers;
 using Audiochan.Core.Features.Followers.GetFollowings;
 using Audiochan.Core.Features.Genres.ListGenre;

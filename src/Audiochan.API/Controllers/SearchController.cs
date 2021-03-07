@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Responses;
-using Audiochan.Core.Features.Audio.GetAudio;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Features.Search;
 using Audiochan.Core.Features.Users.GetUser;
 using MediatR;

@@ -2,13 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Features.Audio.UpdatePicture
+namespace Audiochan.Core.Features.Audios.UpdatePicture
 {
     public record UpdateAudioPictureCommand(long Id, string ImageData) : IRequest<IResult<string>>
     {

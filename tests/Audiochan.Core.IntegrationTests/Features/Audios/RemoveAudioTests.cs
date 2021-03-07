@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Features.Audio.RemoveAudio;
+using Audiochan.Core.Features.Audios.RemoveAudio;
 using Audiochan.Core.UnitTests.Builders;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

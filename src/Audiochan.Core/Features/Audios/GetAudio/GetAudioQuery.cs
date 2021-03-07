@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using AutoMapper;
@@ -10,7 +8,7 @@ using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Features.Audio.GetAudio
+namespace Audiochan.Core.Features.Audios.GetAudio
 {
     public record GetAudioQuery(long Id) : IRequest<Result<AudioViewModel>>
     {

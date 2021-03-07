@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Features.Audio
+namespace Audiochan.Core.Features.Audios
 {
     public static class QueryableExtensions
     {

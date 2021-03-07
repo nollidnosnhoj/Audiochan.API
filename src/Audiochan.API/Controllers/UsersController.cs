@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Audiochan.API.Models;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Features.Audio.GetAudio;
-using Audiochan.Core.Features.Audio.GetAudioList;
 using Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios;
 using Audiochan.Core.Features.Followers.GetFollowers;
 using Audiochan.Core.Features.Followers.GetFollowings;
 using Audiochan.API.Extensions;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
+using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Features.Users.GetUser;
 using Audiochan.Core.Features.Users.GetUserAudios;
 using MediatR;
