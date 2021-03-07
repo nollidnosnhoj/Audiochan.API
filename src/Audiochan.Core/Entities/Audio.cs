@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities.Base;
+using Microsoft.AspNetCore.Http;
 
 namespace Audiochan.Core.Entities
 {
@@ -14,8 +16,8 @@ namespace Audiochan.Core.Entities
             this.Tags = new HashSet<Tag>();
             this.Favorited = new HashSet<FavoriteAudio>();
         }
-        
-        public Audio(Guid uploadId, string fileName, int fileSize, int duration, string userId) : this()
+
+        public Audio(Guid uploadId, string fileName, long fileSize, int duration, string userId) : this()
         {
             if (uploadId == Guid.Empty)
                 throw new ArgumentException("UploadId cannot be empty.", nameof(uploadId));

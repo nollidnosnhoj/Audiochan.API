@@ -27,7 +27,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
     {
         public Guid UploadId { get; init; }
         public string FileName { get; init; }
-        public int FileSize { get; init; }
+        public long FileSize { get; init; }
         public int Duration { get; init; }
     }
 
