@@ -72,7 +72,7 @@ namespace Audiochan.API.Controllers
             Description = "Requires authentication.",
             OperationId = "CreateAudio",
             Tags = new [] { "audios" })]
-        public async Task<IActionResult> Create([FromBody] CreateAudioCommand request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromForm] CreateAudioCommand request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request, cancellationToken);
             return result.IsSuccess 
