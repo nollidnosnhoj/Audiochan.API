@@ -333,6 +333,11 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 column: "genre_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_audios_title",
+                table: "audios",
+                column: "title");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_audios_user_id",
                 table: "audios",
                 column: "user_id");

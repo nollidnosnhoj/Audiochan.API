@@ -105,6 +105,9 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                     b.HasIndex("GenreId")
                         .HasDatabaseName("ix_audios_genre_id");
 
+                    b.HasIndex("Title")
+                        .HasDatabaseName("ix_audios_title");
+
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_audios_user_id");
 
