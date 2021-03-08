@@ -110,7 +110,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                     title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "text", nullable: true),
                     duration = table.Column<int>(type: "integer", nullable: false),
-                    upload_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    upload_id = table.Column<string>(type: "text", nullable: false),
                     file_size = table.Column<long>(type: "bigint", nullable: false),
                     file_ext = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     picture = table.Column<string>(type: "text", nullable: true),
@@ -336,6 +336,11 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 name: "ix_audios_title",
                 table: "audios",
                 column: "title");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_audios_upload_id",
+                table: "audios",
+                column: "upload_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audios_user_id",

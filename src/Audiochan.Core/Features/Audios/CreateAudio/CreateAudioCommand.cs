@@ -25,7 +25,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
 {
     public record CreateAudioCommand : AudioCommandRequest, IRequest<Result<AudioViewModel>>
     {
-        public Guid UploadId { get; init; }
+        public string UploadId { get; init; }
         public string FileName { get; init; }
         public long FileSize { get; init; }
         public int Duration { get; init; }
@@ -87,7 +87,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         {
             var currentUserId = _currentUserService.GetUserId();
 
-            var audio = new Entities.Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUserId);
+            var audio = new Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUserId);
 
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);

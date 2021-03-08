@@ -90,8 +90,9 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("title");
 
-                    b.Property<Guid>("UploadId")
-                        .HasColumnType("uuid")
+                    b.Property<string>("UploadId")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("upload_id");
 
                     b.Property<string>("UserId")
@@ -107,6 +108,9 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Title")
                         .HasDatabaseName("ix_audios_title");
+
+                    b.HasIndex("UploadId")
+                        .HasDatabaseName("ix_audios_upload_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_audios_user_id");

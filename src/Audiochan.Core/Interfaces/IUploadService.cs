@@ -7,6 +7,6 @@ namespace Audiochan.Core.Interfaces
 {
     public interface IUploadService
     {
-        (Guid UploadId, string Url) GetUploadUrl(string fileName);
+        (string UploadId, string Url) GetUploadUrl(string fileName);
     }
 }

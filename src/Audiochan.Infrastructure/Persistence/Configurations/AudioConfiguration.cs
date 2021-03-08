@@ -12,6 +12,9 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(x => x.UploadId)
+                .IsRequired();
+
             builder.Property(x => x.FileExt)
                 .HasMaxLength(10);
 
@@ -33,6 +36,7 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
             
             builder.HasKey(x => x.Id);
             builder.HasIndex(x => x.Title);
+            builder.HasIndex(x => x.UploadId);
         }
     }
 }

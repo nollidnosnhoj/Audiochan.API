@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios.CreateAudio;
 using Audiochan.Core.Features.Audios.GetAudio;
@@ -70,7 +71,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
 
             var audio = await _fixture.SendAsync(new CreateAudioCommand
             {
-                UploadId = Guid.NewGuid(),
+                UploadId = UploadHelpers.GenerateUploadId(),
                 FileName = "test.mp3",
                 Duration = 100,
                 FileSize = 100,

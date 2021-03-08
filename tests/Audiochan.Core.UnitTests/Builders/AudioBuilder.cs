@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Entities;
 using Bogus;
 
@@ -13,7 +13,7 @@ namespace Audiochan.Core.UnitTests.Builders
         public AudioBuilder(string userId, string fileName = "test.mp3")
         {
             _audio = new Audio(
-                uploadId: Guid.NewGuid(), 
+                uploadId: UploadHelpers.GenerateUploadId(), 
                 fileName: fileName, 
                 fileSize: _randomizer.Number(5000, 25000), 
                 duration: _randomizer.Number(30, 300),

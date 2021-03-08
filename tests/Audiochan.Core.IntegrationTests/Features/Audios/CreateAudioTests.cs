@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.CreateAudio;
 using Audiochan.Infrastructure.Persistence;
@@ -27,7 +28,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             // ASSIGN
             var (userId, _) = await _fixture.RunAsDefaultUserAsync();
 
-            var uploadId = Guid.NewGuid();
+            var uploadId = UploadHelpers.GenerateUploadId();
             
             // ACT
             var result = await _fixture.SendAsync(new CreateAudioCommand

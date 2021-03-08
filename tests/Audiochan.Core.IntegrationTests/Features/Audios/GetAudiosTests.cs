@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.CreateAudio;
 using Audiochan.Core.Features.Audios.GetAudioList;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Audiochan.Core.IntegrationTests.Features.Audios
@@ -36,7 +34,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             {
                 await _fixture.SendAsync(new CreateAudioCommand
                 {
-                    UploadId = Guid.NewGuid(),
+                    UploadId = UploadHelpers.GenerateUploadId(),
                     FileName = Guid.NewGuid().ToString("N") + ".mp3",
                     Duration = 100,
                     FileSize = 100,

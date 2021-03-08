@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Audiochan.API.Models
+﻿namespace Audiochan.API.Models
 {
-    public record UploadAudioResponse(Guid UploadId, string Url)
+    public record UploadAudioResponse(string UploadId, string Url)
     {
     }
 }

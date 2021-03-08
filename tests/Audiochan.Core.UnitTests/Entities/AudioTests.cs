@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Entities;
 using FluentAssertions;
 using Xunit;
@@ -16,15 +17,15 @@ namespace Audiochan.Core.UnitTests.Entities
         [Fact]
         public void NewAudio_ShouldThrow_WhenFileNameIsNullOrEmpty()
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), null, 0, 0, "ValidUserId"))
+            FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), null, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("null", "fileName");
             
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), string.Empty, 0, 0, "ValidUserId"))
+            FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), string.Empty, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("empty", "fileName");
             
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), "  ", 0, 0, "ValidUserId"))
+            FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), "  ", 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("whitespace", "fileName");
         }
@@ -33,7 +34,7 @@ namespace Audiochan.Core.UnitTests.Entities
         [InlineData("audio.mp3")]
         public void NewAudio_ShouldNotThrow_WhenFilenameDoesHaveExtension(string fileName)
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, "ValidUserId"))
+            FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), fileName, 0, 0, "ValidUserId"))
                 .Should()
                 .NotThrow<ArgumentException>();
         }
@@ -42,7 +43,7 @@ namespace Audiochan.Core.UnitTests.Entities
         public void NewAudio_ShouldTruncate_WhenFilenameIsMoreThanThirtyCharactersLong()
         {
             const string fileName = "Vn4Emz1X9FJodmQxtKYszmnZBH6SM4o34MmVLXYKOjvizDK39l.mp3";
-            var audio = new Audio(Guid.NewGuid(), fileName, 100, 100, "ValidUserId");
+            var audio = new Audio(UploadHelpers.GenerateUploadId(), fileName, 100, 100, "ValidUserId");
             audio.Title.Length.Should().Be(30);
         }
 
@@ -50,7 +51,7 @@ namespace Audiochan.Core.UnitTests.Entities
         [InlineData("shouldfail")]
         public void NewAudio_ShouldThrow_WhenFilenameDoesNotHaveExtension(string fileName)
         {
-            FluentActions.Invoking(() => new Audio(Guid.NewGuid(), fileName, 0, 0, "ValidUserId"))
+            FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), fileName, 0, 0, "ValidUserId"))
                 .Should()
                 .Throw<ArgumentException>("no file extension", "filename");
         }
@@ -59,7 +60,7 @@ namespace Audiochan.Core.UnitTests.Entities
         public void NewAudio_ShouldHaveExtension_BasedOnFileName()
         {
             var expectedTitle = "audio";
-            var audio = new Audio(Guid.NewGuid(), "audio.mp3", 0, 0, "ValidUserId");
+            var audio = new Audio(UploadHelpers.GenerateUploadId(), "audio.mp3", 0, 0, "ValidUserId");
             audio.Title.Should().Be(expectedTitle);
         }
 
@@ -101,7 +102,7 @@ namespace Audiochan.Core.UnitTests.Entities
         {
             // Assign
             const string currentUserId = "testId";
-            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, "ValidUserId");
+            var audio = new Audio(UploadHelpers.GenerateUploadId(), "filename.mp3", 0, 0, "ValidUserId");
             
             // Act
             audio.AddFavorite(currentUserId);
@@ -115,7 +116,7 @@ namespace Audiochan.Core.UnitTests.Entities
         {
             // Assign
             const string currentUserId = "testId";
-            var audio = new Audio(Guid.NewGuid(), "filename.mp3", 0, 0, "ValidUserId");
+            var audio = new Audio(UploadHelpers.GenerateUploadId(), "filename.mp3", 0, 0, "ValidUserId");
             audio.Favorited.Add(new FavoriteAudio {AudioId = audio.Id, UserId = currentUserId});
             
             // Act
