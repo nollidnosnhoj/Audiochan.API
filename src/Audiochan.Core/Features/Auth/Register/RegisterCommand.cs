@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
@@ -8,7 +9,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using IdentityOptions = Audiochan.Core.Common.Options.IdentityOptions;
 
 namespace Audiochan.Core.Features.Auth.Register
 {
@@ -21,7 +21,7 @@ namespace Audiochan.Core.Features.Auth.Register
 
     public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
     {
-        public RegisterCommandValidator(IOptions<IdentityOptions> options)
+        public RegisterCommandValidator(IOptions<Audiochan.Core.Common.Options.IdentityOptions> options)
         {
             RuleFor(req => req.Username).Username(options.Value);
             RuleFor(req => req.Email)
@@ -32,7 +32,7 @@ namespace Audiochan.Core.Features.Auth.Register
                 .Password(options.Value);
         }
     }
-
+    
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, IResult<bool>>
     {
         private readonly UserManager<User> _userManager;

@@ -1,11 +1,13 @@
-﻿using System;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Audiochan.API.Models;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Audiochan.API.Models;
+using Audiochan.Core.Common.Models;
 
 namespace Audiochan.API.Middlewares
 {
@@ -16,7 +18,7 @@ namespace Audiochan.API.Middlewares
         private readonly IWebHostEnvironment _env;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
-
+        
 
         public ExceptionHandlingMiddleware(RequestDelegate next
             , IWebHostEnvironment env

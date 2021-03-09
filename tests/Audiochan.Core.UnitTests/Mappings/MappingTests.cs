@@ -50,7 +50,7 @@ namespace Audiochan.Core.UnitTests.Mappings
             var instance = GetInstanceOf(source);
             _mapper.Map(instance, source, destination);
         }
-
+        
         private object? GetInstanceOf(Type type)
         {
             if (type.GetConstructor(Type.EmptyTypes) != null)

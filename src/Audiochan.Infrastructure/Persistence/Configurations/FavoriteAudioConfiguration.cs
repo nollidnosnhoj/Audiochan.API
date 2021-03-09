@@ -9,7 +9,7 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<FavoriteAudio> builder)
         {
             builder
-                .HasKey(ft => new {ft.UserId, ft.AudioId});
+                .HasKey(ft => new { ft.UserId, ft.AudioId });
 
             builder
                 .HasOne(ft => ft.Audio)

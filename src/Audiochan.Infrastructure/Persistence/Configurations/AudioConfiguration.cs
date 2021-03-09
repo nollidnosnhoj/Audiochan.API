@@ -33,10 +33,9 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            
             builder.HasKey(x => x.Id);
-            builder.HasIndex(x => x.Title)
-                .IsTsVectorExpressionIndex("english");
+            builder.HasIndex(x => x.Title);
             builder.HasIndex(x => x.UploadId);
         }
     }

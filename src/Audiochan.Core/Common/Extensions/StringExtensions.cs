@@ -13,21 +13,21 @@ namespace Audiochan.Core.Common.Extensions
             return !string.IsNullOrWhiteSpace(phrase)
                    && Regex.IsMatch(phrase.ToLower(), @"/^[a-z0-9]+(?:-[a-z0-9]+)*$/");
         }
-
+        
         public static string GenerateSlug(this string phrase)
         {
             if (string.IsNullOrWhiteSpace(phrase)) return string.Empty;
-
+            
             // Convert foreign characters into ASCII
             var text = new IdnMapping().GetAscii(phrase);
 
             return text.GenerateTag();
         }
-
+        
         public static string GenerateTag(this string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return string.Empty;
-
+            
             var text = name.ToLower();
 
             //  Remove all invalid characters.  
@@ -41,7 +41,7 @@ namespace Audiochan.Core.Common.Extensions
 
             // If there's consecutive hyphens, only use one.
             text = Regex.Replace(text, @"[-]{2,}", "-");
-
+            
             // Dirty: Trim any hyphens
             text = text.Trim('-');
 
@@ -61,7 +61,7 @@ namespace Audiochan.Core.Common.Extensions
 
             return formattedTags;
         }
-
+        
         public static string ToSnakeCase(this string input)
         {
             if (string.IsNullOrEmpty(input))

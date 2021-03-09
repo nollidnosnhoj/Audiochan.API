@@ -2,12 +2,11 @@
 using Audiochan.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
+namespace Audiochan.Core.Features.Audios
 {
-    public static class AudioQueryableExtensions
+    public static class QueryableExtensions
     {
-        public static IQueryable<Audio> DefaultQueryable(this DbSet<Audio> dbSet,
-            string currentUserId = "")
+        public static IQueryable<Entities.Audio> DefaultQueryable(this DbSet<Entities.Audio> dbSet, string currentUserId = "")
         {
             return dbSet
                 .AsNoTracking()
@@ -17,20 +16,22 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
                 .Include(a => a.Genre)
                 .Where(a => a.UserId == currentUserId || a.IsPublic);
         }
-
-        public static IQueryable<Audio> FilterBySearchTerm(this IQueryable<Audio> queryable,
-            string q)
+        
+        public static IQueryable<Audio> FilterByTags(this IQueryable<Audio> queryable, string tags, string delimiter)
         {
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(tags))
             {
-                queryable = queryable.Where(a => EF.Functions.ILike(a.Title, $"%{q}%"));
+                var parsedTags = tags.Split(delimiter)
+                    .Select(t => t.Trim().ToLower())
+                    .ToArray();
+            
+                queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
             }
 
             return queryable;
         }
 
-        public static IQueryable<Audio> FilterByGenre(this IQueryable<Audio> queryable,
-            string input)
+        public static IQueryable<Audio> FilterByGenre(this IQueryable<Audio> queryable, string input)
         {
             if (!string.IsNullOrWhiteSpace(input))
             {
@@ -40,21 +41,6 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
                     genreId = parsedId;
 
                 queryable = queryable.Where(a => a.GenreId == genreId || a.Genre.Slug == input.Trim().ToLower());
-            }
-
-            return queryable;
-        }
-
-        public static IQueryable<Audio> FilterByTags(this IQueryable<Audio> queryable,
-            string tags, string delimiter)
-        {
-            if (!string.IsNullOrWhiteSpace(tags))
-            {
-                var parsedTags = tags.Split(delimiter)
-                    .Select(t => t.Trim().ToLower())
-                    .ToArray();
-
-                queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
             }
 
             return queryable;

@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.API.Extensions;
 using Audiochan.Core.Features.Favorites.Audios.CheckIfFavoritedAudio;
 using Audiochan.Core.Features.Favorites.Audios.SetFavorite;
 using Audiochan.Core.Interfaces;
+using Audiochan.API.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,14 +26,14 @@ namespace Audiochan.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpHead("audios/{audioId}", Name = "CheckIfUserFavoritedAudio")]
+        [HttpHead("audios/{audioId}", Name="CheckIfUserFavoritedAudio")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [SwaggerOperation(
             Summary = "Check if the authenticated user favorited an audio.",
             Description = "Requires authentication.",
             OperationId = "CheckIfUserFavoritedAudio",
-            Tags = new[] {"favorites"}
+            Tags = new []{"favorites"}
         )]
         public async Task<IActionResult> IsFavorite(long audioId, CancellationToken cancellationToken)
         {
@@ -43,7 +43,7 @@ namespace Audiochan.API.Controllers
                 : NotFound();
         }
 
-        [HttpPut("audios/{audioId}", Name = "FavoriteAudio")]
+        [HttpPut("audios/{audioId}", Name="FavoriteAudio")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -51,18 +51,18 @@ namespace Audiochan.API.Controllers
             Summary = "Favorite an audio",
             Description = "Requires authentication.",
             OperationId = "FavoriteAudio",
-            Tags = new[] {"favorites"}
+            Tags = new []{"favorites"}
         )]
         public async Task<IActionResult> Favorite(long audioId, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
             var result = await _mediator.Send(new SetFavoriteCommand(currentUserId, audioId, true), cancellationToken);
-            return result.IsSuccess
-                ? Ok()
+            return result.IsSuccess 
+                ? Ok() 
                 : result.ReturnErrorResponse();
         }
 
-        [HttpDelete("audios/{audioId}", Name = "UnfavoriteAudio")]
+        [HttpDelete("audios/{audioId}", Name="UnfavoriteAudio")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -70,14 +70,14 @@ namespace Audiochan.API.Controllers
             Summary = "Unfavorite an audio",
             Description = "Requires authentication.",
             OperationId = "UnfavoriteAudio",
-            Tags = new[] {"favorites"}
+            Tags = new []{"favorites"}
         )]
         public async Task<IActionResult> Unfavorite(long audioId, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
             var result = await _mediator.Send(new SetFavoriteCommand(currentUserId, audioId, false), cancellationToken);
-            return result.IsSuccess
-                ? NoContent()
+            return result.IsSuccess 
+                ? NoContent() 
                 : result.ReturnErrorResponse();
         }
     }

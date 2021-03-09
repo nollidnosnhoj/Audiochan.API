@@ -1,14 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using IdentityOptions = Audiochan.Core.Common.Options.IdentityOptions;
 
 namespace Audiochan.Core.Features.Users.UpdatePassword
 {
@@ -21,7 +22,7 @@ namespace Audiochan.Core.Features.Users.UpdatePassword
 
     public class UpdatePasswordCommandValidator : AbstractValidator<UpdatePasswordCommand>
     {
-        public UpdatePasswordCommandValidator(IOptions<IdentityOptions> options)
+        public UpdatePasswordCommandValidator(IOptions<Audiochan.Core.Common.Options.IdentityOptions> options)
         {
             RuleFor(req => req.NewPassword)
                 .NotEmpty()
@@ -31,7 +32,7 @@ namespace Audiochan.Core.Features.Users.UpdatePassword
                 .Password(options.Value, "New Password");
         }
     }
-
+    
     public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordCommand, IResult<bool>>
     {
         private readonly UserManager<User> _userManager;
@@ -40,7 +41,7 @@ namespace Audiochan.Core.Features.Users.UpdatePassword
         {
             _userManager = userManger;
         }
-
+        
         public async Task<IResult<bool>> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);

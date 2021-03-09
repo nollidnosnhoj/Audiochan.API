@@ -35,7 +35,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
                         title = "ABC123 " + title;
                     if (random.Int(1, 10) % 2 == 0)
                         title += " ABC123";
-                    var audio = new AudioBuilder("test.mp3", userId)
+                    var audio = new AudioBuilder(userId)
                         .Title(title)
                         .Build();
                     await _fixture.InsertAsync(audio);
@@ -46,7 +46,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
             {
                 Q = "example"
             });
-
+            
             result.Should().NotBeNull();
             result.Count.Should().Be(3);
             result.Items.Count.Should().Be(3);
@@ -62,7 +62,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
             for (var i = 0; i < 10; i++)
             {
                 var tags = new List<string>();
-
+                
                 if (i > 0 && i % 2 == 0)
                     tags.Add("testtag1");
                 if (i > 0 && i % 3 == 0)

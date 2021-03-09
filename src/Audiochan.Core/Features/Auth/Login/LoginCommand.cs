@@ -1,5 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Enums;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
@@ -15,7 +17,7 @@ namespace Audiochan.Core.Features.Auth.Login
         public string Login { get; init; }
         public string Password { get; init; }
     }
-
+    
     public class LoginCommandValidator : AbstractValidator<LoginCommand>
     {
         public LoginCommandValidator()
@@ -24,7 +26,7 @@ namespace Audiochan.Core.Features.Auth.Login
             RuleFor(x => x.Password).NotEmpty();
         }
     }
-
+    
     public class LoginCommandHandler : IRequestHandler<LoginCommand, IResult<AuthResultViewModel>>
     {
         private readonly UserManager<User> _userManager;
@@ -36,11 +38,10 @@ namespace Audiochan.Core.Features.Auth.Login
             _tokenService = tokenService;
         }
 
-        public async Task<IResult<AuthResultViewModel>> Handle(LoginCommand request,
-            CancellationToken cancellationToken)
+        public async Task<IResult<AuthResultViewModel>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.Users
-                .SingleOrDefaultAsync(u =>
+                .SingleOrDefaultAsync(u => 
                     u.UserName == request.Login.Trim().ToLower() || u.Email == request.Login, cancellationToken);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))

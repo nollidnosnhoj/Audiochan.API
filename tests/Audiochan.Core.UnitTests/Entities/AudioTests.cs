@@ -13,18 +13,18 @@ namespace Audiochan.Core.UnitTests.Entities
         {
             Id = "ValidUserId"
         };
-
+        
         [Fact]
         public void NewAudio_ShouldThrow_WhenFileNameIsNullOrEmpty()
         {
             FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), null, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("null", "fileName");
-
+            
             FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), string.Empty, 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("empty", "fileName");
-
+            
             FluentActions.Invoking(() => new Audio(UploadHelpers.GenerateUploadId(), "  ", 0, 0, "ValidUserId"))
                 .Should()
                 .ThrowExactly<ArgumentNullException>("whitespace", "fileName");
@@ -74,12 +74,12 @@ namespace Audiochan.Core.UnitTests.Entities
 
             // Act
             audio.UpdateTags(tagEntities);
-
+            
             // Assert
             audio.Tags.Count.Should().Be(3);
             audio.Tags.Count(t => t.Id == "apples").Should().Be(1);
         }
-
+        
         [Theory]
         [InlineData("apples", "oranges", "cucumber")]
         public void UpdateAudio_ShouldHaveCorrectTagValues(params string[] tags)
@@ -87,11 +87,11 @@ namespace Audiochan.Core.UnitTests.Entities
             // Assign
             var tagEntities = tags.Select(tag => new Tag {Id = tag}).ToList();
             var audio = new Audio();
-            audio.Tags.Add(new Tag {Id = "apples"});
+            audio.Tags.Add(new Tag{Id = "apples"});
 
             // Act
             audio.UpdateTags(tagEntities);
-
+            
             // Assert
             audio.Tags.Count.Should().Be(3);
             audio.Tags.Count(t => t.Id == "apples").Should().Be(1);
@@ -103,10 +103,10 @@ namespace Audiochan.Core.UnitTests.Entities
             // Assign
             const string currentUserId = "testId";
             var audio = new Audio(UploadHelpers.GenerateUploadId(), "filename.mp3", 0, 0, "ValidUserId");
-
+            
             // Act
             audio.AddFavorite(currentUserId);
-
+            
             // Assert
             audio.Favorited.Any(x => x.UserId == currentUserId).Should().Be(true);
         }
@@ -118,10 +118,10 @@ namespace Audiochan.Core.UnitTests.Entities
             const string currentUserId = "testId";
             var audio = new Audio(UploadHelpers.GenerateUploadId(), "filename.mp3", 0, 0, "ValidUserId");
             audio.Favorited.Add(new FavoriteAudio {AudioId = audio.Id, UserId = currentUserId});
-
+            
             // Act
             audio.RemoveFavorite(currentUserId);
-
+            
             // Assert
             audio.Favorited.Any(x => x.UserId == currentUserId).Should().Be(false);
         }

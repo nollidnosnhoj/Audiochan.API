@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Audiochan.Core.Common.Extensions;
+using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities.Base;
+using Microsoft.AspNetCore.Http;
 
 namespace Audiochan.Core.Entities
 {
@@ -19,7 +21,7 @@ namespace Audiochan.Core.Entities
         {
             if (string.IsNullOrWhiteSpace(uploadId))
                 throw new ArgumentException("UploadId cannot be empty.", nameof(uploadId));
-
+            
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentNullException(nameof(fileName));
 
@@ -27,10 +29,10 @@ namespace Audiochan.Core.Entities
                 throw new ArgumentNullException(nameof(userId));
 
             var fileExtension = Path.GetExtension(fileName);
-
+            
             if (string.IsNullOrEmpty(fileExtension))
                 throw new ArgumentException("File name does not have file extension", nameof(fileName));
-
+            
             this.UploadId = uploadId;
             this.FileExt = fileExtension;
             this.FileSize = fileSize;
@@ -127,7 +129,7 @@ namespace Audiochan.Core.Entities
                 throw new ArgumentNullException(nameof(userId));
 
             var favorite = GetFavorite(userId);
-
+            
             if (favorite is null)
             {
                 favorite = new FavoriteAudio {AudioId = this.Id, UserId = userId};

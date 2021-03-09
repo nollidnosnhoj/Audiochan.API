@@ -15,7 +15,7 @@ namespace Audiochan.API.Configurations
             {
                 options.SwaggerDoc("v1", new OpenApiInfo {Title = "Audiochan API Version 1"});
                 options.AddFluentValidationRules();
-
+                
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the bearer scheme",
@@ -23,7 +23,7 @@ namespace Audiochan.API.Configurations
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-
+                
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -34,11 +34,10 @@ namespace Audiochan.API.Configurations
                                 Id = "Bearer",
                                 Type = ReferenceType.SecurityScheme
                             }
-                        },
-                        new List<string>()
-                    }
+                        }, new List<string>()
+                    } 
                 });
-
+                
                 options.EnableAnnotations();
             });
         }
@@ -46,7 +45,7 @@ namespace Audiochan.API.Configurations
         public static void UseSwaggerConfig(this IApplicationBuilder app)
         {
             app.UseSwagger();
-
+            
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Audiochan API Version 1");

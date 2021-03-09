@@ -335,8 +335,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_audios_title",
                 table: "audios",
-                column: "title")
-                .Annotation("Npgsql:TsVectorConfig", "english");
+                column: "title");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audios_upload_id",

@@ -1,9 +1,13 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Users.GetUser;
-using Audiochan.Core.Interfaces.Repositories;
+using Audiochan.Core.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 
 namespace Audiochan.Core.Features.Search
@@ -12,20 +16,19 @@ namespace Audiochan.Core.Features.Search
     {
         public string Q { get; init; }
     }
-
+    
     public class SearchUsersQueryHandler : IRequestHandler<SearchUsersQuery, PagedList<UserViewModel>>
     {
-        private readonly IUserRepository _userRepository;
+        private readonly ISearchService _searchService;
 
-        public SearchUsersQueryHandler(IUserRepository userRepository)
+        public SearchUsersQueryHandler(ISearchService searchService)
         {
-            _userRepository = userRepository;
+            _searchService = searchService;
         }
 
-        public async Task<PagedList<UserViewModel>> Handle(SearchUsersQuery request,
-            CancellationToken cancellationToken)
+        public async Task<PagedList<UserViewModel>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
         {
-            return await _userRepository.SearchAsync<UserViewModel>(request, cancellationToken);
+            return await _searchService.SearchUsers(request, cancellationToken);
         }
     }
 }

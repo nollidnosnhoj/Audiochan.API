@@ -10,7 +10,7 @@ namespace Audiochan.Core.Common.Models.Responses
         Forbidden,
         UnprocessedEntity
     }
-
+    
     public interface IResult<out TResponse>
     {
         TResponse Data { get; }
@@ -28,8 +28,7 @@ namespace Audiochan.Core.Common.Models.Responses
         public bool IsSuccess { get; init; }
         public ResultError? ErrorCode { get; init; }
 
-        public static Result<TResponse> Fail(ResultError errorCode, string message = "",
-            Dictionary<string, string[]> errors = null)
+        public static Result<TResponse> Fail(ResultError errorCode, string message = "", Dictionary<string, string[]> errors = null)
         {
             return new()
             {

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Audiochan.Core.Common.Enums;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,19 +11,16 @@ namespace Audiochan.Core.Common.Extensions
     {
         public static IResult<bool> ToResult(this IdentityResult identityResult, string message = "")
         {
-            return identityResult.Succeeded
-                ? Result<bool>.Success(true)
-                : Result<bool>.Fail(ResultError.UnprocessedEntity, message,
-                    identityResult.FromIdentityToResultErrors());
+            return identityResult.Succeeded 
+                ? Result<bool>.Success(true) 
+                : Result<bool>.Fail(ResultError.UnprocessedEntity, message, identityResult.FromIdentityToResultErrors());
         }
-
-        public static IResult<TResponse> ToResult<TResponse>(this IdentityResult identityResult, TResponse data,
-            string message = "")
+        
+        public static IResult<TResponse> ToResult<TResponse>(this IdentityResult identityResult, TResponse data, string message = "")
         {
-            return identityResult.Succeeded
-                ? Result<TResponse>.Success(data)
-                : Result<TResponse>.Fail(ResultError.UnprocessedEntity, message,
-                    identityResult.FromIdentityToResultErrors());
+            return identityResult.Succeeded 
+                ? Result<TResponse>.Success(data) 
+                : Result<TResponse>.Fail(ResultError.UnprocessedEntity, message, identityResult.FromIdentityToResultErrors());
         }
 
         /// <summary>

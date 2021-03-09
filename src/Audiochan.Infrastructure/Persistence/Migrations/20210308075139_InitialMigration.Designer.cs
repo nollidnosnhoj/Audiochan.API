@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Audiochan.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210309041447_InitialMigration")]
+    [Migration("20210308075139_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,8 +109,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_audios_genre_id");
 
                     b.HasIndex("Title")
-                        .HasDatabaseName("ix_audios_title")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
+                        .HasDatabaseName("ix_audios_title");
 
                     b.HasIndex("UploadId")
                         .HasDatabaseName("ix_audios_upload_id");

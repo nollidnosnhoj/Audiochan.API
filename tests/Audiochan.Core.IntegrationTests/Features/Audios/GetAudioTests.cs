@@ -28,10 +28,10 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             var (ownerId, _) = await _fixture.RunAsDefaultUserAsync();
             var audio = new AudioBuilder("myaudio.mp3", ownerId).Build();
             await _fixture.InsertAsync(audio);
-
+            
             // Act
             var result = await _fixture.SendAsync(new GetAudioQuery(0));
-
+            
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(false);
@@ -47,12 +47,12 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 .Public(false)
                 .Build();
             await _fixture.InsertAsync(audio);
-
+            
             // Act
             var successResult = await _fixture.SendAsync(new GetAudioQuery(audio.Id));
             await _fixture.RunAsDefaultUserAsync();
             var failureResult = await _fixture.SendAsync(new GetAudioQuery(audio.Id));
-
+            
             // Assert
             successResult.Should().NotBeNull();
             successResult.IsSuccess.Should().Be(true);
@@ -76,12 +76,12 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 Duration = 100,
                 FileSize = 100,
                 Genre = "dubstep",
-                Tags = new List<string> {"apples", "oranges"}
+                Tags = new List<string>{ "apples", "oranges" }
             });
-
+            
             // Act
             var result = await _fixture.SendAsync(new GetAudioQuery(audio.Data.Id));
-
+            
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(true);

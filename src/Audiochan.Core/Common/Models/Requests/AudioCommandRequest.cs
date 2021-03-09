@@ -11,7 +11,7 @@ namespace Audiochan.Core.Common.Models.Requests
         public string Genre { get; init; }
         public List<string> Tags { get; init; } = new();
     }
-
+    
     public class AudioCommandValidator : AbstractValidator<AudioCommandRequest>
     {
         public AudioCommandValidator()
@@ -26,7 +26,7 @@ namespace Audiochan.Core.Common.Models.Requests
             RuleFor(req => req.Description)
                 .MaximumLength(500)
                 .WithMessage("Description cannot be more than 500 characters long.");
-
+            
             // Must be at most 10 tags.
             RuleFor(req => req.Tags)
                 .Must(u => u!.Count <= 10)

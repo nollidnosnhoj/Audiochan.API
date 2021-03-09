@@ -107,8 +107,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_audios_genre_id");
 
                     b.HasIndex("Title")
-                        .HasDatabaseName("ix_audios_title")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english");
+                        .HasDatabaseName("ix_audios_title");
 
                     b.HasIndex("UploadId")
                         .HasDatabaseName("ix_audios_upload_id");

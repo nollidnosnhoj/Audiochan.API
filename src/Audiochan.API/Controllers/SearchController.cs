@@ -22,8 +22,7 @@ namespace Audiochan.API.Controllers
 
         [HttpGet("audios")]
         [ProducesResponseType(typeof(PagedList<AudioViewModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SearchAudios([FromQuery] SearchAudiosQuery query,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> SearchAudios([FromQuery] SearchAudiosQuery query, CancellationToken cancellationToken)
         {
             var results = await _mediator.Send(query, cancellationToken);
             return new JsonResult(results);
@@ -31,8 +30,7 @@ namespace Audiochan.API.Controllers
 
         [HttpGet("users")]
         [ProducesResponseType(typeof(PagedList<UserViewModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> SearchUsers([FromQuery] SearchUsersQuery query,
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> SearchUsers([FromQuery] SearchUsersQuery query, CancellationToken cancellationToken)
         {
             var results = await _mediator.Send(query, cancellationToken);
             return new JsonResult(results);

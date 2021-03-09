@@ -1,4 +1,7 @@
-﻿using Audiochan.API.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Audiochan.API.Models;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +24,7 @@ namespace Audiochan.API.Controllers
         [SwaggerOperation(
             Summary = "Get a temporary pre-signed AWS S3 Put link to upload audio.",
             OperationId = "GetPresignedUrl",
-            Tags = new[] {"upload"}
+            Tags = new []{"upload"}
         )]
         public IActionResult GetUploadUrl([FromBody] UploadAudioRequest request)
         {

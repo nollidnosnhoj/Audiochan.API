@@ -12,13 +12,13 @@ namespace Audiochan.API.Middlewares
     public class CustomRateLimitingMiddleware : IpRateLimitMiddleware
     {
         private readonly IpRateLimitOptions _rateLimitOptions;
-
-        public CustomRateLimitingMiddleware(RequestDelegate next,
-            IOptions<IpRateLimitOptions> options,
-            IRateLimitCounterStore counterStore,
-            IIpPolicyStore policyStore,
-            IRateLimitConfiguration config,
-            ILogger<IpRateLimitMiddleware> logger)
+        
+        public CustomRateLimitingMiddleware(RequestDelegate next, 
+            IOptions<IpRateLimitOptions> options, 
+            IRateLimitCounterStore counterStore, 
+            IIpPolicyStore policyStore, 
+            IRateLimitConfiguration config, 
+            ILogger<IpRateLimitMiddleware> logger) 
             : base(next, options, counterStore, policyStore, config, logger)
         {
             _rateLimitOptions = options.Value;
