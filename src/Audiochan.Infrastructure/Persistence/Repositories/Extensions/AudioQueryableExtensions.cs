@@ -23,7 +23,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
         {
             if (!string.IsNullOrWhiteSpace(q))
             {
-                queryable = queryable.Where(a => a.Title.ToLower().Contains(q.ToLower()));
+                queryable = queryable.Where(a => EF.Functions.ILike(a.Title, $"%{q}%"));
             }
 
             return queryable;
