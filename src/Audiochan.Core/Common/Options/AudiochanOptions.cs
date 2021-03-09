@@ -11,6 +11,7 @@ namespace Audiochan.Core.Common.Options
             public long MaxFileSize { get; init; }
         }
 
+        public string StorageUrl { get; init; }
         public StorageOptions AudioStorageOptions { get; init; }
         public StorageOptions ImageStorageOptions { get; init; }
     }

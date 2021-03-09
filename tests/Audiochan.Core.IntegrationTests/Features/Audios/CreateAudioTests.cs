@@ -52,7 +52,6 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             // ASSERT
             result.IsSuccess.Should().Be(true);
             result.Data.Should().NotBeNull();
-            result.Data.UploadId.Should().Be(uploadId);
             result.Data.Title.Should().Be("Test Audio");
             result.Data.Description.Should().Be("This is a test audio");
             result.Data.FileExt.Should().Be(".mp3");
