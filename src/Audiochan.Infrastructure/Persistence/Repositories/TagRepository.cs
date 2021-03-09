@@ -7,13 +7,13 @@ using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Services
+namespace Audiochan.Infrastructure.Persistence.Repositories
 {
-    public class TagService
+    public class TagRepository : ITagRepository
     {
         private readonly IApplicationDbContext _dbContext;
 
-        public TagService(IApplicationDbContext dbContext)
+        public TagRepository(IApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

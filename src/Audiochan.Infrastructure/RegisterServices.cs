@@ -2,6 +2,7 @@
 using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure.Image;
 using Audiochan.Infrastructure.Persistence;
+using Audiochan.Infrastructure.Persistence.Repositories;
 using Audiochan.Infrastructure.Search;
 using Audiochan.Infrastructure.Security;
 using Audiochan.Infrastructure.Shared;
@@ -20,6 +21,7 @@ namespace Audiochan.Infrastructure
             bool isDevelopment)
         {
             ConfigureDatabase(services, configuration, isDevelopment);
+            ConfigureRepositories(services);
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IStorageService, AmazonS3Service>();
             services.AddTransient<ISearchService, DatabaseSearchService>();
@@ -43,6 +45,12 @@ namespace Audiochan.Infrastructure
             });
             
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+        }
+
+        private static void ConfigureRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
         }
     }
 }

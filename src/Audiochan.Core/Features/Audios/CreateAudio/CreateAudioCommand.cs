@@ -14,7 +14,6 @@ using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
-using Audiochan.Core.Services;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -62,24 +61,25 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
     public class CreateAudioCommandHandler : IRequestHandler<CreateAudioCommand, Result<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
-        private readonly TagService _tagService;
-        private readonly GenreService _genreService;
         private readonly IStorageService _storageService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
+        private readonly IGenreRepository _genreRepository;
+        private readonly ITagRepository _tagRepository;
 
         public CreateAudioCommandHandler(IApplicationDbContext dbContext,
             IStorageService storageService,
             ICurrentUserService currentUserService,
             IMapper mapper, 
-            TagService tagService, GenreService genreService)
+            IGenreRepository genreRepository, 
+            ITagRepository tagRepository)
         {
             _dbContext = dbContext;
             _storageService = storageService;
             _currentUserService = currentUserService;
             _mapper = mapper;
-            _tagService = tagService;
-            _genreService = genreService;
+            _genreRepository = genreRepository;
+            _tagRepository = tagRepository;
         }
 
         public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request,
@@ -98,11 +98,11 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
             
             try
             {
-                var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
+                var genre = await _genreRepository.GetByInput(request.Genre, cancellationToken);
                 audio.UpdateGenre(genre);
                 
                 var tags = request.Tags.Count > 0
-                    ? await _tagService.CreateTags(request.Tags, cancellationToken)
+                    ? await _tagRepository.CreateTags(request.Tags, cancellationToken)
                     : new List<Tag>();
                 audio.UpdateTags(tags);
 
