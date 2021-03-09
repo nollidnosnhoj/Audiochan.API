@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Audiochan.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audios
@@ -15,18 +16,22 @@ namespace Audiochan.Core.Features.Audios
                 .Include(a => a.Genre)
                 .Where(a => a.UserId == currentUserId || a.IsPublic);
         }
-
-        public static IQueryable<Entities.Audio> FilterBySearchTerm(this IQueryable<Entities.Audio> queryable, string q)
+        
+        public static IQueryable<Audio> FilterByTags(this IQueryable<Audio> queryable, string tags, string delimiter)
         {
-            if (!string.IsNullOrWhiteSpace(q))
+            if (!string.IsNullOrWhiteSpace(tags))
             {
-                queryable = queryable.Where(a => a.Title.ToLower().Contains(q.ToLower()));
+                var parsedTags = tags.Split(delimiter)
+                    .Select(t => t.Trim().ToLower())
+                    .ToArray();
+            
+                queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
             }
 
             return queryable;
         }
 
-        public static IQueryable<Entities.Audio> FilterByGenre(this IQueryable<Entities.Audio> queryable, string input)
+        public static IQueryable<Audio> FilterByGenre(this IQueryable<Audio> queryable, string input)
         {
             if (!string.IsNullOrWhiteSpace(input))
             {
@@ -41,21 +46,7 @@ namespace Audiochan.Core.Features.Audios
             return queryable;
         }
 
-        public static IQueryable<Entities.Audio> FilterByTags(this IQueryable<Entities.Audio> queryable, string tags, string delimiter)
-        {
-            if (!string.IsNullOrWhiteSpace(tags))
-            {
-                var parsedTags = tags.Split(delimiter)
-                    .Select(t => t.Trim().ToLower())
-                    .ToArray();
-            
-                queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
-            }
-
-            return queryable;
-        }
-
-        public static IQueryable<Entities.Audio> Sort(this IQueryable<Entities.Audio> queryable, string sort)
+        public static IQueryable<Audio> Sort(this IQueryable<Audio> queryable, string sort)
         {
             return sort.ToLower() switch
             {

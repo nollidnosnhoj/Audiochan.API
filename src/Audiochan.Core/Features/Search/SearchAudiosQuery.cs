@@ -21,29 +21,16 @@ namespace Audiochan.Core.Features.Search
 
     public class SearchAudiosQueryHandler : IRequestHandler<SearchAudiosQuery, PagedList<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly ISearchService _searchService;
 
-        public SearchAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public SearchAudiosQueryHandler(ISearchService searchService)
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
-            _mapper = mapper;
+            _searchService = searchService;
         }
 
         public async Task<PagedList<AudioViewModel>> Handle(SearchAudiosQuery request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
-
-            return await _dbContext.Audios
-                .DefaultQueryable(currentUserId)
-                .FilterBySearchTerm(request.Q)
-                .FilterByGenre(request.Genre)
-                .FilterByTags(request.Tags, ",")
-                .Sort(request.Sort)
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
-                .PaginateAsync(request, cancellationToken);
+            return await _searchService.SearchAudios(request, cancellationToken);
         }
     }
 }

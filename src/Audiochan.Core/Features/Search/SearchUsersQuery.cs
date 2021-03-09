@@ -19,24 +19,16 @@ namespace Audiochan.Core.Features.Search
     
     public class SearchUsersQueryHandler : IRequestHandler<SearchUsersQuery, PagedList<UserViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly ISearchService _searchService;
 
-        public SearchUsersQueryHandler(IApplicationDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService)
+        public SearchUsersQueryHandler(ISearchService searchService)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
-            _currentUserService = currentUserService;
+            _searchService = searchService;
         }
 
         public async Task<PagedList<UserViewModel>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
-            return await _dbContext.Users
-                .Where(u => u.UserName.Contains(request.Q.ToLower()))
-                .ProjectTo<UserViewModel>(_mapper.ConfigurationProvider, new {currentUserId})
-                .PaginateAsync(request, cancellationToken);
+            return await _searchService.SearchUsers(request, cancellationToken);
         }
     }
 }
