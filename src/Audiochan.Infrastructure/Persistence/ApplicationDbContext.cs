@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Audiochan.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : IdentityDbContext<User, Role, string>
+    public class ApplicationDbContext : IdentityDbContext<User, Role, string>, IApplicationDbContext
     {
         private readonly IDateTimeService _dateTimeService;
         private IDbContextTransaction _currentTransaction;

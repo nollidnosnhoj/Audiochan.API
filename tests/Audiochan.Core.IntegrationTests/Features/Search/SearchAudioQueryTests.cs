@@ -35,7 +35,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Search
                         title = "ABC123 " + title;
                     if (random.Int(1, 10) % 2 == 0)
                         title += " ABC123";
-                    var audio = new AudioBuilder("test.mp3", userId)
+                    var audio = new AudioBuilder(userId)
                         .Title(title)
                         .Build();
                     await _fixture.InsertAsync(audio);

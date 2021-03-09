@@ -10,7 +10,7 @@ namespace Audiochan.Core.UnitTests.Builders
         private Audio _audio;
         private readonly Randomizer _randomizer = new();
 
-        public AudioBuilder(string fileName, string userId)
+        public AudioBuilder(string userId, string fileName = "test.mp3")
         {
             _audio = new Audio(
                 uploadId: UploadHelpers.GenerateUploadId(), 

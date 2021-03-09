@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
-using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -39,21 +38,33 @@ namespace Audiochan.Core.Features.Users.GetUser
 
     public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IResult<UserViewModel>>
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IMapper _mapper;
 
-        public GetUserQueryHandler(IUserRepository userRepository)
+        public GetUserQueryHandler(ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _currentUserService = currentUserService;
+            _dbContext = dbContext;
+            _mapper = mapper;
         }
         
         public async Task<IResult<UserViewModel>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository
-                .GetAsync<UserViewModel>(u => u.UserName == request.Username.Trim().ToLower(), cancellationToken);
+            var currentUserId = _currentUserService.GetUserId();
+            
+            var profile = await _dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Followers)
+                .Include(u => u.Followings)
+                .Include(u => u.Audios)
+                .Where(u => u.UserName == request.Username.Trim().ToLower())
+                .ProjectTo<UserViewModel>(_mapper.ConfigurationProvider, new {currentUserId})
+                .SingleOrDefaultAsync(cancellationToken);
 
-            return user == null
+            return profile == null
                 ? Result<UserViewModel>.Fail(ResultError.NotFound)
-                : Result<UserViewModel>.Success(user);
+                : Result<UserViewModel>.Success(profile);
         }
     }
 }

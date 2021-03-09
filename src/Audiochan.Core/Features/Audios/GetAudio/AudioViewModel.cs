@@ -21,7 +21,7 @@ namespace Audiochan.Core.Features.Audios.GetAudio
         public GenreDto Genre { get; init; }
         public UserDto User { get; init; }
         // TODO: I want to remove UploadId eventually from the view model.
-        public string UploadId { get; init; }
+        public Guid UploadId { get; init; }
 
         public record GenreDto(long Id, string Name, string Slug)
         {

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Interfaces;
 using MediatR;
 
-namespace Audiochan.Infrastructure.Persistence.Pipelines
+namespace Audiochan.Core.Common.Pipelines
 {
     /// <summary>
     /// This pipeline handles the database transaction
@@ -12,9 +13,9 @@ namespace Audiochan.Infrastructure.Persistence.Pipelines
     /// <typeparam name="TResponse">The Response object</typeparam>
     public class DbContextTransactionPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IApplicationDbContext _dbContext;
 
-        public DbContextTransactionPipelineBehavior(ApplicationDbContext dbContext)
+        public DbContextTransactionPipelineBehavior(IApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
