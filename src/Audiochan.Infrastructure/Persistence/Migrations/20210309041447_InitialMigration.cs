@@ -16,12 +16,14 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy",
-                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     slug = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
                 },
-                constraints: table => { table.PrimaryKey("pk_genres", x => x.id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_genres", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "roles",
@@ -29,11 +31,13 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_name =
-                        table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    normalized_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     concurrency_stamp = table.Column<string>(type: "text", nullable: true)
                 },
-                constraints: table => { table.PrimaryKey("pk_roles", x => x.id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_roles", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "tags",
@@ -41,25 +45,25 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false)
                 },
-                constraints: table => { table.PrimaryKey("pk_tags", x => x.id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tags", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
-                    display_name =
-                        table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    display_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     picture = table.Column<string>(type: "text", nullable: true),
                     about = table.Column<string>(type: "text", nullable: true),
                     website = table.Column<string>(type: "text", nullable: true),
                     joined = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_user_name =
-                        table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_email =
-                        table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    normalized_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
                     password_hash = table.Column<string>(type: "text", nullable: true),
                     security_stamp = table.Column<string>(type: "text", nullable: true),
@@ -71,15 +75,17 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                     lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     access_failed_count = table.Column<int>(type: "integer", nullable: false)
                 },
-                constraints: table => { table.PrimaryKey("pk_users", x => x.id); });
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_users", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "role_claims",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy",
-                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     role_id = table.Column<string>(type: "text", nullable: false),
                     claim_type = table.Column<string>(type: "text", nullable: true),
                     claim_value = table.Column<string>(type: "text", nullable: true)
@@ -100,8 +106,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy",
-                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "text", nullable: true),
                     duration = table.Column<int>(type: "integer", nullable: false),
@@ -143,7 +148,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_followed_users", x => new {x.observer_id, x.target_id});
+                    table.PrimaryKey("pk_followed_users", x => new { x.observer_id, x.target_id });
                     table.ForeignKey(
                         name: "fk_followed_users_users_observer_id",
                         column: x => x.observer_id,
@@ -163,8 +168,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy",
-                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     token = table.Column<string>(type: "text", nullable: false),
                     expiry = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -188,8 +192,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy",
-                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     user_id = table.Column<string>(type: "text", nullable: false),
                     claim_type = table.Column<string>(type: "text", nullable: true),
                     claim_value = table.Column<string>(type: "text", nullable: true)
@@ -216,7 +219,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_logins", x => new {x.login_provider, x.provider_key});
+                    table.PrimaryKey("pk_user_logins", x => new { x.login_provider, x.provider_key });
                     table.ForeignKey(
                         name: "fk_user_logins_users_user_id",
                         column: x => x.user_id,
@@ -234,7 +237,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_roles", x => new {x.user_id, x.role_id});
+                    table.PrimaryKey("pk_user_roles", x => new { x.user_id, x.role_id });
                     table.ForeignKey(
                         name: "fk_user_roles_roles_role_id",
                         column: x => x.role_id,
@@ -260,7 +263,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_tokens", x => new {x.user_id, x.login_provider, x.name});
+                    table.PrimaryKey("pk_user_tokens", x => new { x.user_id, x.login_provider, x.name });
                     table.ForeignKey(
                         name: "fk_user_tokens_users_user_id",
                         column: x => x.user_id,
@@ -278,7 +281,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_audio_tags", x => new {x.audios_id, x.tags_id});
+                    table.PrimaryKey("pk_audio_tags", x => new { x.audios_id, x.tags_id });
                     table.ForeignKey(
                         name: "fk_audio_tags_audios_audios_id",
                         column: x => x.audios_id,
@@ -304,7 +307,7 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_favorite_audios", x => new {x.user_id, x.audio_id});
+                    table.PrimaryKey("pk_favorite_audios", x => new { x.user_id, x.audio_id });
                     table.ForeignKey(
                         name: "fk_favorite_audios_audios_audio_id",
                         column: x => x.audio_id,
@@ -332,7 +335,8 @@ namespace Audiochan.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_audios_title",
                 table: "audios",
-                column: "title");
+                column: "title")
+                .Annotation("Npgsql:TsVectorConfig", "english");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audios_upload_id",
