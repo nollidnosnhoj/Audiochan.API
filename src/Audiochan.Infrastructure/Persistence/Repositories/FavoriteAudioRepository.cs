@@ -16,9 +16,8 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
     public class FavoriteAudioRepository : BaseRepository<FavoriteAudio>, IFavoriteAudioRepository
     {
         private readonly ICurrentUserService _currentUserService;
-
-        public FavoriteAudioRepository(ApplicationDbContext context, IMapper mapper,
-            ICurrentUserService currentUserService) : base(context, mapper)
+        
+        public FavoriteAudioRepository(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService) : base(context, mapper)
         {
             _currentUserService = currentUserService;
         }
@@ -35,8 +34,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             .ThenInclude(a => a.Favorited);
 
 
-        public async Task<PagedList<TDto>> ListAsync<TDto>(string username,
-            PaginationQueryRequest<TDto> paginationQuery,
+        public async Task<PagedList<TDto>> ListAsync<TDto>(string username, PaginationQueryRequest<TDto> paginationQuery,
             CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
@@ -44,7 +42,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
                 .Where(fa => fa.User.UserName == username.Trim().ToLower())
                 .OrderByDescending(fa => fa.Created)
                 .Select(fa => fa.Audio)
-                .ProjectTo<TDto>(Mapper.ConfigurationProvider, new {currentUserId})
+                .ProjectTo<TDto>(Mapper.ConfigurationProvider, new { currentUserId })
                 .PaginateAsync(paginationQuery, cancellationToken);
         }
     }

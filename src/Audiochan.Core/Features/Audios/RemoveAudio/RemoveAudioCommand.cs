@@ -7,11 +7,13 @@ using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audios.RemoveAudio
 {
     public record RemoveAudioCommand(long Id) : IRequest<IResult<bool>>
     {
+        
     }
 
     public class RemoveAudioCommandHandler : IRequestHandler<RemoveAudioCommand, IResult<bool>>
@@ -20,18 +22,17 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
         private readonly ICurrentUserService _currentUserService;
         private readonly IAudioRepository _audioRepository;
 
-        public RemoveAudioCommandHandler(IStorageService storageService, ICurrentUserService currentUserService,
-            IAudioRepository audioRepository)
+        public RemoveAudioCommandHandler(IStorageService storageService, ICurrentUserService currentUserService, IAudioRepository audioRepository)
         {
             _storageService = storageService;
             _currentUserService = currentUserService;
             _audioRepository = audioRepository;
         }
-
+        
         public async Task<IResult<bool>> Handle(RemoveAudioCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
-
+            
             var audio = await _audioRepository.SingleOrDefaultAsync(a => a.Id == request.Id, true, cancellationToken);
 
             if (audio == null)
@@ -44,8 +45,7 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
 
             var tasks = new List<Task>
             {
-                _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio),
-                    cancellationToken)
+                _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio), cancellationToken)
             };
             if (!string.IsNullOrEmpty(audio.Picture))
                 tasks.Add(_storageService.RemoveAsync(audio.Picture, cancellationToken));

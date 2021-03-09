@@ -20,7 +20,7 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(new LoginCommand());
             result.ShouldHaveValidationErrorFor(x => x.Login);
         }
-
+        
         [Fact]
         public void CheckIfPasswordIsEmpty()
         {

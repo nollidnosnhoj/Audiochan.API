@@ -24,20 +24,19 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldNotRemoveAudio_WhenUserCannotModify()
         {
             // Assign
-            var (ownerId, _) =
-                await _fixture.RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
-
+            var (ownerId, _) = await _fixture.RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
+            
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
             await _fixture.InsertAsync(audio);
-
+            
             // Act
             await _fixture.RunAsDefaultUserAsync();
 
             var command = new RemoveAudioCommand(audio.Id);
 
             var result = await _fixture.SendAsync(command);
-
+            
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(false);
@@ -67,11 +66,11 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         {
             // Assign
             var (ownerId, _) = await _fixture.RunAsDefaultUserAsync();
-
+            
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
             await _fixture.InsertAsync(audio);
-
+            
             var (favoriterId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
 
@@ -91,7 +90,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 return database.FavoriteAudios.SingleOrDefaultAsync(x =>
                     x.AudioId == audio.Id && x.UserId == favoriterId);
             });
-
+            
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(true);

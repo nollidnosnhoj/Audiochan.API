@@ -74,7 +74,7 @@ namespace Audiochan.Core.UnitTests.Validations
                 .ShouldHaveValidationErrorFor(x => x.Password)
                 .WithErrorCode(ValidationErrorCodes.Password.RequireLowercase);
         }
-
+        
         [Fact]
         public void PasswordRequireUppercase()
         {
@@ -86,7 +86,7 @@ namespace Audiochan.Core.UnitTests.Validations
                 .ShouldHaveValidationErrorFor(x => x.Password)
                 .WithErrorCode(ValidationErrorCodes.Password.RequireUppercase);
         }
-
+        
         [Fact]
         public void PasswordRequireNonAlphanumeric()
         {
@@ -98,7 +98,7 @@ namespace Audiochan.Core.UnitTests.Validations
                 .ShouldHaveValidationErrorFor(x => x.Password)
                 .WithErrorCode(ValidationErrorCodes.Password.RequireNonAlphanumeric);
         }
-
+        
         [Fact]
         public void PasswordRequireLength()
         {

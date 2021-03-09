@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
@@ -13,8 +14,9 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
 {
     public record UpdateUserPictureCommand(string UserId, string ImageData) : IRequest<IResult<string>>
     {
+        
     }
-
+    
     public class UpdateUserPictureCommandHandler : IRequestHandler<UpdateUserPictureCommand, IResult<string>>
     {
         private readonly UserManager<User> _userManager;
@@ -22,14 +24,14 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
         private readonly IStorageService _storageService;
 
         public UpdateUserPictureCommandHandler(UserManager<User> userManager,
-            IImageService imageService,
+            IImageService imageService, 
             IStorageService storageService)
         {
             _userManager = userManager;
             _imageService = imageService;
             _storageService = storageService;
         }
-
+        
         public async Task<IResult<string>> Handle(UpdateUserPictureCommand request, CancellationToken cancellationToken)
         {
             var blobName = Path.Combine(request.UserId, Guid.NewGuid().ToString("N") + ".jpg");
@@ -42,9 +44,7 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
                     await _storageService.RemoveAsync(user.Picture, cancellationToken);
                     user.UpdatePicture(string.Empty);
                 }
-
-                var response =
-                    await _imageService.UploadImage(request.ImageData, PictureType.User, blobName, cancellationToken);
+                var response = await _imageService.UploadImage(request.ImageData, PictureType.User, blobName, cancellationToken);
                 user.UpdatePicture(response.Path);
                 await _userManager.UpdateAsync(user);
                 return Result<string>.Success(response.Url);

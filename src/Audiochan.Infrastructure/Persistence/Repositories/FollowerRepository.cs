@@ -7,6 +7,7 @@ using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
+using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -25,7 +26,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             .Include(u => u.Observer);
 
 
-        public async Task<PagedList<TDto>> ListAsync<TDto>(Expression<Func<FollowedUser, bool>> expression,
+        public async Task<PagedList<TDto>> ListAsync<TDto>(Expression<Func<FollowedUser, bool>> expression, 
             PaginationQueryRequest<TDto> paginationQuery, CancellationToken cancellationToken = default)
         {
             return await BaseQueryable

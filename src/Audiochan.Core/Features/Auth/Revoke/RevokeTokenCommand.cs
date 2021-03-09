@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Enums;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
@@ -14,15 +16,14 @@ namespace Audiochan.Core.Features.Auth.Revoke
     {
         public string RefreshToken { get; init; }
     }
-
+    
     public class RevokeTokenCommandHandler : IRequestHandler<RevokeTokenCommand, IResult<bool>>
     {
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IDateTimeService _dateTimeService;
 
-        public RevokeTokenCommandHandler(UserManager<User> userManager, ITokenService tokenService,
-            IDateTimeService dateTimeService)
+        public RevokeTokenCommandHandler(UserManager<User> userManager, ITokenService tokenService, IDateTimeService dateTimeService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
@@ -34,7 +35,7 @@ namespace Audiochan.Core.Features.Auth.Revoke
             // Fail when refresh token is not defined
             if (string.IsNullOrEmpty(request.RefreshToken))
                 return Result<bool>.Fail(ResultError.BadRequest, "Refresh token was not defined.");
-
+            
             var user = await _userManager.Users
                 .Include(u => u.RefreshTokens)
                 .SingleOrDefaultAsync(u => u.RefreshTokens
@@ -45,7 +46,7 @@ namespace Audiochan.Core.Features.Auth.Revoke
 
             var existingRefreshToken = user.RefreshTokens
                 .Single(r => r.Token == request.RefreshToken);
-
+            
             if (_tokenService.IsRefreshTokenValid(existingRefreshToken))
             {
                 existingRefreshToken.Revoked = _dateTimeService.Now;

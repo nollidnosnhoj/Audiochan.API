@@ -16,8 +16,8 @@ namespace Audiochan.Infrastructure
 {
     public static class RegisterServices
     {
-        public static IServiceCollection AddInfraServices(this IServiceCollection services,
-            IConfiguration configuration,
+        public static IServiceCollection AddInfraServices(this IServiceCollection services, 
+            IConfiguration configuration, 
             bool isDevelopment)
         {
             ConfigureDatabase(services, configuration, isDevelopment);
@@ -36,8 +36,7 @@ namespace Audiochan.Infrastructure
             return services;
         }
 
-        private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration,
-            bool isDevelopment)
+        private static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {

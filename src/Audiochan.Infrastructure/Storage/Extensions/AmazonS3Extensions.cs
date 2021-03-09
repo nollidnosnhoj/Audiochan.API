@@ -28,9 +28,8 @@ namespace Audiochan.Infrastructure.Storage.Extensions
                 }
             }
         }
-
-        public static void AddMetadataCollection(this GetPreSignedUrlRequest request,
-            Dictionary<string, string> data = null)
+        
+        public static void AddMetadataCollection(this GetPreSignedUrlRequest request, Dictionary<string, string> data = null)
         {
             if (data?.Count > 0)
             {

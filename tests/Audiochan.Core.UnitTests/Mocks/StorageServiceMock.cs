@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Constants;
+using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using Moq;
@@ -15,33 +16,33 @@ namespace Audiochan.Core.UnitTests.Mocks
         {
             var mock = new Mock<IStorageService>();
             mock
-                .Setup(x =>
-                    x.ExistsAsync(It.IsAny<string>(),
-                        It.IsAny<string>(),
+                .Setup(x => 
+                    x.ExistsAsync(It.IsAny<string>(), 
+                        It.IsAny<string>(), 
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             mock
-                .Setup(x =>
-                    x.ExistsAsync(It.IsAny<string>(),
+                .Setup(x => 
+                    x.ExistsAsync(It.IsAny<string>(), 
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
             mock
-                .Setup(x =>
-                    x.RemoveAsync(It.IsAny<string>(),
+                .Setup(x => 
+                    x.RemoveAsync(It.IsAny<string>(), 
                         It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
             mock
-                .Setup(x =>
-                    x.RemoveAsync(It.IsAny<string>(),
-                        It.IsAny<string>(),
+                .Setup(x => 
+                    x.RemoveAsync(It.IsAny<string>(), 
+                        It.IsAny<string>(), 
                         It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
             mock
-                .Setup(x =>
-                    x.SaveAsync(It.IsAny<Stream>(),
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<Dictionary<string, string>>(),
+                .Setup(x => 
+                    x.SaveAsync(It.IsAny<Stream>(), 
+                        It.IsAny<string>(), 
+                        It.IsAny<string>(), 
+                        It.IsAny<Dictionary<string, string>>(), 
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new SaveBlobResponse
                 {

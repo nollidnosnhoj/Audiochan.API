@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Audiochan.Core.Common.Constants;
+using Audiochan.Core.Entities;
 
 namespace Audiochan.Core.Common.Extensions
 {
@@ -386,12 +389,12 @@ namespace Audiochan.Core.Common.Extensions
             {".z", "application/x-compress"},
             {".zip", "application/x-zip-compressed"},
         };
-
+        
         public static string GetContentType(this string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 return "application/octet-stream";
-
+            
             var extension = Path.GetExtension(fileName);
 
             if (string.IsNullOrEmpty(extension))

@@ -24,7 +24,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
         public async Task ShouldGetAudios_BasedOnGenre()
         {
             const int resultCount = 2;
-
+            
             var genreName = Guid.NewGuid().ToString("N");
             var genre = new Genre {Name = genreName, Slug = genreName.GenerateSlug()};
             await _fixture.InsertAsync(genre);

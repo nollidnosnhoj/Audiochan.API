@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             Context = context;
             Mapper = mapper;
         }
-
+        
         protected abstract IQueryable<TEntity> BaseQueryable { get; }
 
         public async Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> expression,
@@ -27,14 +28,13 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             CancellationToken cancellationToken = default)
         {
             var queryable = !isTracking ? BaseQueryable.AsNoTracking() : BaseQueryable;
-
+            
             return await queryable
                 .Where(expression)
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> expression,
-            CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> expression, CancellationToken cancellationToken = default)
         {
             return await BaseQueryable.AsNoTracking().AnyAsync(expression, cancellationToken);
         }

@@ -1,12 +1,12 @@
-using Audiochan.API.Configurations;
 using Audiochan.API.Middlewares;
 using Audiochan.API.Services;
 using Audiochan.Core;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure;
-using Audiochan.Infrastructure.Persistence.Pipelines;
 using Audiochan.Infrastructure.Storage.Options;
+using Audiochan.API.Configurations;
+using Audiochan.Infrastructure.Persistence.Pipelines;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -59,7 +59,10 @@ namespace Audiochan.API
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.UseSwaggerConfig();
         }

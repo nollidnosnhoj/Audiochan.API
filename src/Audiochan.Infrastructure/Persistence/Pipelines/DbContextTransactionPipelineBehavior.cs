@@ -19,8 +19,7 @@ namespace Audiochan.Infrastructure.Persistence.Pipelines
             _dbContext = dbContext;
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-            RequestHandlerDelegate<TResponse> next)
+        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             TResponse result;
 

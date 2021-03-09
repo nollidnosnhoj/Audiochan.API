@@ -34,9 +34,9 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
         private readonly IGenreRepository _genreRepository;
         private readonly ITagRepository _tagRepository;
 
-        public UpdateAudioCommandHandler(ICurrentUserService currentUserService,
-            IMapper mapper,
-            IAudioRepository audioRepository,
+        public UpdateAudioCommandHandler(ICurrentUserService currentUserService, 
+            IMapper mapper, 
+            IAudioRepository audioRepository, 
             IGenreRepository genreRepository, ITagRepository tagRepository)
         {
             _currentUserService = currentUserService;
@@ -45,19 +45,18 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
             _genreRepository = genreRepository;
             _tagRepository = tagRepository;
         }
-
-        public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request,
-            CancellationToken cancellationToken)
+        
+        public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 
             var audio = await _audioRepository
                 .SingleOrDefaultAsync(a => a.Id == request.Id, true, cancellationToken);
 
-            if (audio == null)
+            if (audio == null) 
                 return Result<AudioViewModel>.Fail(ResultError.NotFound);
 
-            if (!audio.CanModify(currentUserId))
+            if (!audio.CanModify(currentUserId)) 
                 return Result<AudioViewModel>.Fail(ResultError.Forbidden);
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
@@ -76,7 +75,7 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
                 audio.UpdateTags(newTags);
             }
-
+            
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
             audio.UpdatePublicStatus(request.IsPublic);
@@ -87,7 +86,7 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
             {
                 IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
             };
-
+            
             return Result<AudioViewModel>.Success(viewModel);
         }
     }

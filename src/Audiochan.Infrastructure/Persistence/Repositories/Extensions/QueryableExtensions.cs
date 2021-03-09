@@ -1,13 +1,11 @@
 ﻿using System.Linq;
-using Audiochan.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
 {
     public static class QueryableExtensions
     {
-        public static IQueryable<Audio> DefaultQueryable(this DbSet<Audio> dbSet,
-            string currentUserId = "")
+        public static IQueryable<Core.Entities.Audio> DefaultQueryable(this DbSet<Core.Entities.Audio> dbSet, string currentUserId = "")
         {
             return dbSet
                 .AsNoTracking()
@@ -18,8 +16,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
                 .Where(a => a.UserId == currentUserId || a.IsPublic);
         }
 
-        public static IQueryable<Audio> FilterBySearchTerm(this IQueryable<Audio> queryable,
-            string q)
+        public static IQueryable<Core.Entities.Audio> FilterBySearchTerm(this IQueryable<Core.Entities.Audio> queryable, string q)
         {
             if (!string.IsNullOrWhiteSpace(q))
             {
@@ -29,8 +26,7 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
             return queryable;
         }
 
-        public static IQueryable<Audio> FilterByGenre(this IQueryable<Audio> queryable,
-            string input)
+        public static IQueryable<Core.Entities.Audio> FilterByGenre(this IQueryable<Core.Entities.Audio> queryable, string input)
         {
             if (!string.IsNullOrWhiteSpace(input))
             {
@@ -45,22 +41,21 @@ namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
             return queryable;
         }
 
-        public static IQueryable<Audio> FilterByTags(this IQueryable<Audio> queryable,
-            string tags, string delimiter)
+        public static IQueryable<Core.Entities.Audio> FilterByTags(this IQueryable<Core.Entities.Audio> queryable, string tags, string delimiter)
         {
             if (!string.IsNullOrWhiteSpace(tags))
             {
                 var parsedTags = tags.Split(delimiter)
                     .Select(t => t.Trim().ToLower())
                     .ToArray();
-
+            
                 queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
             }
 
             return queryable;
         }
 
-        public static IQueryable<Audio> Sort(this IQueryable<Audio> queryable, string sort)
+        public static IQueryable<Core.Entities.Audio> Sort(this IQueryable<Core.Entities.Audio> queryable, string sort)
         {
             return sort.ToLower() switch
             {

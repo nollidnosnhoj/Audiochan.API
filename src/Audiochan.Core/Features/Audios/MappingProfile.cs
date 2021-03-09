@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Audiochan.Core.Common.Models;
-using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.GetAudio;
 using AutoMapper;
 
@@ -11,7 +10,7 @@ namespace Audiochan.Core.Features.Audios
         public AudioMappingProfile()
         {
             string currentUserId = string.Empty;
-            CreateMap<Audio, AudioViewModel>()
+            CreateMap<Entities.Audio, AudioViewModel>()
                 .ForMember(dest => dest.Tags, opts =>
                     opts.MapFrom(src => src.Tags.Select(tag => tag.Id).ToArray()))
                 .ForMember(dest => dest.FavoriteCount, opts =>
@@ -28,7 +27,7 @@ namespace Audiochan.Core.Features.Audios
                     opts.MapFrom(src => new UserDto(src.User.Id, src.User.UserName, src.User.Picture)));
         }
     }
-
+    
     // public static class MappingProfile
     // {
     //     // public static Expression<Func<Entities.Audio, AudioViewModel>> AudioMapToViewmodel(string currentUserId)
