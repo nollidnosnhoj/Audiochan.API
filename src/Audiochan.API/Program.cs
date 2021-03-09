@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Entities;
 using Audiochan.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -31,14 +29,14 @@ namespace Audiochan.API
                     await context.Database.MigrateAsync();
                     await ApplicationDbSeeder.GetSeedAsync(context, userManager, roleManager);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while migrating or seeding the database.");
                     throw;
                 }
             }
-            
+
             await host.RunAsync();
         }
 
@@ -49,9 +47,6 @@ namespace Audiochan.API
                     logging.ClearProviders();
                     logging.AddConsole();
                 })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }

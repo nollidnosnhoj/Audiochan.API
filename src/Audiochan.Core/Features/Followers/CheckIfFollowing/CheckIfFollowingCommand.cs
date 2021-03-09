@@ -8,7 +8,6 @@ namespace Audiochan.Core.Features.Followers.CheckIfFollowing
 {
     public record CheckIfFollowingCommand(string UserId, string Username) : IRequest<bool>
     {
-        
     }
 
     public class CheckIfFollowingCommandHandler : IRequestHandler<CheckIfFollowingCommand, bool>
@@ -19,13 +18,13 @@ namespace Audiochan.Core.Features.Followers.CheckIfFollowing
         {
             _dbContext = dbContext;
         }
-        
+
         public async Task<bool> Handle(CheckIfFollowingCommand request, CancellationToken cancellationToken)
         {
             return await _dbContext.FollowedUsers
                 .AsNoTracking()
                 .Include(u => u.Target)
-                .AnyAsync(u => u.ObserverId == request.UserId 
+                .AnyAsync(u => u.ObserverId == request.UserId
                                && u.Target.UserName == request.Username.Trim().ToLower(), cancellationToken);
         }
     }

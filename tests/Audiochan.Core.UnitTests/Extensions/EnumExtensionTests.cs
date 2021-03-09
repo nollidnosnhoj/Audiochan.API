@@ -12,7 +12,7 @@ namespace Audiochan.Core.UnitTests.Extensions
         Enum4,
         Enum5
     }
-    
+
     public class EnumExtensionTests
     {
         [Fact]

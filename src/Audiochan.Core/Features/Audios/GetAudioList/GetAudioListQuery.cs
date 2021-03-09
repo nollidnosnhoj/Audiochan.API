@@ -21,14 +21,16 @@ namespace Audiochan.Core.Features.Audios.GetAudioList
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public GetAudioListQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public GetAudioListQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mapper = mapper;
         }
 
-        public async Task<PagedList<AudioViewModel>> Handle(GetAudioListQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<AudioViewModel>> Handle(GetAudioListQuery request,
+            CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 
@@ -36,7 +38,7 @@ namespace Audiochan.Core.Features.Audios.GetAudioList
                 .DefaultQueryable(currentUserId)
                 .FilterByGenre(request.Genre)
                 .Sort(request.Sort)
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
+                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new {currentUserId})
                 .PaginateAsync(request, cancellationToken);
         }
     }

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Audiochan.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Audiochan.Core.Interfaces
 {

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Audiochan.API;
 using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.UnitTests.Mocks;
 using Audiochan.Infrastructure.Persistence;
-using Audiochan.API;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -27,9 +27,8 @@ namespace Audiochan.Core.IntegrationTests
     [CollectionDefinition(nameof(SliceFixture))]
     public class SliceFixtureCollection : ICollectionFixture<SliceFixture>
     {
-        
     }
-    
+
     public class SliceFixture : IAsyncLifetime
     {
         private readonly Checkpoint _checkpoint;
@@ -46,8 +45,8 @@ namespace Audiochan.Core.IntegrationTests
             _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
             _checkpoint = new Checkpoint
             {
-                TablesToIgnore = new[] { "__EFMigrationsHistory" },
-                SchemasToInclude = new [] { "public" },
+                TablesToIgnore = new[] {"__EFMigrationsHistory"},
+                SchemasToInclude = new[] {"public"},
                 DbAdapter = DbAdapter.Postgres
             };
             EnsureDatabase();
@@ -73,17 +72,17 @@ namespace Audiochan.Core.IntegrationTests
                         {"ConnectionStrings:Database", _connectionString}
                     });
                 });
-                
+
                 builder.ConfigureServices(services =>
                 {
                     ReplaceCurrentUserService(services);
                     ReplaceStorageService(services);
                 });
-                
+
                 base.ConfigureWebHost(builder);
             }
         }
-        
+
         public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
         {
             using var scope = _scopeFactory.CreateScope();
@@ -97,7 +96,7 @@ namespace Audiochan.Core.IntegrationTests
             }
             catch (Exception)
             {
-                dbContext.RollbackTransaction(); 
+                dbContext.RollbackTransaction();
                 throw;
             }
         }
@@ -120,7 +119,7 @@ namespace Audiochan.Core.IntegrationTests
                 throw;
             }
         }
-        
+
         public async Task<(string, string)> RunAsDefaultUserAsync()
         {
             return await RunAsUserAsync("testuser", "Testing1234!", Array.Empty<string>());
@@ -128,7 +127,7 @@ namespace Audiochan.Core.IntegrationTests
 
         public async Task<(string, string)> RunAsAdministratorAsync()
         {
-            return await RunAsUserAsync("admin", "Administrator1234!", new[] { UserRoleConstants.Admin });
+            return await RunAsUserAsync("admin", "Administrator1234!", new[] {UserRoleConstants.Admin});
         }
 
         public async Task<(string, string)> RunAsUserAsync(string userName, string password, string[] roles)
@@ -154,7 +153,7 @@ namespace Audiochan.Core.IntegrationTests
                 DisplayName = userName,
                 Joined = DateTime.UtcNow
             };
-            
+
             var result = await userManager.CreateAsync(user, password);
 
             if (roles.Any())
@@ -182,22 +181,22 @@ namespace Audiochan.Core.IntegrationTests
             throw new Exception($"Unable to create {userName}.{Environment.NewLine}{errors}");
         }
 
-        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, Task> action) 
+        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, Task> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>()));
 
-        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, ValueTask> action) 
+        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, ValueTask> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>()).AsTask());
 
-        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, IMediator, Task> action) 
+        public Task ExecuteDbContextAsync(Func<ApplicationDbContext, IMediator, Task> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>(), sp.GetService<IMediator>()));
 
-        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, Task<T>> action) 
+        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, Task<T>> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>()));
 
-        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, ValueTask<T>> action) 
+        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, ValueTask<T>> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>()).AsTask());
 
-        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, IMediator, Task<T>> action) 
+        public Task<T> ExecuteDbContextAsync<T>(Func<ApplicationDbContext, IMediator, Task<T>> action)
             => ExecuteScopeAsync(sp => action(sp.GetService<ApplicationDbContext>(), sp.GetService<IMediator>()));
 
         public Task InsertAsync<T>(params T[] entities) where T : class
@@ -208,6 +207,7 @@ namespace Audiochan.Core.IntegrationTests
                 {
                     db.Set<T>().Add(entity);
                 }
+
                 return db.SaveChangesAsync();
             });
         }
@@ -222,7 +222,7 @@ namespace Audiochan.Core.IntegrationTests
             });
         }
 
-        public Task InsertAsync<TEntity, TEntity2>(TEntity entity, TEntity2 entity2) 
+        public Task InsertAsync<TEntity, TEntity2>(TEntity entity, TEntity2 entity2)
             where TEntity : class
             where TEntity2 : class
         {
@@ -235,7 +235,7 @@ namespace Audiochan.Core.IntegrationTests
             });
         }
 
-        public Task InsertAsync<TEntity, TEntity2, TEntity3>(TEntity entity, TEntity2 entity2, TEntity3 entity3) 
+        public Task InsertAsync<TEntity, TEntity2, TEntity3>(TEntity entity, TEntity2 entity2, TEntity3 entity3)
             where TEntity : class
             where TEntity2 : class
             where TEntity3 : class
@@ -250,7 +250,8 @@ namespace Audiochan.Core.IntegrationTests
             });
         }
 
-        public Task InsertAsync<TEntity, TEntity2, TEntity3, TEntity4>(TEntity entity, TEntity2 entity2, TEntity3 entity3, TEntity4 entity4) 
+        public Task InsertAsync<TEntity, TEntity2, TEntity3, TEntity4>(TEntity entity, TEntity2 entity2,
+            TEntity3 entity3, TEntity4 entity4)
             where TEntity : class
             where TEntity2 : class
             where TEntity3 : class
@@ -302,7 +303,7 @@ namespace Audiochan.Core.IntegrationTests
             }
 
             await ExecuteDbContextAsync(ApplicationDbSeeder.AddDefaultGenresAsync);
-            
+
             _currentUserId = null;
         }
 
@@ -321,7 +322,7 @@ namespace Audiochan.Core.IntegrationTests
 
             services.AddTransient(_ => CurrentUserServiceMock.Create(_currentUserId, _currentUsername).Object);
         }
-        
+
         private static void ReplaceStorageService(IServiceCollection services)
         {
             var storageServiceDescriptor = services.FirstOrDefault(d =>
@@ -331,7 +332,7 @@ namespace Audiochan.Core.IntegrationTests
 
             services.AddTransient(_ => StorageServiceMock.Create().Object);
         }
-        
+
         private static void EnsureDatabase()
         {
             using var scope = _scopeFactory.CreateScope();

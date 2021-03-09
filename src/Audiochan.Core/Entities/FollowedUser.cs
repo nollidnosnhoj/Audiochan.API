@@ -1,5 +1,4 @@
-﻿using System;
-using Audiochan.Core.Entities.Base;
+﻿using Audiochan.Core.Entities.Base;
 
 namespace Audiochan.Core.Entities
 {

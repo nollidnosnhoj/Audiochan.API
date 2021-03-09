@@ -8,7 +8,6 @@ namespace Audiochan.Core.Features.Favorites.Audios.CheckIfFavoritedAudio
 {
     public record CheckIfFavoritedAudioCommand(string UserId, long AudioId) : IRequest<bool>
     {
-        
     }
 
     public class CheckIfFavoritedAudioCommandHandler : IRequestHandler<CheckIfFavoritedAudioCommand, bool>

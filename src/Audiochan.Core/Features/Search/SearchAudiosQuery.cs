@@ -1,14 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
-using Audiochan.Core.Features.Audios;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 
 namespace Audiochan.Core.Features.Search
@@ -28,7 +23,8 @@ namespace Audiochan.Core.Features.Search
             _searchService = searchService;
         }
 
-        public async Task<PagedList<AudioViewModel>> Handle(SearchAudiosQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<AudioViewModel>> Handle(SearchAudiosQuery request,
+            CancellationToken cancellationToken)
         {
             return await _searchService.SearchAudios(request, cancellationToken);
         }

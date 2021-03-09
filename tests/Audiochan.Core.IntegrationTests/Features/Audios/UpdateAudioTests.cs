@@ -28,11 +28,11 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             // Assign
             var (ownerId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
-            
+
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
             await _fixture.InsertAsync(audio);
-            
+
             // Act
             await _fixture.RunAsDefaultUserAsync();
 
@@ -43,7 +43,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             };
 
             var result = await _fixture.SendAsync(command);
-            
+
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(false);
@@ -56,7 +56,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             // Assign
             var (ownerId, _) = await _fixture
                 .RunAsUserAsync("kopacetic", Guid.NewGuid().ToString(), Array.Empty<string>());
-            
+
             var audio = new AudioBuilder("testaudio.mp3", ownerId).Build();
 
             var genre = new Genre {Name = "Dubstep", Slug = "dubstep"};
@@ -83,7 +83,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                     .Include(a => a.User)
                     .SingleOrDefaultAsync(a => a.Id == audio.Id);
             });
-            
+
             // Assert
             result.Should().NotBeNull();
             result.IsSuccess.Should().Be(true);

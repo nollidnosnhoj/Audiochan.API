@@ -25,8 +25,8 @@ namespace Audiochan.API.Controllers
         [SwaggerOperation(
             Summary = "Returns a list of available genres.",
             OperationId = "GetGenres",
-            Tags = new []{"genres"})]
-        public async Task<IActionResult> GetGenres([FromQuery] ListGenreQuery queryParams, 
+            Tags = new[] {"genres"})]
+        public async Task<IActionResult> GetGenres([FromQuery] ListGenreQuery queryParams,
             CancellationToken cancellationToken)
         {
             return Ok(await _mediator.Send(queryParams, cancellationToken));

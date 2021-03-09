@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
@@ -41,8 +40,9 @@ namespace Audiochan.Core.Features.Followers.GetFollowers
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        
-        public async Task<PagedList<FollowerViewModel>> Handle(GetFollowersQuery request, CancellationToken cancellationToken)
+
+        public async Task<PagedList<FollowerViewModel>> Handle(GetFollowersQuery request,
+            CancellationToken cancellationToken)
         {
             return await _dbContext.FollowedUsers
                 .AsNoTracking()

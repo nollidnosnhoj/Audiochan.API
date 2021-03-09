@@ -6,6 +6,7 @@ namespace Audiochan.Core.Interfaces
 {
     public interface IImageService
     {
-        Task<SaveBlobResponse> UploadImage(string data, string container, string blobName, CancellationToken cancellationToken = default);
+        Task<SaveBlobResponse> UploadImage(string data, string container, string blobName,
+            CancellationToken cancellationToken = default);
     }
 }

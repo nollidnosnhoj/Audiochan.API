@@ -10,7 +10,7 @@ namespace Audiochan.Core.Common.Options
             public List<string> ContentTypes { get; init; }
             public long MaxFileSize { get; init; }
         }
-        
+
         public StorageOptions AudioStorageOptions { get; init; }
         public StorageOptions ImageStorageOptions { get; init; }
     }

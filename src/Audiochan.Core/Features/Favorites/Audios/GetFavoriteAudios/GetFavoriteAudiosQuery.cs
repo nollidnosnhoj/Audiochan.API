@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios.GetAudio;
@@ -25,14 +24,16 @@ namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public GetFavoriteAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public GetFavoriteAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mapper = mapper;
         }
-        
-        public async Task<PagedList<AudioViewModel>> Handle(GetFavoriteAudiosQuery request, CancellationToken cancellationToken)
+
+        public async Task<PagedList<AudioViewModel>> Handle(GetFavoriteAudiosQuery request,
+            CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 

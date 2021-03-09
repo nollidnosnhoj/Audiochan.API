@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,7 @@ namespace Audiochan.API.Configurations
         {
             var jwtSetting = new JwtOptions();
             configuration.GetSection(nameof(JwtOptions)).Bind(jwtSetting);
-            
+
             services
                 .AddAuthentication(options =>
                 {

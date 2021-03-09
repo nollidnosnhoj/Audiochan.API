@@ -25,10 +25,10 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             var tagEntities = await _dbContext.Tags
                 .Where(tag => taggifyTags.Contains(tag.Id))
                 .ToListAsync(cancellationToken);
-            
+
             foreach (var tag in taggifyTags.Where(tag => tagEntities.All(t => t.Id != tag)))
             {
-                tagEntities.Add(new Tag{Id = tag});
+                tagEntities.Add(new Tag {Id = tag});
             }
 
             return tagEntities;

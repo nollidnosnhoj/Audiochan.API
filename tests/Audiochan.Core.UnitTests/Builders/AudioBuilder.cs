@@ -13,9 +13,9 @@ namespace Audiochan.Core.UnitTests.Builders
         public AudioBuilder(string userId, string fileName = "test.mp3")
         {
             _audio = new Audio(
-                uploadId: UploadHelpers.GenerateUploadId(), 
-                fileName: fileName, 
-                fileSize: _randomizer.Number(5000, 25000), 
+                uploadId: UploadHelpers.GenerateUploadId(),
+                fileName: fileName,
+                fileSize: _randomizer.Number(5000, 25000),
                 duration: _randomizer.Number(30, 300),
                 userId: userId);
         }

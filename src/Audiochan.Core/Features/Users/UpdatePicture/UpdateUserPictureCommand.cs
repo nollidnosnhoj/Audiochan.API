@@ -2,10 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Constants;
-using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Common.Helpers;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
@@ -18,9 +15,8 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
 {
     public record UpdateUserPictureCommand(string UserId, string ImageData) : IRequest<IResult<string>>
     {
-        
     }
-    
+
     public class UpdateUserPictureCommandHandler : IRequestHandler<UpdateUserPictureCommand, IResult<string>>
     {
         private readonly AudiochanOptions.StorageOptions _pictureStorageOptions;
@@ -31,8 +27,8 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
 
         public UpdateUserPictureCommandHandler(IOptions<AudiochanOptions> options,
             UserManager<User> userManager,
-            IImageService imageService, 
-            IStorageService storageService, 
+            IImageService imageService,
+            IStorageService storageService,
             IDateTimeService dateTimeService)
         {
             _pictureStorageOptions = options.Value.ImageStorageOptions;
@@ -41,7 +37,7 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
             _storageService = storageService;
             _dateTimeService = dateTimeService;
         }
-        
+
         public async Task<IResult<string>> Handle(UpdateUserPictureCommand request, CancellationToken cancellationToken)
         {
             var container = Path.Combine(_pictureStorageOptions.Container, "users");
@@ -50,7 +46,7 @@ namespace Audiochan.Core.Features.Users.UpdatePicture
             {
                 var user = await _userManager.FindByIdAsync(request.UserId + "");
                 if (user == null) return Result<string>.Fail(ResultError.Unauthorized);
-                
+
                 if (!string.IsNullOrEmpty(user.Picture))
                 {
                     await _storageService.RemoveAsync(user.Picture, cancellationToken);

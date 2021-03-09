@@ -15,7 +15,7 @@ namespace Audiochan.API.Services
 
         public string GetUserId()
         {
-            return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier) 
+            return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier)
                    ?? string.Empty;
         }
 

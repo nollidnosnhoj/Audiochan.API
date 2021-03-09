@@ -14,7 +14,6 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
 {
     public record UpdateAudioPictureCommand(long Id, string ImageData) : IRequest<IResult<string>>
     {
-        
     }
 
     public class UpdateAudioPictureCommandHandler : IRequestHandler<UpdateAudioPictureCommand, IResult<string>>
@@ -26,11 +25,11 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
 
-        public UpdateAudioPictureCommandHandler(IOptions<AudiochanOptions> options, 
-            IApplicationDbContext dbContext, 
-            IStorageService storageService, 
-            ICurrentUserService currentUserService, 
-            IImageService imageService, 
+        public UpdateAudioPictureCommandHandler(IOptions<AudiochanOptions> options,
+            IApplicationDbContext dbContext,
+            IStorageService storageService,
+            ICurrentUserService currentUserService,
+            IImageService imageService,
             IDateTimeService dateTimeService)
         {
             _pictureStorageOptions = options.Value.ImageStorageOptions;
@@ -40,8 +39,9 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
             _imageService = imageService;
             _dateTimeService = dateTimeService;
         }
-        
-        public async Task<IResult<string>> Handle(UpdateAudioPictureCommand request, CancellationToken cancellationToken)
+
+        public async Task<IResult<string>> Handle(UpdateAudioPictureCommand request,
+            CancellationToken cancellationToken)
         {
             var container = Path.Combine(_pictureStorageOptions.Container, "audios");
             var blobName = BlobHelpers.GetPictureBlobName(_dateTimeService.Now);
@@ -54,7 +54,7 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
 
                 if (audio == null) return Result<string>.Fail(ResultError.NotFound);
                 if (!audio.CanModify(currentUserId)) return Result<string>.Fail(ResultError.Forbidden);
-                
+
                 if (!string.IsNullOrEmpty(audio.Picture))
                 {
                     await _storageService.RemoveAsync(audio.Picture, cancellationToken);

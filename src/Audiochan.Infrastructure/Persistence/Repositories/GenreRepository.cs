@@ -20,9 +20,9 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
         {
             if (string.IsNullOrWhiteSpace(input))
                 return null;
-            
+
             long genreId = 0;
-            
+
             if (long.TryParse(input, out var parseResult))
                 genreId = parseResult;
 

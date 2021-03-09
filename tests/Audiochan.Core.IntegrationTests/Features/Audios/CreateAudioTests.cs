@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Helpers;
-using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.CreateAudio;
-using Audiochan.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -29,7 +26,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             var (userId, _) = await _fixture.RunAsDefaultUserAsync();
 
             var uploadId = UploadHelpers.GenerateUploadId();
-            
+
             // ACT
             var result = await _fixture.SendAsync(new CreateAudioCommand
             {
@@ -39,7 +36,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
                 FileSize = 10000,
                 Title = "Test Audio",
                 Description = "This is a test audio",
-                Tags = new List<string>{ "apples", "oranges", "banana" },
+                Tags = new List<string> {"apples", "oranges", "banana"},
                 Genre = "dubstep",
                 IsPublic = false
             });
@@ -69,7 +66,7 @@ namespace Audiochan.Core.IntegrationTests.Features.Audios
             result.Data.IsPublic.Should().Be(false);
             result.Data.User.Should().NotBeNull();
             result.Data.User.Id.Should().Be(userId);
-            
+
             created.Should().NotBeNull();
             created.UploadId.Should().Be(uploadId);
             created.Title.Should().Be("Test Audio");

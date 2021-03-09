@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
@@ -30,7 +29,7 @@ namespace Audiochan.Core.Features.Followers.GetFollowings
                     opts.MapFrom(src => src.Target.Picture));
         }
     }
-    
+
     public class GetFollowingsQueryHandler : IRequestHandler<GetFollowingsQuery, PagedList<FollowingViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
@@ -42,7 +41,8 @@ namespace Audiochan.Core.Features.Followers.GetFollowings
             _mapper = mapper;
         }
 
-        public async Task<PagedList<FollowingViewModel>> Handle(GetFollowingsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<FollowingViewModel>> Handle(GetFollowingsQuery request,
+            CancellationToken cancellationToken)
         {
             return await _dbContext.FollowedUsers
                 .AsNoTracking()

@@ -1,10 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
-using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +9,6 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
 {
     public record SetFavoriteCommand(string UserId, long AudioId, bool IsFavoriting) : IRequest<IResult<bool>>
     {
-        
     }
 
     public class SetFavoriteCommandHandler : IRequestHandler<SetFavoriteCommand, IResult<bool>>
@@ -36,15 +31,15 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
             var audio = await _dbContext.Audios
                 .Include(a => a.Favorited)
                 .SingleOrDefaultAsync(a => a.Id == request.AudioId, cancellationToken);
-            
-            if (audio == null) 
+
+            if (audio == null)
                 return Result<bool>.Fail(ResultError.NotFound);
-            
+
             if (audio.CanModify(request.UserId))
                 return Result<bool>.Fail(ResultError.Forbidden);
 
-            var favorited = request.IsFavoriting 
-                ? audio.AddFavorite(request.UserId) 
+            var favorited = request.IsFavoriting
+                ? audio.AddFavorite(request.UserId)
                 : audio.RemoveFavorite(request.UserId);
 
             await _dbContext.SaveChangesAsync(cancellationToken);

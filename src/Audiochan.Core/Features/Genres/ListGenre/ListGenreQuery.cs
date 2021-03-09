@@ -16,7 +16,7 @@ namespace Audiochan.Core.Features.Genres.ListGenre
         Alphabetically,
         Popularity
     }
-    
+
     public record ListGenreQuery : IRequest<List<GenreViewModel>>
     {
         public ListGenresSort Sort { get; } = default;

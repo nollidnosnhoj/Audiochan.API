@@ -17,7 +17,7 @@ namespace Audiochan.Core.Features.Audios.GetAudioFeed
     {
         public string UserId { get; init; }
     }
-    
+
     public class GetAudioFeedQueryHandler : IRequestHandler<GetAudioFeedQuery, PagedList<AudioViewModel>>
     {
         private readonly IApplicationDbContext _dbContext;
@@ -29,7 +29,8 @@ namespace Audiochan.Core.Features.Audios.GetAudioFeed
             _mapper = mapper;
         }
 
-        public async Task<PagedList<AudioViewModel>> Handle(GetAudioFeedQuery request, CancellationToken cancellationToken)
+        public async Task<PagedList<AudioViewModel>> Handle(GetAudioFeedQuery request,
+            CancellationToken cancellationToken)
         {
             var followedIds = await _dbContext.FollowedUsers
                 .AsNoTracking()

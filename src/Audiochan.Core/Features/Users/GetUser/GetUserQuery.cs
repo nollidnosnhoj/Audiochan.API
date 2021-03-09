@@ -13,7 +13,6 @@ namespace Audiochan.Core.Features.Users.GetUser
 {
     public record GetUserQuery(string Username) : IRequest<IResult<UserViewModel>>
     {
-        
     }
 
     public class UserMappingProfile : Profile
@@ -29,10 +28,10 @@ namespace Audiochan.Core.Features.Users.GetUser
                 .ForMember(dest => dest.FollowingCount, opts =>
                     opts.MapFrom(src => src.Followings.Count))
                 .ForMember(dest => dest.IsFollowing, opts =>
-                    opts.MapFrom(src => 
+                    opts.MapFrom(src =>
                         currentUserId != null && currentUserId.Length > 0
-                            ? src.Followers.Any(f => f.ObserverId == currentUserId) 
-                            : (bool?)null));
+                            ? src.Followers.Any(f => f.ObserverId == currentUserId)
+                            : (bool?) null));
         }
     }
 
@@ -42,17 +41,18 @@ namespace Audiochan.Core.Features.Users.GetUser
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public GetUserQueryHandler(ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
+        public GetUserQueryHandler(ICurrentUserService currentUserService, IApplicationDbContext dbContext,
+            IMapper mapper)
         {
             _currentUserService = currentUserService;
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        
+
         public async Task<IResult<UserViewModel>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
-            
+
             var profile = await _dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Followers)

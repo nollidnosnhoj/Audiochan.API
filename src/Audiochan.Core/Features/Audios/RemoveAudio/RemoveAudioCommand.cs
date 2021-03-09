@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Common.Options;
@@ -14,7 +13,6 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
 {
     public record RemoveAudioCommand(long Id) : IRequest<IResult<bool>>
     {
-        
     }
 
     public class RemoveAudioCommandHandler : IRequestHandler<RemoveAudioCommand, IResult<bool>>
@@ -24,9 +22,9 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
         private readonly IStorageService _storageService;
         private readonly ICurrentUserService _currentUserService;
 
-        public RemoveAudioCommandHandler(IOptions<AudiochanOptions> options, 
-            IApplicationDbContext dbContext, 
-            IStorageService storageService, 
+        public RemoveAudioCommandHandler(IOptions<AudiochanOptions> options,
+            IApplicationDbContext dbContext,
+            IStorageService storageService,
             ICurrentUserService currentUserService)
         {
             _audioStorageOptions = options.Value.AudioStorageOptions;
@@ -34,7 +32,7 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
             _storageService = storageService;
             _currentUserService = currentUserService;
         }
-        
+
         public async Task<IResult<bool>> Handle(RemoveAudioCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
@@ -47,14 +45,15 @@ namespace Audiochan.Core.Features.Audios.RemoveAudio
 
             if (!audio.CanModify(currentUserId))
                 return Result<bool>.Fail(ResultError.Forbidden);
-            
+
             _dbContext.Audios.Remove(audio);
-            
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             var tasks = new List<Task>
             {
-                _storageService.RemoveAsync(_audioStorageOptions.Container, BlobHelpers.GetAudioBlobName(audio), cancellationToken)
+                _storageService.RemoveAsync(_audioStorageOptions.Container, BlobHelpers.GetAudioBlobName(audio),
+                    cancellationToken)
             };
             if (!string.IsNullOrEmpty(audio.Picture))
                 tasks.Add(_storageService.RemoveAsync(audio.Picture, cancellationToken));

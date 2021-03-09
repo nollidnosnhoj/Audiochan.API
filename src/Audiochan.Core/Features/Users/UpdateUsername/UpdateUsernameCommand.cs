@@ -2,13 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using IdentityOptions = Audiochan.Core.Common.Options.IdentityOptions;
 
 namespace Audiochan.Core.Features.Users.UpdateUsername
 {
@@ -20,12 +20,12 @@ namespace Audiochan.Core.Features.Users.UpdateUsername
 
     public class UpdateUsernameCommandValidator : AbstractValidator<UpdateUsernameCommand>
     {
-        public UpdateUsernameCommandValidator(IOptions<Audiochan.Core.Common.Options.IdentityOptions> options)
+        public UpdateUsernameCommandValidator(IOptions<IdentityOptions> options)
         {
             RuleFor(req => req.NewUsername).Username(options.Value);
         }
     }
-    
+
     public class UpdateUsernameCommandHandler : IRequestHandler<UpdateUsernameCommand, IResult<bool>>
     {
         private readonly UserManager<User> _userManager;

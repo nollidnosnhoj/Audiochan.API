@@ -34,10 +34,10 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
         private readonly IGenreRepository _genreRepository;
         private readonly ITagRepository _tagRepository;
 
-        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, 
-            ICurrentUserService currentUserService, 
-            IMapper mapper, 
-            IGenreRepository genreRepository, 
+        public UpdateAudioCommandHandler(IApplicationDbContext dbContext,
+            ICurrentUserService currentUserService,
+            IMapper mapper,
+            IGenreRepository genreRepository,
             ITagRepository tagRepository)
         {
             _dbContext = dbContext;
@@ -46,8 +46,9 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
             _genreRepository = genreRepository;
             _tagRepository = tagRepository;
         }
-        
-        public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
+
+        public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request,
+            CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 
@@ -58,10 +59,10 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
                 .Include(a => a.Genre)
                 .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
-            if (audio == null) 
+            if (audio == null)
                 return Result<AudioViewModel>.Fail(ResultError.NotFound);
 
-            if (!audio.CanModify(currentUserId)) 
+            if (!audio.CanModify(currentUserId))
                 return Result<AudioViewModel>.Fail(ResultError.Forbidden);
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
@@ -80,19 +81,19 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
                 audio.UpdateTags(newTags);
             }
-            
+
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
             audio.UpdatePublicStatus(request.IsPublic);
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            
+
             var viewModel = _mapper.Map<AudioViewModel>(audio) with
             {
                 IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
             };
-            
+
             return Result<AudioViewModel>.Success(viewModel);
         }
     }

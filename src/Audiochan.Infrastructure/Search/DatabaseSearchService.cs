@@ -20,14 +20,16 @@ namespace Audiochan.Infrastructure.Search
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
-        public DatabaseSearchService(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public DatabaseSearchService(IApplicationDbContext dbContext, ICurrentUserService currentUserService,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mapper = mapper;
         }
 
-        public async Task<PagedList<AudioViewModel>> SearchAudios(SearchAudiosQuery query, CancellationToken cancellationToken = default)
+        public async Task<PagedList<AudioViewModel>> SearchAudios(SearchAudiosQuery query,
+            CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
 
@@ -37,11 +39,12 @@ namespace Audiochan.Infrastructure.Search
                 .FilterByGenre(query.Genre)
                 .FilterByTags(query.Tags, ",")
                 .Sort(query.Sort)
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
+                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new {currentUserId})
                 .PaginateAsync(query, cancellationToken);
         }
 
-        public async Task<PagedList<UserViewModel>> SearchUsers(SearchUsersQuery query, CancellationToken cancellationToken = default)
+        public async Task<PagedList<UserViewModel>> SearchUsers(SearchUsersQuery query,
+            CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
             return await _dbContext.Users

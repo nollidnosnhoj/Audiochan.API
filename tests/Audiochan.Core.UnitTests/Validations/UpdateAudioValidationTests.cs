@@ -27,7 +27,7 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfLessOrEqualToTenTagsIsValid()
         {
@@ -40,7 +40,7 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfNullTagsIsValid()
         {
@@ -48,11 +48,11 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfEmptyTagsIsValid()
         {
-            var dto = new UpdateAudioCommand{Tags = new List<string?>()};
+            var dto = new UpdateAudioCommand {Tags = new List<string?>()};
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }

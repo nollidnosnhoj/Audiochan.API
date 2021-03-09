@@ -6,7 +6,7 @@ namespace Audiochan.Core.Features.Audios
 {
     public static class QueryableExtensions
     {
-        public static IQueryable<Entities.Audio> DefaultQueryable(this DbSet<Entities.Audio> dbSet, string currentUserId = "")
+        public static IQueryable<Audio> DefaultQueryable(this DbSet<Audio> dbSet, string currentUserId = "")
         {
             return dbSet
                 .AsNoTracking()
@@ -16,7 +16,7 @@ namespace Audiochan.Core.Features.Audios
                 .Include(a => a.Genre)
                 .Where(a => a.UserId == currentUserId || a.IsPublic);
         }
-        
+
         public static IQueryable<Audio> FilterByTags(this IQueryable<Audio> queryable, string tags, string delimiter)
         {
             if (!string.IsNullOrWhiteSpace(tags))
@@ -24,7 +24,7 @@ namespace Audiochan.Core.Features.Audios
                 var parsedTags = tags.Split(delimiter)
                     .Select(t => t.Trim().ToLower())
                     .ToArray();
-            
+
                 queryable = queryable.Where(a => a.Tags.Any(t => parsedTags.Contains(t.Id)));
             }
 

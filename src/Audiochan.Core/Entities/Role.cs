@@ -6,12 +6,10 @@ namespace Audiochan.Core.Entities
     {
         public Role()
         {
-            
         }
 
-        public Role( string name ) : base ( name ) 
+        public Role(string name) : base(name)
         {
-            
         }
     }
 }
