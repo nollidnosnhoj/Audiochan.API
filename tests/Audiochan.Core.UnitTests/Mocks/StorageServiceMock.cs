@@ -46,7 +46,7 @@ namespace Audiochan.Core.UnitTests.Mocks
                         It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new SaveBlobResponse
                 {
-                    Path = Path.Combine(ContainerConstants.Audios, "blob.mp3"),
+                    Path = Path.Combine("audios", "blob.mp3"),
                     Url = "blob.mp3",
                     ContentType = "audio/mpeg"
                 });

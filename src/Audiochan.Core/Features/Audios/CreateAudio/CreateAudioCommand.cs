@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Constants;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models;
@@ -34,7 +33,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
     {
         public CreateAudioCommandValidator(IOptions<AudiochanOptions> options)
         {
-            var uploadOptions = options.Value.AudioUploadOptions;
+            var uploadOptions = options.Value.AudioStorageOptions;
             
             RuleFor(req => req.UploadId)
                 .NotEmpty()
@@ -44,14 +43,16 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
                 .WithMessage("Duration is required.");
             RuleFor(req => req.FileSize)
                 .NotEmpty()
-                .WithMessage("FileSize is required.");
+                .WithMessage("FileSize is required.")
+                .LessThanOrEqualTo(uploadOptions.MaxFileSize)
+                .WithMessage("FileSize exceeded maximum file size.");
             RuleFor(req => req.FileName)
                 .NotEmpty()
                 .WithMessage("Filename is required.")
                 .Must(Path.HasExtension)
                 .WithMessage("Filename must have a file extension.")
-                .Must(fileName =>
-                    uploadOptions.ContentTypes.Contains(Path.GetExtension(fileName).GetContentType()))
+                .Must(fileName => uploadOptions.ContentTypes
+                    .Contains(Path.GetExtension(fileName).GetContentType()))
                 .WithMessage("Filename is invalid.");
 
             Include(new AudioCommandValidator());
@@ -66,14 +67,17 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         private readonly IMapper _mapper;
         private readonly IGenreRepository _genreRepository;
         private readonly ITagRepository _tagRepository;
+        private readonly AudiochanOptions.StorageOptions _audioStorageOptions;
 
-        public CreateAudioCommandHandler(IApplicationDbContext dbContext,
+        public CreateAudioCommandHandler(IOptions<AudiochanOptions> options,
+            IApplicationDbContext dbContext,
             IStorageService storageService,
             ICurrentUserService currentUserService,
             IMapper mapper, 
             IGenreRepository genreRepository, 
             ITagRepository tagRepository)
         {
+            _audioStorageOptions = options.Value.AudioStorageOptions;
             _dbContext = dbContext;
             _storageService = storageService;
             _currentUserService = currentUserService;
@@ -122,7 +126,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
             }
             catch (Exception)
             {
-                await _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio), cancellationToken);
+                await _storageService.RemoveAsync(_audioStorageOptions.Container, BlobHelpers.GetAudioBlobName(audio), cancellationToken);
                 throw; 
             }
         }
@@ -130,7 +134,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         private async Task<bool> CheckIfAudioBlobExists(Entities.Audio audio, CancellationToken cancellationToken = default)
         {
             return await _storageService.ExistsAsync(
-                container: ContainerConstants.Audios,
+                container: _audioStorageOptions.Container,
                 blobName: BlobHelpers.GetAudioBlobName(audio),
                 cancellationToken);
         }

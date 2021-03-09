@@ -30,8 +30,6 @@ namespace Audiochan.Infrastructure.Storage
 
         public AmazonS3Service(IOptions<AmazonS3Options> amazonS3Options, IDateTimeService dateTimeService)
         {
-            if (!amazonS3Options.Value.Url.Contains("amazonaws.com"))
-                throw new StorageException("StorageUrl should contain amazonaws.com");
             _dateTimeService = dateTimeService;
             _bucket = amazonS3Options.Value.Bucket;
             var region = RegionEndpoint.GetBySystemName(amazonS3Options.Value.Region);

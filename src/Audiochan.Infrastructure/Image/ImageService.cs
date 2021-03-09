@@ -21,30 +21,14 @@ namespace Audiochan.Infrastructure.Image
             _storageService = storageService;
         }
 
-        public async Task<SaveBlobResponse> UploadImage(string data, PictureType type, string blobName, 
+        public async Task<SaveBlobResponse> UploadImage(string data, string container, string blobName, 
             CancellationToken cancellationToken = default)
         {
-            var imageStream = await ProcessImage(data, cancellationToken);
-            return await _storageService.SaveAsync(
-                stream: imageStream,
-                container: GetContainer(type),
-                blobName: blobName,
-                metadata: null,
-                cancellationToken: cancellationToken);
-        }
-
-        public async Task RemoveImage(PictureType type, string blobName, CancellationToken cancellationToken = default)
-        {
-            await _storageService.RemoveAsync(GetContainer(type), blobName, cancellationToken);
-        }
-
-        private static async Task<Stream> ProcessImage(string imageData, CancellationToken cancellationToken = default)
-        {
             // Parse the base64 data
-            if (imageData.Contains("base64"))
-                imageData = imageData.Split("base64")[1].Trim(',');
+            if (data.Contains("base64"))
+                data = data.Split("base64")[1].Trim(',');
             
-            var bytes = Convert.FromBase64String(imageData);
+            var bytes = Convert.FromBase64String(data);
             
             // Resize the image to 500 x 500.
             using var imageContext = SixLabors.ImageSharp.Image.Load(bytes);
@@ -55,17 +39,12 @@ namespace Audiochan.Infrastructure.Image
             await resizedImage.SaveAsJpegAsync(imageStream, cancellationToken);
             imageStream.Seek(0, SeekOrigin.Begin);
             
-            return imageStream;
-        }
-
-        private static string GetContainer(PictureType type)
-        {
-            return type switch
-            {
-                PictureType.Audio => Path.Combine(ContainerConstants.Pictures, ContainerConstants.Audios),
-                PictureType.User => Path.Combine(ContainerConstants.Pictures, ContainerConstants.Users),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
+            return await _storageService.SaveAsync(
+                stream: imageStream,
+                container: container,
+                blobName: blobName,
+                metadata: null,
+                cancellationToken: cancellationToken);
         }
     }
 }

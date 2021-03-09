@@ -16,15 +16,16 @@ namespace Audiochan.Core.UnitTests.Validations
         {
             var options = Options.Create(new AudiochanOptions
             {
-                AudioUploadOptions = new AudiochanOptions.UploadOptions
+                AudioStorageOptions = new AudiochanOptions.StorageOptions
                 {
+                    Container = "audios",
                     ContentTypes = new List<string>
                     {
                         "audio/mp3",
                         "audio/mpeg",
                         "audio/ogg"
                     },
-                    FileSize = 262144000
+                    MaxFileSize = 262144000
                 }
             });
             _validator = new CreateAudioCommandValidator(options);

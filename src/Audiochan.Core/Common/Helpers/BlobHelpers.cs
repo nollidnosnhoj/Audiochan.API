@@ -8,23 +8,14 @@ namespace Audiochan.Core.Common.Helpers
 {
     public static class BlobHelpers
     {
-        public static string GetAudioBlobName(Audio audio, bool includeContainer = false)
+        public static string GetAudioBlobName(Audio audio)
         {
-            var name = audio.UploadId + audio.FileExt;
-            return includeContainer 
-                ? Path.Combine(ContainerConstants.Audios, name) 
-                : name;
+            return audio.UploadId + audio.FileExt;
         }
 
-        public static string GetPictureBlobPath(PictureType pictureType, string entityId)
+        public static string GetPictureBlobName(DateTime dateTime)
         {
-            var blobPath = Path.Combine(entityId, Guid.NewGuid().ToString("N"), "picture.jpg");
-            return pictureType switch
-            {
-                PictureType.Audio => Path.Combine(ContainerConstants.Pictures, ContainerConstants.Audios, blobPath),
-                PictureType.User => Path.Combine(ContainerConstants.Pictures, ContainerConstants.Users, blobPath),
-                _ => throw new ArgumentOutOfRangeException(nameof(pictureType), pictureType, null)
-            };
+            return $"{Guid.NewGuid():N}_{dateTime:yyyyMMddHHmmss}.jpg";
         }
     }
 }

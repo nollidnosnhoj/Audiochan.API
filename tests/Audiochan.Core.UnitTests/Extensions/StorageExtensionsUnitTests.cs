@@ -28,7 +28,7 @@ namespace Audiochan.Core.UnitTests.Extensions
         [Fact]
         public void GetValidContentTypeFromPathTest()
         {
-            var path = Path.Combine(ContainerConstants.Audios, _uploadId.ToString(), "source.mp3");
+            var path = Path.Combine("audios", _uploadId.ToString(), "source.mp3");
             var contentType = path.GetContentType();
             contentType.Should().Be("audio/mpeg");
         }

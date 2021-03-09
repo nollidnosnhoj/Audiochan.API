@@ -1,11 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Enums;
+using Audiochan.Core.Common.Helpers;
 using Audiochan.Core.Common.Models.Responses;
+using Audiochan.Core.Common.Options;
 using Audiochan.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audios.UpdatePicture
 {
@@ -16,22 +19,32 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
 
     public class UpdateAudioPictureCommandHandler : IRequestHandler<UpdateAudioPictureCommand, IResult<string>>
     {
+        private readonly AudiochanOptions.StorageOptions _pictureStorageOptions;
         private readonly IApplicationDbContext _dbContext;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IStorageService _storageService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IImageService _imageService;
 
-        public UpdateAudioPictureCommandHandler(IApplicationDbContext dbContext, IStorageService storageService, ICurrentUserService currentUserService, IImageService imageService)
+        public UpdateAudioPictureCommandHandler(IOptions<AudiochanOptions> options, 
+            IApplicationDbContext dbContext, 
+            IStorageService storageService, 
+            ICurrentUserService currentUserService, 
+            IImageService imageService, 
+            IDateTimeService dateTimeService)
         {
+            _pictureStorageOptions = options.Value.ImageStorageOptions;
             _dbContext = dbContext;
             _storageService = storageService;
             _currentUserService = currentUserService;
             _imageService = imageService;
+            _dateTimeService = dateTimeService;
         }
         
         public async Task<IResult<string>> Handle(UpdateAudioPictureCommand request, CancellationToken cancellationToken)
         {
-            var blobName = request.Id + "_" + Guid.NewGuid().ToString("N") + ".jpg";
+            var container = Path.Combine(_pictureStorageOptions.Container, "audios");
+            var blobName = BlobHelpers.GetPictureBlobName(_dateTimeService.Now);
             try
             {
                 var currentUserId = _currentUserService.GetUserId();
@@ -41,20 +54,21 @@ namespace Audiochan.Core.Features.Audios.UpdatePicture
 
                 if (audio == null) return Result<string>.Fail(ResultError.NotFound);
                 if (!audio.CanModify(currentUserId)) return Result<string>.Fail(ResultError.Forbidden);
+                
                 if (!string.IsNullOrEmpty(audio.Picture))
                 {
                     await _storageService.RemoveAsync(audio.Picture, cancellationToken);
                     audio.UpdatePicture(string.Empty);
                 }
-                
-                var response = await _imageService.UploadImage(request.ImageData, PictureType.Audio, blobName, cancellationToken);
-                audio.UpdatePicture(response.Path);
+
+                var image = await _imageService.UploadImage(request.ImageData, container, blobName, cancellationToken);
+                audio.UpdatePicture(image.Path);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                return Result<string>.Success(response.Url);
+                return Result<string>.Success(image.Url);
             }
             catch (Exception)
             {
-                await _imageService.RemoveImage(PictureType.Audio, blobName, cancellationToken);
+                await _storageService.RemoveAsync(container, blobName, cancellationToken);
                 throw;
             }
         }

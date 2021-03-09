@@ -4,13 +4,14 @@ namespace Audiochan.Core.Common.Options
 {
     public record AudiochanOptions
     {
-        public record UploadOptions
+        public record StorageOptions
         {
-            public long FileSize { get; init; }
-            public List<string> ContentTypes { get; init; } = new();
+            public string Container { get; init; }
+            public List<string> ContentTypes { get; init; }
+            public long MaxFileSize { get; init; }
         }
-
-        public UploadOptions AudioUploadOptions { get; init; }
-        public UploadOptions ImageUploadOptions { get; init; }
+        
+        public StorageOptions AudioStorageOptions { get; init; }
+        public StorageOptions ImageStorageOptions { get; init; }
     }
 }
