@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
@@ -35,7 +37,30 @@ namespace Audiochan.Core.Features.Genres.ListGenre
 
         public async Task<List<GenreViewModel>> Handle(ListGenreQuery request, CancellationToken cancellationToken)
         {
-            return await _genreRepository.ListAsync<GenreViewModel>(request.Sort, cancellationToken);
+            Expression<Func<Genre, object>> orderByExpression;
+            bool isDescending;
+            
+            switch (request.Sort)
+            {
+                case ListGenresSort.Popularity:
+                    orderByExpression = g => g.Audios.Count;
+                    isDescending = true;
+                    break;
+                case ListGenresSort.Alphabetically:
+                    orderByExpression = g => g.Name;
+                    isDescending = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(request.Sort), request.Sort, null);
+            }
+
+            return await _genreRepository.ListAsync<GenreViewModel>(
+                null, 
+                orderByExpression, 
+                isDescending, 
+                false, 
+                null,
+                cancellationToken);
         }
     }
 }

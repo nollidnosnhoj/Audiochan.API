@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
+using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using MediatR;
@@ -29,17 +30,27 @@ namespace Audiochan.Core.Features.Followers.GetFollowers
     public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, PagedList<FollowerViewModel>>
     {
         private readonly IFollowerRepository _followerRepository;
+        private readonly ICurrentUserService _currentUserService;
 
-        public GetFollowersQueryHandler(IFollowerRepository followerRepository)
+        public GetFollowersQueryHandler(IFollowerRepository followerRepository, ICurrentUserService currentUserService)
         {
             _followerRepository = followerRepository;
+            _currentUserService = currentUserService;
         }
 
         public async Task<PagedList<FollowerViewModel>> Handle(GetFollowersQuery request,
             CancellationToken cancellationToken)
         {
-            return await _followerRepository.ListAsync(
-                u => u.Target.UserName == request.Username.Trim().ToLower(), request, cancellationToken);
+            var currentUserId = _currentUserService.GetUserId();
+            return await _followerRepository.PagedListAsync<FollowerViewModel>(
+                request.Page,
+                request.Size,
+                u => u.Target.UserName == request.Username.Trim().ToLower(),
+                u => u.Created,
+                true,
+                false,
+                new {currentUserId},
+                cancellationToken);
         }
     }
 }

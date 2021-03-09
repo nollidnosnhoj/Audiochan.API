@@ -101,7 +101,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
 
             try
             {
-                var genre = await _genreRepository.GetAsync(request.Genre, cancellationToken);
+                var genre = await _genreRepository.GetByInputAsync(request.Genre, cancellationToken);
                 audio.UpdateGenre(genre);
 
                 var tags = request.Tags.Count > 0
