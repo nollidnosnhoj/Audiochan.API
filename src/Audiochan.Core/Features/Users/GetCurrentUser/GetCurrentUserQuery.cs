@@ -1,23 +1,16 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Common.Enums;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Users.GetCurrentUser
 {
     public record GetCurrentUserQuery : IRequest<IResult<CurrentUserViewModel>>
     {
-        
     }
 
     public class CurrentUserMappingProfile : Profile
@@ -39,7 +32,8 @@ namespace Audiochan.Core.Features.Users.GetCurrentUser
             _userRepository = userRepository;
         }
 
-        public async Task<IResult<CurrentUserViewModel>> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
+        public async Task<IResult<CurrentUserViewModel>> Handle(GetCurrentUserQuery request,
+            CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 

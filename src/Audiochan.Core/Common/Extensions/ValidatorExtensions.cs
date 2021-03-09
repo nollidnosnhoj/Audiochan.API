@@ -27,7 +27,7 @@ namespace Audiochan.Core.Common.Extensions
                 .WithMessage("File type is invalid.");
         }
 
-        public static IRuleBuilder<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, 
+        public static IRuleBuilder<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder,
             IdentityOptions identityOptions, string field = "Password")
         {
             if (identityOptions.PasswordRequiresDigit)
@@ -54,19 +54,19 @@ namespace Audiochan.Core.Common.Extensions
             return ruleBuilder;
         }
 
-        public static IRuleBuilder<T, string> Username<T>(this IRuleBuilder<T, string> ruleBuilder, 
+        public static IRuleBuilder<T, string> Username<T>(this IRuleBuilder<T, string> ruleBuilder,
             IdentityOptions identityOptions)
         {
             return ruleBuilder
                 .NotEmpty()
-                    .WithMessage("Username is required.")
+                .WithMessage("Username is required.")
                 .MinimumLength(identityOptions.UsernameMinimumLength)
-                    .WithMessage("Username must be at least 3 characters long.")
+                .WithMessage("Username must be at least 3 characters long.")
                 .MaximumLength(identityOptions.UsernameMaximumLength)
-                    .WithMessage("Username must be at most 20 characters long.")
+                .WithMessage("Username must be at most 20 characters long.")
                 .Must(username => username.All(x => identityOptions.UsernameAllowedCharacters.Contains(x)))
-                    .WithErrorCode(ValidationErrorCodes.Username.RequireCharacters)
-                    .WithMessage("Username is invalid.");
+                .WithErrorCode(ValidationErrorCodes.Username.RequireCharacters)
+                .WithMessage("Username is invalid.");
         }
     }
 }

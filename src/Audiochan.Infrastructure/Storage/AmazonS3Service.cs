@@ -11,7 +11,6 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Audiochan.Core.Common.Exceptions;
 using Audiochan.Core.Common.Extensions;
-using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure.Storage.Extensions;
@@ -58,7 +57,7 @@ namespace Audiochan.Infrastructure.Storage
 
         public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
         {
-            var deleteRequest = new DeleteObjectRequest{BucketName = _bucket, Key = key};
+            var deleteRequest = new DeleteObjectRequest {BucketName = _bucket, Key = key};
 
             try
             {
@@ -70,21 +69,21 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public async Task<SaveBlobResponse> SaveAsync(Stream stream, 
-            string container, 
-            string blobName, 
-            Dictionary<string, string> metadata = null, 
+        public async Task<SaveBlobResponse> SaveAsync(Stream stream,
+            string container,
+            string blobName,
+            Dictionary<string, string> metadata = null,
             CancellationToken cancellationToken = default)
         {
-            long? length = stream.CanSeek 
-                ? stream.Length 
+            long? length = stream.CanSeek
+                ? stream.Length
                 : null;
 
             var threshold = Math.Min(_chunkThreshold, 5000000000);
             var key = GetKeyName(container, blobName);
             var blobUrl = string.Join('/', _url, key);
             var contentType = key.GetContentType();
-            
+
             if (length >= threshold)
             {
                 var transferUtility = new TransferUtility(_client);
@@ -99,7 +98,7 @@ namespace Audiochan.Infrastructure.Storage
                     Headers = {ContentLength = length.Value},
                     CannedACL = S3CannedACL.PublicRead,
                 };
-                
+
                 fileTransferUtilityRequest.AddMetadataCollection(metadata);
 
                 try
@@ -122,7 +121,7 @@ namespace Audiochan.Infrastructure.Storage
                     CannedACL = S3CannedACL.PublicRead,
                     AutoCloseStream = true
                 };
-                
+
                 putRequest.AddMetadataCollection(metadata);
 
                 try
@@ -134,7 +133,7 @@ namespace Audiochan.Infrastructure.Storage
                     throw new StorageException(ex.Message, ex);
                 }
             }
-            
+
             return new SaveBlobResponse
             {
                 Url = blobUrl,
@@ -143,7 +142,8 @@ namespace Audiochan.Infrastructure.Storage
             };
         }
 
-        public async Task<bool> ExistsAsync(string container, string blobName, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(string container, string blobName,
+            CancellationToken cancellationToken = default)
         {
             var key = GetKeyName(container, blobName);
 
@@ -166,10 +166,10 @@ namespace Audiochan.Infrastructure.Storage
             }
         }
 
-        public string GetPresignedUrl(string container, 
-            string blobName, 
-            string originalFileName, 
-            int expirationInMinutes, 
+        public string GetPresignedUrl(string container,
+            string blobName,
+            string originalFileName,
+            int expirationInMinutes,
             Dictionary<string, string> metadata = null)
         {
             try

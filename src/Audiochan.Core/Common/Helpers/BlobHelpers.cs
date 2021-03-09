@@ -11,8 +11,8 @@ namespace Audiochan.Core.Common.Helpers
         public static string GetAudioBlobName(Audio audio, bool includeContainer = false)
         {
             var name = audio.UploadId + audio.FileExt;
-            return includeContainer 
-                ? Path.Combine(ContainerConstants.Audios, name) 
+            return includeContainer
+                ? Path.Combine(ContainerConstants.Audios, name)
                 : name;
         }
 

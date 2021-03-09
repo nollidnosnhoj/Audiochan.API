@@ -9,7 +9,7 @@ namespace Audiochan.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<FollowedUser> builder)
         {
             builder
-                .HasKey(fu => new { FollowerId = fu.ObserverId, FolloweeId = fu.TargetId });
+                .HasKey(fu => new {FollowerId = fu.ObserverId, FolloweeId = fu.TargetId});
 
             builder.HasOne(o => o.Observer)
                 .WithMany(f => f.Followings)

@@ -1,15 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Favorites.Audios.CheckIfFavoritedAudio
 {
     public record CheckIfFavoritedAudioCommand(string UserId, long AudioId) : IRequest<bool>
     {
-        
     }
 
     public class CheckIfFavoritedAudioCommandHandler : IRequestHandler<CheckIfFavoritedAudioCommand, bool>

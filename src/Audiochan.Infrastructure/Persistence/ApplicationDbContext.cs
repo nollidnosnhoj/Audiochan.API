@@ -17,8 +17,8 @@ namespace Audiochan.Infrastructure.Persistence
     {
         private readonly IDateTimeService _dateTimeService;
         private IDbContextTransaction _currentTransaction;
-        
-        public ApplicationDbContext(DbContextOptions options, 
+
+        public ApplicationDbContext(DbContextOptions options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;
@@ -106,7 +106,7 @@ namespace Audiochan.Infrastructure.Persistence
                     .HasMaxLength(256);
                 entity.Property(x => x.Joined)
                     .IsRequired();
-                
+
                 entity.OwnsMany(u => u.RefreshTokens, refreshToken =>
                 {
                     refreshToken.WithOwner().HasForeignKey(r => r.UserId);
@@ -118,36 +118,18 @@ namespace Audiochan.Infrastructure.Persistence
                     refreshToken.ToTable("refresh_tokens");
                 });
             });
-            
-            builder.Entity<Role>(entity =>
-            {
-                entity.ToTable("roles");
-            });
-            
-            builder.Entity<IdentityUserRole<string>>(entity =>
-            {
-                entity.ToTable("user_roles");
-            });
-            
-            builder.Entity<IdentityUserClaim<string>>(entity =>
-            {
-                entity.ToTable("user_claims");
-            });
-            
-            builder.Entity<IdentityUserLogin<string>>(entity =>
-            {
-                entity.ToTable("user_logins");
-            });
-            
-            builder.Entity<IdentityRoleClaim<string>>(entity =>
-            {
-                entity.ToTable("role_claims");
-            });
-            
-            builder.Entity<IdentityUserToken<string>>(entity =>
-            {
-                entity.ToTable("user_tokens");
-            });
+
+            builder.Entity<Role>(entity => { entity.ToTable("roles"); });
+
+            builder.Entity<IdentityUserRole<string>>(entity => { entity.ToTable("user_roles"); });
+
+            builder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable("user_claims"); });
+
+            builder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("user_logins"); });
+
+            builder.Entity<IdentityRoleClaim<string>>(entity => { entity.ToTable("role_claims"); });
+
+            builder.Entity<IdentityUserToken<string>>(entity => { entity.ToTable("user_tokens"); });
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             RenameToSnakeCase(builder);
@@ -158,23 +140,23 @@ namespace Audiochan.Infrastructure.Persistence
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 entity.SetTableName(entity.GetTableName().ToSnakeCase());
-        
+
                 foreach (var property in entity.GetProperties())
                 {
                     var storeObjectId = StoreObjectIdentifier.Table(entity.GetTableName(), entity.GetSchema());
                     property.SetColumnName(property.GetColumnName(storeObjectId).ToSnakeCase());
                 }
-        
+
                 foreach (var property in entity.GetKeys())
                 {
                     property.SetName(property.GetName().ToSnakeCase());
                 }
-                
+
                 foreach (var property in entity.GetForeignKeys())
                 {
                     property.SetConstraintName(property.GetConstraintName().ToSnakeCase());
                 }
-        
+
                 foreach (var index in entity.GetIndexes())
                 {
                     index.SetDatabaseName(index.GetDatabaseName().ToSnakeCase());

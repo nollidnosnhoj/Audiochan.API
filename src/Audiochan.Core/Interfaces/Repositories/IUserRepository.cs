@@ -12,6 +12,7 @@ namespace Audiochan.Core.Interfaces.Repositories
     {
         Task<TDto> GetAsync<TDto>(Expression<Func<User, bool>> expression,
             CancellationToken cancellationToken = default);
+
         Task<PagedList<TDto>> SearchAsync<TDto>(SearchUsersQuery query, CancellationToken cancellationToken = default);
     }
 }

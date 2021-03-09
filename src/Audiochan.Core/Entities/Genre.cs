@@ -8,7 +8,7 @@ namespace Audiochan.Core.Entities
         {
             Audios = new HashSet<Audio>();
         }
-        
+
         public long Id { get; set; }
         public string Name { get; set; }
         public string Slug { get; set; }

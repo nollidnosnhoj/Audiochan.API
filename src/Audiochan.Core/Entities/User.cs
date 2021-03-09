@@ -15,7 +15,7 @@ namespace Audiochan.Core.Entities
             Followers = new HashSet<FollowedUser>();
             RefreshTokens = new HashSet<RefreshToken>();
         }
-        
+
         public User(string username, string email, DateTime joined)
         {
             this.UserName = username;

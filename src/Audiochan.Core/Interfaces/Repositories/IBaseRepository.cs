@@ -10,8 +10,10 @@ namespace Audiochan.Core.Interfaces.Repositories
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> expression,
             bool isTracking = true,
             CancellationToken cancellationToken = default);
+
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> expression,
             CancellationToken cancellationToken = default);
+
         Task InsertAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
         Task RemoveAsync(TEntity entity, CancellationToken cancellationToken = default);

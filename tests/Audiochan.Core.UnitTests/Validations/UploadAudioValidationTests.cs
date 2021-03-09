@@ -29,11 +29,11 @@ namespace Audiochan.Core.UnitTests.Validations
             });
             _validator = new CreateAudioCommandValidator(options);
         }
-        
+
         [Fact]
         public void CheckIfTitleIsValidWhenEmpty()
         {
-            var result = _validator.TestValidate(new CreateAudioCommand{Title=""});
+            var result = _validator.TestValidate(new CreateAudioCommand {Title = ""});
             result.ShouldNotHaveValidationErrorFor(x => x.Title);
         }
 
@@ -49,7 +49,7 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfLessOrEqualToTenTagsIsValid()
         {
@@ -62,7 +62,7 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfNullTagsIsValid()
         {
@@ -70,11 +70,11 @@ namespace Audiochan.Core.UnitTests.Validations
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }
-        
+
         [Fact]
         public void CheckIfEmptyTagsIsValid()
         {
-            var dto = new CreateAudioCommand{Tags = new List<string?>()};
+            var dto = new CreateAudioCommand {Tags = new List<string?>()};
             var result = _validator.TestValidate(dto);
             result.ShouldNotHaveValidationErrorFor(x => x.Tags);
         }

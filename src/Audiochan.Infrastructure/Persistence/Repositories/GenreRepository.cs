@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -27,9 +26,9 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
         {
             if (string.IsNullOrWhiteSpace(genre))
                 return null;
-            
+
             long genreId = 0;
-            
+
             if (long.TryParse(genre, out var parseResult))
                 genreId = parseResult;
 
@@ -39,7 +38,8 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             return await BaseQueryable.Where(predicate).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<TDto>> ListAsync<TDto>(ListGenresSort sort, CancellationToken cancellationToken = default)
+        public async Task<List<TDto>> ListAsync<TDto>(ListGenresSort sort,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<Genre> queryable = BaseQueryable
                 .Include(g => g.Audios);

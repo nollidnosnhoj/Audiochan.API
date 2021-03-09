@@ -3,18 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Users.GetUser
 {
     public record GetUserQuery(string Username) : IRequest<IResult<UserViewModel>>
     {
-        
     }
 
     public class UserMappingProfile : Profile
@@ -30,10 +26,10 @@ namespace Audiochan.Core.Features.Users.GetUser
                 .ForMember(dest => dest.FollowingCount, opts =>
                     opts.MapFrom(src => src.Followings.Count))
                 .ForMember(dest => dest.IsFollowing, opts =>
-                    opts.MapFrom(src => 
+                    opts.MapFrom(src =>
                         currentUserId != null && currentUserId.Length > 0
-                            ? src.Followers.Any(f => f.ObserverId == currentUserId) 
-                            : (bool?)null));
+                            ? src.Followers.Any(f => f.ObserverId == currentUserId)
+                            : (bool?) null));
         }
     }
 
@@ -45,7 +41,7 @@ namespace Audiochan.Core.Features.Users.GetUser
         {
             _userRepository = userRepository;
         }
-        
+
         public async Task<IResult<UserViewModel>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
             var user = await _userRepository

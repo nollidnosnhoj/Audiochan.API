@@ -18,8 +18,9 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
         private readonly ICurrentUserService _currentUserService;
-        
-        public UserRepository(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService) : base(context, mapper)
+
+        public UserRepository(ApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService) :
+            base(context, mapper)
         {
             _currentUserService = currentUserService;
         }
@@ -29,10 +30,11 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
             .Include(u => u.Followings)
             .Include(u => u.Audios);
 
-        public async Task<TDto> GetAsync<TDto>(Expression<Func<User, bool>> expression, CancellationToken cancellationToken = default)
+        public async Task<TDto> GetAsync<TDto>(Expression<Func<User, bool>> expression,
+            CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
-            
+
             return await BaseQueryable
                 .AsNoTracking()
                 .Where(expression)
@@ -40,7 +42,8 @@ namespace Audiochan.Infrastructure.Persistence.Repositories
                 .SingleOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<PagedList<TDto>> SearchAsync<TDto>(SearchUsersQuery query, CancellationToken cancellationToken = default)
+        public async Task<PagedList<TDto>> SearchAsync<TDto>(SearchUsersQuery query,
+            CancellationToken cancellationToken = default)
         {
             var currentUserId = _currentUserService.GetUserId();
             return await BaseQueryable

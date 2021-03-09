@@ -19,7 +19,9 @@ namespace Audiochan.Core.Features.Audios.GetAudio
         public DateTime Created { get; init; }
         public DateTime? LastModified { get; init; }
         public GenreDto Genre { get; init; }
+
         public UserDto User { get; init; }
+
         // TODO: I want to remove UploadId eventually from the view model.
         public string UploadId { get; init; }
 

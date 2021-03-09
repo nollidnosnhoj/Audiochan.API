@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Audiochan.Core.Features.Followers.SetFollow;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,8 @@ namespace Audiochan.Core.IntegrationTests.Features.Followers
         public async Task AddFollowerTest()
         {
             var (targetId, targetUsername) = await _sliceFixture.RunAsDefaultUserAsync();
-            var (observerId, _) = await _sliceFixture.RunAsUserAsync("kopacetic", "kopacetic123!", System.Array.Empty<string>());
+            var (observerId, _) =
+                await _sliceFixture.RunAsUserAsync("kopacetic", "kopacetic123!", Array.Empty<string>());
 
             await _sliceFixture.SendAsync(new SetFollowCommand(observerId, targetUsername, true));
 

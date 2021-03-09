@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Audiochan.Core.Features.Users.GetCurrentUser
+﻿namespace Audiochan.Core.Features.Users.GetCurrentUser
 {
     public record CurrentUserViewModel
     {

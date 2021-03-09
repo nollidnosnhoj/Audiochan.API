@@ -35,7 +35,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         public CreateAudioCommandValidator(IOptions<AudiochanOptions> options)
         {
             var uploadOptions = options.Value.AudioUploadOptions;
-            
+
             RuleFor(req => req.UploadId)
                 .NotEmpty()
                 .WithMessage("UploadId is required.");
@@ -71,8 +71,8 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         public CreateAudioCommandHandler(IStorageService storageService,
             ICurrentUserService currentUserService,
             IMapper mapper,
-            IAudioRepository audioRepository, 
-            IUserRepository userRepository, 
+            IAudioRepository audioRepository,
+            IUserRepository userRepository,
             IGenreRepository genreRepository, ITagRepository tagRepository)
         {
             _storageService = storageService;
@@ -89,7 +89,8 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
         {
             var currentUserId = _currentUserService.GetUserId();
 
-            var audio = new Audio(request.UploadId, request.FileName, request.FileSize, request.Duration, currentUserId);
+            var audio = new Audio(request.UploadId, request.FileName, request.FileSize, request.Duration,
+                currentUserId);
 
             audio.UpdateTitle(request.Title);
             audio.UpdateDescription(request.Description);
@@ -97,12 +98,12 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
 
             if (!await CheckIfAudioBlobExists(audio, cancellationToken))
                 return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Cannot find audio in storage.");
-            
+
             try
             {
                 var genre = await _genreRepository.GetAsync(request.Genre, cancellationToken);
                 audio.UpdateGenre(genre);
-                
+
                 var tags = request.Tags.Count > 0
                     ? await _tagRepository.InsertAsync(request.Tags, cancellationToken)
                     : new List<Tag>();
@@ -112,19 +113,20 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
 
                 var currentUser = await _userRepository
                     .SingleOrDefaultAsync(u => u.Id == currentUserId, true, cancellationToken);
-                
+
                 var viewModel = _mapper.Map<AudioViewModel>(audio) with
                 {
                     User = new UserDto(currentUser.Id, currentUser.UserName, currentUser.Picture),
                     IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)
                 };
-                
+
                 return Result<AudioViewModel>.Success(viewModel);
             }
             catch (Exception)
             {
-                await _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio), cancellationToken);
-                throw; 
+                await _storageService.RemoveAsync(ContainerConstants.Audios, BlobHelpers.GetAudioBlobName(audio),
+                    cancellationToken);
+                throw;
             }
         }
 
