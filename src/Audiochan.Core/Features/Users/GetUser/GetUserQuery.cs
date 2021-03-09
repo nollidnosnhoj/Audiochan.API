@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
-using Audiochan.Core.Interfaces;
 using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using MediatR;
@@ -37,23 +36,16 @@ namespace Audiochan.Core.Features.Users.GetUser
     public class GetUserQueryHandler : IRequestHandler<GetUserQuery, IResult<UserViewModel>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetUserQueryHandler(IUserRepository userRepository, ICurrentUserService currentUserService)
+        public GetUserQueryHandler(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _currentUserService = currentUserService;
         }
 
         public async Task<IResult<UserViewModel>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
             var user = await _userRepository
-                .SingleOrDefaultAsync<UserViewModel>(
-                    u => u.UserName == request.Username.Trim().ToLower(),
-                    false,
-                    new {currentUserId},
-                    cancellationToken);
+                .GetAsync<UserViewModel>(u => u.UserName == request.Username.Trim().ToLower(), cancellationToken);
 
             return user == null
                 ? Result<UserViewModel>.Fail(ResultError.NotFound)

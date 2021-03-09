@@ -36,11 +36,9 @@ namespace Audiochan.Core.Features.Users.GetCurrentUser
             CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
-            var user = await _userRepository.SingleOrDefaultAsync<CurrentUserViewModel>(
-                u => u.Id == currentUserId,
-                false,
-                new {currentUserId},
-                cancellationToken);
+
+            var user = await _userRepository
+                .GetAsync<CurrentUserViewModel>(u => u.Id == currentUserId, cancellationToken);
 
             return user == null
                 ? Result<CurrentUserViewModel>.Fail(ResultError.Unauthorized)

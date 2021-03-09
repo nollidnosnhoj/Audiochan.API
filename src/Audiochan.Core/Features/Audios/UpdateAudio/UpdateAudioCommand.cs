@@ -62,7 +62,7 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
             {
-                var genre = await _genreRepository.GetByInputAsync(request.Genre, cancellationToken);
+                var genre = await _genreRepository.GetAsync(request.Genre, cancellationToken);
 
                 if (genre == null)
                     return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Genre does not exist.");

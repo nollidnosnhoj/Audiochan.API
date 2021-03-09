@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Infrastructure.Persistence.Repositories.Extensions
 {
-    public static class AudioQueryableExtensions
+    public static class QueryableExtensions
     {
         public static IQueryable<Audio> DefaultQueryable(this DbSet<Audio> dbSet,
             string currentUserId = "")
