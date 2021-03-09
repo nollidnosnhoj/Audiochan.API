@@ -1,22 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Audiochan.Core.Common.Enums;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Genres.ListGenre
 {
-    public enum ListGenresSort
-    {
-        Alphabetically,
-        Popularity
-    }
-    
     public record ListGenreQuery : IRequest<List<GenreViewModel>>
     {
         public ListGenresSort Sort { get; } = default;
@@ -34,33 +27,16 @@ namespace Audiochan.Core.Features.Genres.ListGenre
 
     public class ListGenreQueryHandler : IRequestHandler<ListGenreQuery, List<GenreViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IGenreRepository _genreRepository;
 
-        public ListGenreQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public ListGenreQueryHandler(IGenreRepository genreRepository)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _genreRepository = genreRepository;
         }
 
         public async Task<List<GenreViewModel>> Handle(ListGenreQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<Genre> queryable = _dbContext.Genres
-                .Include(g => g.Audios);
-
-            switch (request.Sort)
-            {
-                case ListGenresSort.Popularity:
-                    queryable = queryable.OrderByDescending(g => g.Audios.Count);
-                    break;
-                case ListGenresSort.Alphabetically:
-                    queryable = queryable.OrderBy(g => g.Name);
-                    break;
-            }
-
-            return await queryable
-                .ProjectTo<GenreViewModel>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+            return await _genreRepository.ListAsync<GenreViewModel>(request.Sort, cancellationToken);
         }
     }
 }

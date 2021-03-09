@@ -7,6 +7,7 @@ using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -33,24 +34,17 @@ namespace Audiochan.Core.Features.Followers.GetFollowers
 
     public class GetFollowersQueryHandler : IRequestHandler<GetFollowersQuery, PagedList<FollowerViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IFollowerRepository _followerRepository;
 
-        public GetFollowersQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public GetFollowersQueryHandler(IFollowerRepository followerRepository)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _followerRepository = followerRepository;
         }
         
         public async Task<PagedList<FollowerViewModel>> Handle(GetFollowersQuery request, CancellationToken cancellationToken)
         {
-            return await _dbContext.FollowedUsers
-                .AsNoTracking()
-                .Include(u => u.Target)
-                .Include(u => u.Observer)
-                .Where(u => u.Target.UserName == request.Username.Trim().ToLower())
-                .ProjectTo<FollowerViewModel>(_mapper.ConfigurationProvider)
-                .PaginateAsync(request, cancellationToken);
+            return await _followerRepository.ListAsync(
+                u => u.Target.UserName == request.Username.Trim().ToLower(), request, cancellationToken);
         }
     }
 }

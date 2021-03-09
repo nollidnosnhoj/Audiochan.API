@@ -5,6 +5,7 @@ using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,21 +18,20 @@ namespace Audiochan.Core.Features.Followers.SetFollow
 
     public class SetFollowCommandHandler : IRequestHandler<SetFollowCommand, IResult<bool>>
     {
-        private readonly IApplicationDbContext _dbContext;
+        private readonly IUserRepository _userRepository;
 
-        public SetFollowCommandHandler(IApplicationDbContext dbContext)
+        public SetFollowCommandHandler(IUserRepository userRepository)
         {
-            _dbContext = dbContext;
+            _userRepository = userRepository;
         }
         
         public async Task<IResult<bool>> Handle(SetFollowCommand request, CancellationToken cancellationToken)
         {
-            if (!await _dbContext.Users.AsNoTracking().AnyAsync(u => u.Id == request.UserId, cancellationToken))
+            if (!await _userRepository.ExistsAsync(u => u.Id == request.UserId, cancellationToken))
                 return Result<bool>.Fail(ResultError.Unauthorized);
             
-            var target = await _dbContext.Users
-                .Include(u => u.Followers)
-                .SingleOrDefaultAsync(u => u.UserName == request.Username.Trim().ToLower(), cancellationToken);
+            var target = await _userRepository
+                .SingleOrDefaultAsync(u => u.UserName == request.Username.Trim().ToLower(), true, cancellationToken);
 
             if (target == null)
                 return Result<bool>.Fail(ResultError.NotFound);
@@ -43,7 +43,7 @@ namespace Audiochan.Core.Features.Followers.SetFollow
                 ? target.AddFollower(request.UserId)
                 : target.RemoveFollower(request.UserId);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _userRepository.UpdateAsync(target, cancellationToken);
 
             return Result<bool>.Success(isFollowed);
         }

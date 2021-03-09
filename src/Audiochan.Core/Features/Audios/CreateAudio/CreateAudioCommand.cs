@@ -14,11 +14,10 @@ using Audiochan.Core.Common.Options;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
-using Audiochan.Core.Services;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Audiochan.Core.Features.Audios.CreateAudio
@@ -61,25 +60,28 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
 
     public class CreateAudioCommandHandler : IRequestHandler<CreateAudioCommand, Result<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly TagService _tagService;
-        private readonly GenreService _genreService;
         private readonly IStorageService _storageService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
+        private readonly IAudioRepository _audioRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IGenreRepository _genreRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public CreateAudioCommandHandler(IApplicationDbContext dbContext,
-            IStorageService storageService,
+        public CreateAudioCommandHandler(IStorageService storageService,
             ICurrentUserService currentUserService,
-            IMapper mapper, 
-            TagService tagService, GenreService genreService)
+            IMapper mapper,
+            IAudioRepository audioRepository, 
+            IUserRepository userRepository, 
+            IGenreRepository genreRepository, ITagRepository tagRepository)
         {
-            _dbContext = dbContext;
             _storageService = storageService;
             _currentUserService = currentUserService;
             _mapper = mapper;
-            _tagService = tagService;
-            _genreService = genreService;
+            _audioRepository = audioRepository;
+            _userRepository = userRepository;
+            _genreRepository = genreRepository;
+            _tagRepository = tagRepository;
         }
 
         public async Task<Result<AudioViewModel>> Handle(CreateAudioCommand request,
@@ -98,19 +100,18 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
             
             try
             {
-                var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
+                var genre = await _genreRepository.GetAsync(request.Genre, cancellationToken);
                 audio.UpdateGenre(genre);
                 
                 var tags = request.Tags.Count > 0
-                    ? await _tagService.CreateTags(request.Tags, cancellationToken)
+                    ? await _tagRepository.InsertAsync(request.Tags, cancellationToken)
                     : new List<Tag>();
                 audio.UpdateTags(tags);
 
-                await _dbContext.Audios.AddAsync(audio, cancellationToken);
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                
-                var currentUser = await _dbContext.Users
-                    .SingleOrDefaultAsync(u => u.Id == currentUserId, cancellationToken);
+                await _audioRepository.InsertAsync(audio, cancellationToken);
+
+                var currentUser = await _userRepository
+                    .SingleOrDefaultAsync(u => u.Id == currentUserId, true, cancellationToken);
                 
                 var viewModel = _mapper.Map<AudioViewModel>(audio) with
                 {
@@ -127,7 +128,7 @@ namespace Audiochan.Core.Features.Audios.CreateAudio
             }
         }
 
-        private async Task<bool> CheckIfAudioBlobExists(Entities.Audio audio, CancellationToken cancellationToken = default)
+        private async Task<bool> CheckIfAudioBlobExists(Audio audio, CancellationToken cancellationToken = default)
         {
             return await _storageService.ExistsAsync(
                 container: ContainerConstants.Audios,

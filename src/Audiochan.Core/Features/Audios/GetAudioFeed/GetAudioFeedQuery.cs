@@ -6,6 +6,7 @@ using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -20,29 +21,17 @@ namespace Audiochan.Core.Features.Audios.GetAudioFeed
     
     public class GetAudioFeedQueryHandler : IRequestHandler<GetAudioFeedQuery, PagedList<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IAudioRepository _audioRepository;
 
-        public GetAudioFeedQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
+        public GetAudioFeedQueryHandler(IAudioRepository audioRepository)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _audioRepository = audioRepository;
         }
 
         public async Task<PagedList<AudioViewModel>> Handle(GetAudioFeedQuery request, CancellationToken cancellationToken)
         {
-            var followedIds = await _dbContext.FollowedUsers
-                .AsNoTracking()
-                .Where(user => user.ObserverId == request.UserId)
-                .Select(user => user.TargetId)
-                .ToListAsync(cancellationToken);
-
-            return await _dbContext.Audios
-                .DefaultQueryable(request.UserId)
-                .Where(a => followedIds.Contains(a.UserId))
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new {currentUserId = request.UserId})
-                .OrderByDescending(a => a.Created)
-                .PaginateAsync(request, cancellationToken);
+            return await _audioRepository.FeedAsync<AudioViewModel>(request.UserId, request.Page, request.Size,
+                cancellationToken);
         }
     }
 }

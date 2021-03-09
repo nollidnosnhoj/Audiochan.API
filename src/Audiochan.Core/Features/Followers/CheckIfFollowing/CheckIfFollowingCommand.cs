@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,20 +14,18 @@ namespace Audiochan.Core.Features.Followers.CheckIfFollowing
 
     public class CheckIfFollowingCommandHandler : IRequestHandler<CheckIfFollowingCommand, bool>
     {
-        private readonly IApplicationDbContext _dbContext;
+        private readonly IFollowerRepository _followerRepository;
 
-        public CheckIfFollowingCommandHandler(IApplicationDbContext dbContext)
+        public CheckIfFollowingCommandHandler(IFollowerRepository followerRepository)
         {
-            _dbContext = dbContext;
+            _followerRepository = followerRepository;
         }
         
         public async Task<bool> Handle(CheckIfFollowingCommand request, CancellationToken cancellationToken)
         {
-            return await _dbContext.FollowedUsers
-                .AsNoTracking()
-                .Include(u => u.Target)
-                .AnyAsync(u => u.ObserverId == request.UserId 
-                               && u.Target.UserName == request.Username.Trim().ToLower(), cancellationToken);
+            return await _followerRepository
+                .ExistsAsync(u => u.ObserverId == request.UserId
+                                    && u.Target.UserName == request.Username.Trim().ToLower(), cancellationToken);
         }
     }
 }

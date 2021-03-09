@@ -6,6 +6,7 @@ using Audiochan.Core.Common.Models;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -29,26 +30,21 @@ namespace Audiochan.Core.Features.Users.GetCurrentUser
 
     public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, IResult<CurrentUserViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
 
-        public GetCurrentUserQueryHandler(ICurrentUserService currentUserService, IApplicationDbContext dbContext, IMapper mapper)
+        public GetCurrentUserQueryHandler(ICurrentUserService currentUserService, IUserRepository userRepository)
         {
             _currentUserService = currentUserService;
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _userRepository = userRepository;
         }
 
         public async Task<IResult<CurrentUserViewModel>> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
-            
-            var user = await _dbContext.Users
-                .AsNoTracking()
-                .Where(u => u.Id == currentUserId)
-                .ProjectTo<CurrentUserViewModel>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync(cancellationToken);
+
+            var user = await _userRepository
+                .GetAsync<CurrentUserViewModel>(u => u.Id == currentUserId, cancellationToken);
 
             return user == null
                 ? Result<CurrentUserViewModel>.Fail(ResultError.Unauthorized)

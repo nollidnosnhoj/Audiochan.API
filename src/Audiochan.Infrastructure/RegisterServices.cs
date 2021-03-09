@@ -1,7 +1,9 @@
 ﻿using Amazon.S3;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using Audiochan.Infrastructure.Image;
 using Audiochan.Infrastructure.Persistence;
+using Audiochan.Infrastructure.Persistence.Repositories;
 using Audiochan.Infrastructure.Security;
 using Audiochan.Infrastructure.Shared;
 using Audiochan.Infrastructure.Storage;
@@ -20,6 +22,12 @@ namespace Audiochan.Infrastructure
         {
             ConfigureDatabase(services, configuration, isDevelopment);
             services.AddAWSService<IAmazonS3>();
+            services.AddScoped<IAudioRepository, AudioRepository>();
+            services.AddScoped<IFavoriteAudioRepository, FavoriteAudioRepository>();
+            services.AddScoped<IFollowerRepository, FollowerRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddTransient<IStorageService, AmazonS3Service>();
             services.AddTransient<IImageService, ImageService>();
             services.AddTransient<ITokenService, TokenService>();
@@ -39,8 +47,6 @@ namespace Audiochan.Infrastructure
                     options.EnableSensitiveDataLogging();
                 }
             });
-            
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
         }
     }
 }

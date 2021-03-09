@@ -7,6 +7,7 @@ using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -21,29 +22,16 @@ namespace Audiochan.Core.Features.Search
 
     public class SearchAudiosQueryHandler : IRequestHandler<SearchAudiosQuery, PagedList<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly IAudioRepository _audioRepository;
 
-        public SearchAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public SearchAudiosQueryHandler(IAudioRepository audioRepository)
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
-            _mapper = mapper;
+            _audioRepository = audioRepository;
         }
 
         public async Task<PagedList<AudioViewModel>> Handle(SearchAudiosQuery request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
-
-            return await _dbContext.Audios
-                .DefaultQueryable(currentUserId)
-                .FilterBySearchTerm(request.Q)
-                .FilterByGenre(request.Genre)
-                .FilterByTags(request.Tags, ",")
-                .Sort(request.Sort)
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider, new { currentUserId })
-                .PaginateAsync(request, cancellationToken);
+            return await _audioRepository.SearchAsync<AudioViewModel>(request, cancellationToken);
         }
     }
 }

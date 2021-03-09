@@ -6,11 +6,10 @@ using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
-using Audiochan.Core.Services;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Audiochan.Core.Features.Audios.UpdateAudio
 {
@@ -29,35 +28,30 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
     public class UpdateAudioCommandHandler : IRequestHandler<UpdateAudioCommand, Result<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly TagService _tagService;
-        private readonly GenreService _genreService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
+        private readonly IAudioRepository _audioRepository;
+        private readonly IGenreRepository _genreRepository;
+        private readonly ITagRepository _tagRepository;
 
-        public UpdateAudioCommandHandler(IApplicationDbContext dbContext, 
-            ICurrentUserService currentUserService, 
+        public UpdateAudioCommandHandler(ICurrentUserService currentUserService, 
             IMapper mapper, 
-            TagService tagService, 
-            GenreService genreService)
+            IAudioRepository audioRepository, 
+            IGenreRepository genreRepository, ITagRepository tagRepository)
         {
-            _dbContext = dbContext;
             _currentUserService = currentUserService;
             _mapper = mapper;
-            _tagService = tagService;
-            _genreService = genreService;
+            _audioRepository = audioRepository;
+            _genreRepository = genreRepository;
+            _tagRepository = tagRepository;
         }
         
         public async Task<Result<AudioViewModel>> Handle(UpdateAudioCommand request, CancellationToken cancellationToken)
         {
             var currentUserId = _currentUserService.GetUserId();
 
-            var audio = await _dbContext.Audios
-                .Include(a => a.Favorited)
-                .Include(a => a.User)
-                .Include(a => a.Tags)
-                .Include(a => a.Genre)
-                .SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+            var audio = await _audioRepository
+                .SingleOrDefaultAsync(a => a.Id == request.Id, true, cancellationToken);
 
             if (audio == null) 
                 return Result<AudioViewModel>.Fail(ResultError.NotFound);
@@ -67,7 +61,7 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
             if (!string.IsNullOrWhiteSpace(request.Genre) && (audio.Genre?.Slug ?? "") != request.Genre)
             {
-                var genre = await _genreService.GetGenre(request.Genre, cancellationToken);
+                var genre = await _genreRepository.GetAsync(request.Genre, cancellationToken);
 
                 if (genre == null)
                     return Result<AudioViewModel>.Fail(ResultError.BadRequest, "Genre does not exist.");
@@ -77,7 +71,7 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
 
             if (request.Tags.Count > 0)
             {
-                var newTags = await _tagService.CreateTags(request.Tags, cancellationToken);
+                var newTags = await _tagRepository.InsertAsync(request.Tags, cancellationToken);
 
                 audio.UpdateTags(newTags);
             }
@@ -86,9 +80,8 @@ namespace Audiochan.Core.Features.Audios.UpdateAudio
             audio.UpdateDescription(request.Description);
             audio.UpdatePublicStatus(request.IsPublic);
 
-            _dbContext.Audios.Update(audio);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            
+            await _audioRepository.UpdateAsync(audio, cancellationToken);
+
             var viewModel = _mapper.Map<AudioViewModel>(audio) with
             {
                 IsFavorited = audio.Favorited.Any(x => x.UserId == currentUserId)

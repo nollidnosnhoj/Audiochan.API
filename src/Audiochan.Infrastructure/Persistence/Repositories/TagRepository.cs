@@ -5,27 +5,29 @@ using System.Threading.Tasks;
 using Audiochan.Core.Common.Extensions;
 using Audiochan.Core.Entities;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audiochan.Core.Services
+namespace Audiochan.Infrastructure.Persistence.Repositories
 {
-    public class TagService
+    public class TagRepository : BaseRepository<Tag>, ITagRepository
     {
-        private readonly IApplicationDbContext _dbContext;
-
-        public TagService(IApplicationDbContext dbContext)
+        public TagRepository(ApplicationDbContext context, IMapper mapper) : base(context, mapper)
         {
-            _dbContext = dbContext;
         }
 
-        public async Task<List<Tag>> CreateTags(IEnumerable<string> tags, CancellationToken cancellationToken = default)
+        protected override IQueryable<Tag> BaseQueryable => Context.Set<Tag>();
+
+
+        public async Task<List<Tag>> InsertAsync(IEnumerable<string> tags, CancellationToken cancellationToken = default)
         {
             var taggifyTags = tags.FormatTags();
 
-            var tagEntities = await _dbContext.Tags
+            var tagEntities = await BaseQueryable
                 .Where(tag => taggifyTags.Contains(tag.Id))
                 .ToListAsync(cancellationToken);
-            
+        
             foreach (var tag in taggifyTags.Where(tag => tagEntities.All(t => t.Id != tag)))
             {
                 tagEntities.Add(new Tag{Id = tag});

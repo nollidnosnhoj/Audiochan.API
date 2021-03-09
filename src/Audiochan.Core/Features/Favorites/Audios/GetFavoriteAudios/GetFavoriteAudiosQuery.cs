@@ -7,6 +7,7 @@ using Audiochan.Core.Common.Models.Requests;
 using Audiochan.Core.Common.Models.Responses;
 using Audiochan.Core.Features.Audios.GetAudio;
 using Audiochan.Core.Interfaces;
+using Audiochan.Core.Interfaces.Repositories;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -21,33 +22,16 @@ namespace Audiochan.Core.Features.Favorites.Audios.GetFavoriteAudios
 
     public class GetFavoriteAudiosQueryHandler : IRequestHandler<GetFavoriteAudiosQuery, PagedList<AudioViewModel>>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly IFavoriteAudioRepository _favoriteAudioRepository;
 
-        public GetFavoriteAudiosQueryHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public GetFavoriteAudiosQueryHandler(IFavoriteAudioRepository favoriteAudioRepository)
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
-            _mapper = mapper;
+            _favoriteAudioRepository = favoriteAudioRepository;
         }
         
         public async Task<PagedList<AudioViewModel>> Handle(GetFavoriteAudiosQuery request, CancellationToken cancellationToken)
         {
-            var currentUserId = _currentUserService.GetUserId();
-
-            return await _dbContext.FavoriteAudios
-                .AsNoTracking()
-                .Include(fa => fa.User)
-                .Include(fa => fa.Audio)
-                .ThenInclude(a => a.User)
-                .Include(fa => fa.Audio)
-                .ThenInclude(a => a.Favorited)
-                .Where(fa => fa.User.UserName == request.Username.Trim().ToLower())
-                .OrderByDescending(fa => fa.Created)
-                .Select(fa => fa.Audio)
-                .ProjectTo<AudioViewModel>(_mapper.ConfigurationProvider)
-                .PaginateAsync(request, cancellationToken);
+            return await _favoriteAudioRepository.ListAsync(request.Username, request, cancellationToken);
         }
     }
 }

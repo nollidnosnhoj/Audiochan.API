@@ -6,6 +6,8 @@ using Audiochan.Core.Interfaces;
 using Audiochan.Infrastructure;
 using Audiochan.Infrastructure.Storage.Options;
 using Audiochan.API.Configurations;
+using Audiochan.Infrastructure.Persistence.Pipelines;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -31,21 +33,20 @@ namespace Audiochan.API
             services.Configure<AudiochanOptions>(Configuration.GetSection(nameof(AudiochanOptions)));
             services.Configure<JwtOptions>(Configuration.GetSection(nameof(JwtOptions)));
             services.Configure<IdentityOptions>(Configuration.GetSection(nameof(IdentityOptions)));
-
-            services
-                .AddMemoryCache()
-                .AddCoreServices()
-                .AddInfraServices(Configuration, Environment.IsDevelopment())
-                .ConfigureIdentity(Configuration)
-                .ConfigureAuthentication(Configuration)
-                .ConfigureAuthorization()
-                .AddHttpContextAccessor()
-                .AddScoped<ICurrentUserService, CurrentUserService>()
-                .ConfigureControllers()
-                .ConfigureRouting()
-                .ConfigureRateLimiting(Configuration)
-                .ConfigureCors()
-                .ConfigureSwagger(Configuration);
+            services.AddMemoryCache();
+            services.AddCoreServices();
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DbContextTransactionPipelineBehavior<,>));
+            services.AddInfraServices(Configuration, Environment.IsDevelopment());
+            services.AddHttpContextAccessor();
+            services.ConfigureIdentity(Configuration);
+            services.ConfigureAuthentication(Configuration);
+            services.ConfigureAuthorization();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.ConfigureControllers();
+            services.ConfigureRouting();
+            services.ConfigureRateLimiting(Configuration);
+            services.ConfigureCors();
+            services.ConfigureSwagger(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
