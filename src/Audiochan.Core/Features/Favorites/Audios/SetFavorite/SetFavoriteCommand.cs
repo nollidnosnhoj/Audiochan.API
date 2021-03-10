@@ -35,9 +35,6 @@ namespace Audiochan.Core.Features.Favorites.Audios.SetFavorite
             if (audio == null)
                 return Result<bool>.Fail(ResultError.NotFound);
 
-            if (audio.CanModify(request.UserId))
-                return Result<bool>.Fail(ResultError.Forbidden);
-
             var favorited = request.IsFavoriting
                 ? audio.AddFavorite(request.UserId)
                 : audio.RemoveFavorite(request.UserId);
